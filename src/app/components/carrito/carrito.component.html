@@ -1,0 +1,28 @@
+<div *ngIf="cartItems.length > 0; else emptyCart">
+  <h2>Tu Carrito</h2>
+  <ul>
+    <li *ngFor="let cartItem of cartItems">
+      <div>
+        <strong>{{ cartItem.item.name }}</strong>
+        <p>{{ cartItem.item.description }}</p>
+        <p>Precio: {{ cartItem.item.price | currency }}</p>
+        <p>Cantidad:
+          <button (click)="decreaseQuantity(cartItem)">-</button>
+          <input
+            type="number"
+            [(ngModel)]="cartItem.quantity"
+            min="1"
+            (change)="updateQuantity(cartItem)"
+          />
+          <button (click)="increaseQuantity(cartItem)">+</button>
+        </p>
+        <button (click)="removeItem(cartItem)">Eliminar</button>
+        <button type="button" class="btn btn-primary" (click)="checkout()">comprar</button>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<ng-template #emptyCart>
+  <p>Tu carrito está vacío.</p>
+</ng-template>

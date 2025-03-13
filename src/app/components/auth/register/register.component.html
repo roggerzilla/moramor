@@ -1,0 +1,7 @@
+<div>
+  <input [(ngModel)]="user.name" name="name" required placeholder="Nombre">
+  <input [(ngModel)]="user.email" name="email" required placeholder="Email">
+  <input [(ngModel)]="user.password" name="password" type="password" required placeholder="Contraseña">
+  <input type="password" id="password_confirmation" [(ngModel)]="user.password_confirmation" name="password_confirmation" required />
+  <button (click)="onRegister()">Registrarse</button> <!-- Botón que llama al método onRegister() -->
+</div>

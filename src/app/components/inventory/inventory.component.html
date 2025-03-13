@@ -1,0 +1,42 @@
+<div>
+  <h2>Inventario</h2>
+
+  <div *ngIf="userRole">
+    <p><strong>Tu rol actual:</strong> {{ userRole }}</p>
+  </div>
+
+  <div *ngIf="userRole === 'superuser' || userRole === 'admin'">
+    <h3>Agregar Producto</h3>
+    <form (ngSubmit)="addItem()">
+      <input [(ngModel)]="item.name" name="name" placeholder="Nombre" />
+      <input [(ngModel)]="item.description" name="description" placeholder="Descripción" />
+      <input [(ngModel)]="item.price" name="price" placeholder="Precio" type="number" />
+      <input [(ngModel)]="item.quantity" name="quantity" placeholder="Cantidad" type="number" />
+      <input type="file" (change)="uploadImage($event)" />
+      <button [disabled]="!item.image_url" type="submit">Agregar Producto</button>
+    </form>
+  </div>
+
+  <h3>Lista de Productos</h3>
+  <div *ngFor="let item of items">
+    <img [src]="item.image_url" width="100" />
+    <p><strong>{{ item.name }}</strong></p>
+    <p>{{ item.description }}</p>
+    <p><strong>${{ item.price }}</strong></p>
+    <p>{{ item.quantity }} en stock</p>
+
+    <button *ngIf="item.quantity === 0" disabled>Sin stock</button>
+    <button (click)="addToCart(item)" *ngIf="item.quantity > 0">Comprar</button>
+
+    <div *ngIf="userRole === 'superuser' || userRole === 'admin'">
+      <button (click)="toggleEdit(item)">Editar</button>
+      <form *ngIf="item.editing" (ngSubmit)="updateItem(item)">
+        <input [(ngModel)]="item.name" name="name" />
+        <input [(ngModel)]="item.description" name="description" />
+        <input [(ngModel)]="item.price" name="price" />
+        <input [(ngModel)]="item.quantity" name="quantity" />
+        <button type="submit">Guardar</button>
+      </form>
+    </div>
+  </div>
+</div>

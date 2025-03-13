@@ -1,0 +1,59 @@
+<div class="p-4 bg-white shadow rounded-lg">
+  <!-- Filtros -->
+  <div class="mb-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+    <!-- Filtro por ID -->
+    <div>
+      <label class="form-label">ID Pedido:</label>
+      <input type="text" class="form-control" [(ngModel)]="searchId" (input)="applyFilters()" placeholder="Buscar por ID">
+    </div>
+
+    <!-- Filtro por Cliente -->
+    <div>
+      <label class="form-label">Cliente:</label>
+      <input type="text" class="form-control" [(ngModel)]="searchName" (input)="applyFilters()" placeholder="Buscar cliente">
+    </div>
+
+    <!-- Filtro por Fecha -->
+    <div>
+      <label class="form-label">Rango de Fechas:</label>
+      <div class="flex space-x-2">
+        <input type="date" class="form-control" [(ngModel)]="startDate" (change)="applyFilters()">
+        <input type="date" class="form-control" [(ngModel)]="endDate" (change)="applyFilters()">
+      </div>
+    </div>
+
+    <!-- Filtro por Ítem -->
+    <div>
+      <label class="form-label">Ítem:</label>
+      <input type="text" class="form-control" [(ngModel)]="searchItem" (input)="applyFilters()" placeholder="Buscar ítem">
+    </div>
+  </div>
+
+  <!-- Tabla de pedidos -->
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Total</th>
+        <th>Fecha</th>
+        <th>Ítems</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let order of filteredOrders">
+        <td>{{ order.id }}</td>
+        <td>{{ order.customer_name }}</td>
+        <td>{{ order.total | currency }}</td>
+        <td>{{ order.created_at | date: 'dd/MM/yyyy' }}</td>
+        <td>
+          <ul>
+            <li *ngFor="let item of order.items">
+              {{ item.name }} ({{ item.quantity }} x {{ item.price | currency }})
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,72 @@
+<div>
+  <h2>Gestión de Usuarios Normales</h2>
+
+  <!-- Formulario para registrar usuarios -->
+  <h3>Registrar Usuario Normal</h3>
+  <form (ngSubmit)="createUser()">
+    <div>
+      <label for="name">Nombre</label>
+      <input [(ngModel)]="user.name" name="name" required />
+    </div>
+
+    <div>
+      <label for="email">Correo</label>
+      <input [(ngModel)]="user.email" name="email" type="email" required />
+    </div>
+
+    <div>
+      <label for="password">Contraseña</label>
+      <input [(ngModel)]="user.password" name="password" type="password" required />
+    </div>
+    <div>
+      <label for="password_confirmation">Confirmación de Contraseña</label>
+      <input [(ngModel)]="user.password_confirmation" name="password_confirmation" type="password" required />
+    </div>
+    <button type="submit">Registrar Usuario</button>
+  </form>
+
+  <hr />
+
+  <!-- Listado de usuarios activos -->
+  <h3>Administradores Registrados</h3>
+  <ul>
+    <li *ngFor="let user of users">
+      <strong>{{ user.name }}</strong> - {{ user.email }}
+      <button (click)="editUser(user)">Editar</button>
+      <button (click)="deleteUser(user.id)">Eliminar</button>
+    </li>
+  </ul>
+
+  <!-- Formulario de edición -->
+  <div *ngIf="editingUser">
+    <h3>Editar Usuario</h3>
+    <form (ngSubmit)="updateUser()">
+      <div>
+        <label for="name">Nombre</label>
+        <input [(ngModel)]="editingUser.name" name="name" required />
+      </div>
+
+      <div>
+        <label for="email">Correo</label>
+        <input [(ngModel)]="editingUser.email" name="email" type="email" required />
+      </div>
+
+      <div>
+        <label for="password">Contraseña (dejar en blanco para no cambiar)</label>
+        <input [(ngModel)]="editingUser.password" name="password" type="password" />
+      </div>
+
+      <button type="submit">Guardar Cambios</button>
+      <button type="button" (click)="cancelEdit()">Cancelar</button>
+    </form>
+  </div>
+
+  <!-- Listado de usuarios eliminados -->
+  <h3>Administradores Eliminados</h3>
+  <ul>
+    <li *ngFor="let user of deletedUsers">
+      <strong>{{ user.name }}</strong> - {{ user.email }}
+      <button (click)="restoreUser(user.id)">Restaurar</button>
+    </li>
+  </ul>
+</div>
