@@ -1,0 +1,11 @@
+.status-pedido {
+    background-color: #d4edda; /* Verde claro */
+  }
+  
+  .status-enviado {
+    background-color: #d1ecf1; /* Azul claro */
+  }
+  
+  .status-cancelado {
+    background-color: #f8d7da; /* Rojo claro */
+  }

@@ -1,0 +1,34 @@
+<div class="container mx-auto mt-10 px-4">
+  <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Lista de Productos</h2>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let item of items" class="bg-white rounded-lg shadow-md overflow-hidden">
+      <img [src]="item.image_url" alt="Imagen del producto" class="w-full h-48 object-cover" />
+      <div class="p-6">
+        <h5 class="text-xl font-semibold text-gray-800 mb-2">{{ item.name }}</h5>
+        <p class="text-gray-600 mb-4">{{ item.description }}</p>
+        <p class="text-lg font-bold text-gray-800">${{ item.price }}</p>
+        <p class="text-gray-700">Stock: {{ item.quantity }}</p>
+
+        <div class="flex items-center mt-4">
+          <input 
+            type="number" 
+            min="1" 
+            [max]="item.quantity" 
+            [value]="1" 
+            #quantityInput 
+            class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button 
+            (click)="addToCart(item, quantityInput.value)" 
+            class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Comprar
+          </button>
+        </div>
+
+        <p *ngIf="item.quantity === 0" class="text-red-500 mt-2">Sin stock</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,28 +1,87 @@
-<div *ngIf="cartItems.length > 0; else emptyCart">
-  <h2>Tu Carrito</h2>
-  <ul>
-    <li *ngFor="let cartItem of cartItems">
-      <div>
-        <strong>{{ cartItem.item.name }}</strong>
-        <p>{{ cartItem.item.description }}</p>
-        <p>Precio: {{ cartItem.item.price | currency }}</p>
-        <p>Cantidad:
-          <button (click)="decreaseQuantity(cartItem)">-</button>
-          <input
-            type="number"
-            [(ngModel)]="cartItem.quantity"
-            min="1"
-            (change)="updateQuantity(cartItem)"
-          />
-          <button (click)="increaseQuantity(cartItem)">+</button>
-        </p>
-        <button (click)="removeItem(cartItem)">Eliminar</button>
-        <button type="button" class="btn btn-primary" (click)="checkout()">comprar</button>
-      </div>
-    </li>
-  </ul>
-</div>
+@if (isOpen) {
+  <!-- Fondo con animación de blur -->
+  <div @fadeInOut 
+       class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40"
+       (click)="closeCart()"></div>
+  
+  <!-- Carrito con animación de slide -->
+  <div @slideInOut
+       class="fixed inset-y-0 right-0 w-full max-w-md z-50 overflow-y-auto">
+    <div class="h-full flex flex-col bg-white shadow-xl">
+    <div class="relative w-screen max-w-md">
+      <div class="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+        <div class="flex-1 py-6 overflow-y-auto px-4 sm:px-6">
+          <div class="flex items-start justify-between">
+            <h2 class="text-lg font-medium text-gray-900">Tu Carrito</h2>
+            <button (click)="closeCart()" class="p-2 text-gray-400 hover:text-gray-500">
+              <span class="sr-only">Cerrar</span>
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
 
-<ng-template #emptyCart>
-  <p>Tu carrito está vacío.</p>
-</ng-template>
+          <div *ngIf="cartItems.length > 0; else emptyCart" class="mt-8">
+            <ul class="divide-y divide-gray-200">
+              <li *ngFor="let cartItem of cartItems" class="py-6 flex">
+                <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                  <img [src]="cartItem.item.image_url || 'assets/placeholder-product.png'" 
+                       [alt]="cartItem.item.name" 
+                       class="h-full w-full object-cover object-center">
+                </div>
+                <div class="ml-4 flex-1 flex flex-col">
+                  <div>
+                    <div class="flex justify-between text-base font-medium text-gray-900">
+                      <h3>{{ cartItem.item.name }}</h3>
+                      <p class="ml-4">{{ cartItem.item.price | currency }}</p>
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500">{{ cartItem.item.description }}</p>
+                  </div>
+                  <div class="flex-1 flex items-end justify-between text-sm">
+                    <div class="flex items-center">
+                      <button (click)="decreaseQuantity(cartItem); $event.stopPropagation()" 
+                              class="px-2 py-1 border border-gray-300 rounded-md hover:bg-gray-100">
+                        -
+                      </button>
+                      <input type="number" 
+                             [(ngModel)]="cartItem.quantity" 
+                             min="1" 
+                             (change)="updateQuantity(cartItem)"
+                             class="w-12 text-center mx-2 border border-gray-300 rounded-md">
+                      <button (click)="increaseQuantity(cartItem); $event.stopPropagation()" 
+                              class="px-2 py-1 border border-gray-300 rounded-md hover:bg-gray-100">
+                        +
+                      </button>
+                    </div>
+                    <button (click)="removeItem(cartItem); $event.stopPropagation()" 
+                            class="font-medium text-red-600 hover:text-red-500">
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <ng-template #emptyCart>
+            <div class="mt-8 text-center">
+              <p class="text-gray-500">Tu carrito está vacío</p>
+            </div>
+          </ng-template>
+        </div>
+
+        <div *ngIf="cartItems.length > 0" class="border-t border-gray-200 py-6 px-4 sm:px-6">
+          <div class="flex justify-between text-base font-medium text-gray-900">
+            <p>Total</p>
+            <p>{{ getTotal() | currency }}</p>
+          </div>
+          <button (click)="checkout()" 
+                  class="mt-6 w-full bg-blue-600 border border-transparent rounded-md py-3 px-4 text-base font-medium text-white hover:bg-blue-700 focus:outline-none">
+            Comprar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

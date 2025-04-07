@@ -21,11 +21,13 @@ export class OrderListComponent implements OnInit {
   startDate: string = '';
   endDate: string = '';
   searchItem: string = '';
+  searchStatus: string = '';
 
   constructor(private orderService: OrderService) {}
 
   ngOnInit(): void {
     this.loadOrders();
+    
   }
 
   loadOrders(): void {
@@ -33,6 +35,7 @@ export class OrderListComponent implements OnInit {
       (orders: Order[]) => {
         this.orders = orders;
         this.filteredOrders = orders; // Mostrar todos los pedidos al inicio
+        console.log("ordenes",orders)
       },
       (error) => {
         console.error('Error al cargar los pedidos:', error);
@@ -73,10 +76,36 @@ export class OrderListComponent implements OnInit {
             item.name.toLowerCase().includes(this.searchItem.toLowerCase())
           )
         : true;
+        const matchesStatus = this.searchStatus
+  ? order.estatus === this.searchStatus
+  : true;
   
-      return matchesId && matchesName && matchesDate && matchesItem;
+  return matchesId && matchesName && matchesDate && matchesItem && matchesStatus;
+
     });
   }
-  
-  
+  updateOrderStatus(order: Order): void {
+    this.orderService.updateOrderStatus(order.id, order.estatus).subscribe(
+      (response) => {
+        alert('Estatus actualizado correctamente');
+      },
+      (error) => {
+        console.error('Error al actualizar el estatus:', error);
+        alert('Error al actualizar el estatus');
+      }
+    );
+  }
+  getStatusClass(estatus: string): string {
+    switch (estatus) {
+      case 'pedido':
+        return 'status-pedido'; // Clase para el estatus "pedido"
+      case 'enviado':
+        return 'status-enviado'; // Clase para el estatus "enviado"
+      case 'cancelado':
+        return 'status-cancelado'; // Clase para el estatus "cancelado"
+      default:
+        return ''; // Si no hay estatus, no se aplica ninguna clase
+    }
+  }
+
 }

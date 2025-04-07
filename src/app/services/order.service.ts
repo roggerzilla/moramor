@@ -30,5 +30,7 @@ export class OrderService {
     console.log('Datos enviados a la API:', JSON.stringify(body, null, 2)); 
     return this.http.post(this.apiUrl2, body, { headers });
   }
-  
+  updateOrderStatus(orderId: number, estatus: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${orderId}/status`, { estatus });
+  }
 }

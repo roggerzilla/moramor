@@ -1,111 +1,93 @@
-import { Component, OnInit } from '@angular/core';
-import { CartService } from '../../services/cart.service';
-import { CartItem } from '../../models/cart-item.model';
-import { FormsModule } from '@angular/forms';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { OrderService } from '../../services/order.service';
-
-import { UserService } from '../../services/user.service';
+import { FormsModule } from '@angular/forms';
+import { trigger, style, transition, animate } from '@angular/animations';
+import { CartItem } from '../../models/cart-item.model';
 
 @Component({
   selector: 'app-carrito',
-  imports: [FormsModule, HttpClientModule, CommonModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './carrito.component.html',
-  styleUrl: './carrito.component.css',
+  styleUrls: ['./carrito.component.css'],
+  animations: [
+    trigger('slideInOut', [
+      transition(':enter', [
+        style({ transform: 'translateX(100%)' }),
+        animate('300ms ease-out', style({ transform: 'translateX(0)' }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ transform: 'translateX(100%)' }))
+      ])
+    ]),
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease-out', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
-export class CarritoComponent implements OnInit {
-  cartItems: CartItem[] = [];
+export class CarritoComponent {
+  @Input() isOpen = false;
+  @Output() closed = new EventEmitter<void>();
+  @Input() cartItems: CartItem[] = [];
+  @Output() cartItemsChange = new EventEmitter<CartItem[]>();
+  @Output() checkoutRequested = new EventEmitter<void>();
+  @Input() cartItemCount = 0;
 
-  constructor(private cartService: CartService, private orderService: OrderService,
-    private userService: UserService,
-  ) {}
-
-  ngOnInit(): void {
-    this.loadCartItems();
-  }
-
-  loadCartItems(): void {
-    this.cartService.getCartItems().subscribe(
-      (items: CartItem[]) => {
-        this.cartItems = items;
-      },
-      (error: HttpErrorResponse) => {
-        console.error('Error al cargar los ítems del carrito:', error);
-      }
-    );
-  }
-
-// Incrementar la cantidad
-increaseQuantity(item: CartItem): void {
-  item.quantity += 1;
-  this.updateQuantity(item);
-}
-
-// Disminuir la cantidad
-decreaseQuantity(item: CartItem): void {
-  if (item.quantity > 1) {
-    item.quantity -= 1;
-    this.updateQuantity(item);
-  }
-}
-
-// Actualizar la cantidad en el backend
-updateQuantity(item: CartItem): void {
-  this.cartService.updateCartItem(item.id, item.quantity).subscribe(
-    () => {
-      console.log('Cantidad actualizada correctamente');
-    },
-    (error: HttpErrorResponse) => {
-      console.error('Error al actualizar la cantidad:', error);
+  toggleCart() {
+    this.isOpen = !this.isOpen;
+    if (!this.isOpen) {
+      this.closed.emit();
     }
-  );
-}
+  }
 
-  removeItem(item: CartItem): void {
-    this.cartService.removeFromCart(item.id).subscribe(
-      () => {
-        alert('Ítem eliminado del carrito');
-        this.loadCartItems(); // Recargar los ítems del carrito
-      },
-      (error: HttpErrorResponse) => {
-        console.error('Error al eliminar el ítem:', error);
-      }
+  closeCart() {
+    this.isOpen = false;
+    this.closed.emit();
+  }
+
+  increaseQuantity(item: CartItem) {
+    item.quantity += 1;
+    this.updateCart();
+  }
+
+  decreaseQuantity(item: CartItem) {
+    if (item.quantity > 1) {
+      item.quantity -= 1;
+      this.updateCart();
+    }
+  }
+
+  updateQuantity(item: CartItem) {
+    if (item.quantity < 1) {
+      item.quantity = 1;
+    }
+    this.updateCart();
+  }
+
+  removeItem(item: CartItem) {
+    this.cartItems = this.cartItems.filter(i => i !== item);
+    this.updateCart();
+  }
+
+  getTotal(): number {
+    return this.cartItems.reduce(
+      (sum, item) => sum + (item.item.price * item.quantity), 
+      0
     );
   }
-  checkout(): void {
-    console.log(localStorage.getItem("token"))
-    this.userService.getUserInfo().subscribe(
-      (user) => {
-        const userId = user.id;
-        const customerName = user.name; // Obtener el nombre del usuario
-  
-        const items = this.cartItems.map((cartItem) => ({
-          id: cartItem.item.id,
-          quantity: cartItem.quantity,
-        }));
-  
-        this.orderService.createOrder(userId, customerName, items).subscribe(
-          (response: any) => {
-            alert('Compra realizada correctamente');
-            this.cartService.clearCart().subscribe({
-              next: () => console.log('Carrito vaciado correctamente'),
-              error: (error) => console.error('Error al vaciar el carrito', error),
-            }); // Vaciar el carrito después de la compra
-            this.loadCartItems(); // Recargar los ítems del carrito
-          },
-          (error: HttpErrorResponse) => {
-            console.error('Error al realizar la compra:', error);
-            alert('Error al realizar la compra');
-          }
-        );
-      },
-      (error) => {
-        console.error('Error al obtener usuario:', error);
-        alert('Debes iniciar sesión para realizar la compra');
-      }
-    );
+
+  checkout() {
+    this.checkoutRequested.emit();
+    this.closeCart();
+  }
+
+  private updateCart() {
+    this.cartItemsChange.emit(this.cartItems);
   }
 }

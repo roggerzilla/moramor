@@ -1,0 +1,32 @@
+a {
+    text-decoration: none !important;
+  }
+  
+  a:hover {
+    text-decoration: none !important;
+  }
+
+  /* Elimina o modifica estos estilos */
+header {
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+  }
+  
+  nav {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+  }
+  
+  /* Asegúrate de que los enlaces no tengan subrayado */
+  a {
+    text-decoration: none;
+  }
+  
+  /* Estilos para el modo oscuro */
+  .dark nav {
+    background-color: transparent;
+  }
+
+  

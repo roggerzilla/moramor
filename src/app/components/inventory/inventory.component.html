@@ -1,42 +1,119 @@
-<div>
-  <h2>Inventario</h2>
+<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+  <h2 class="text-3xl font-bold mb-6 text-gray-800">Inventario</h2>
 
-  <div *ngIf="userRole">
-    <p><strong>Tu rol actual:</strong> {{ userRole }}</p>
-  </div>
+  <!-- Mostrar el rol del usuario -->
 
-  <div *ngIf="userRole === 'superuser' || userRole === 'admin'">
-    <h3>Agregar Producto</h3>
-    <form (ngSubmit)="addItem()">
-      <input [(ngModel)]="item.name" name="name" placeholder="Nombre" />
-      <input [(ngModel)]="item.description" name="description" placeholder="Descripción" />
-      <input [(ngModel)]="item.price" name="price" placeholder="Precio" type="number" />
-      <input [(ngModel)]="item.quantity" name="quantity" placeholder="Cantidad" type="number" />
-      <input type="file" (change)="uploadImage($event)" />
-      <button [disabled]="!item.image_url" type="submit">Agregar Producto</button>
+
+  <!-- Formulario para agregar producto (solo para superuser o admin) -->
+  <div *ngIf="userRole === 'superuser' || userRole === 'admin'" class="mb-8">
+    <h3 class="text-2xl font-semibold mb-4 text-gray-800">Agregar Producto</h3>
+    <form (ngSubmit)="addItem()" class="space-y-4">
+      <input 
+        [(ngModel)]="item.name" 
+        name="name" 
+        placeholder="Nombre" 
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input 
+        [(ngModel)]="item.description" 
+        name="description" 
+        placeholder="Descripción" 
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input 
+        [(ngModel)]="item.price" 
+        name="price" 
+        placeholder="Precio" 
+        type="number" 
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input 
+        [(ngModel)]="item.quantity" 
+        name="quantity" 
+        placeholder="Cantidad" 
+        type="number" 
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input 
+        type="file" 
+        (change)="uploadImage($event)" 
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <button 
+        [disabled]="!item.image_url" 
+        type="submit" 
+        class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+      >
+        Agregar Producto
+      </button>
     </form>
   </div>
 
-  <h3>Lista de Productos</h3>
-  <div *ngFor="let item of items">
-    <img [src]="item.image_url" width="100" />
-    <p><strong>{{ item.name }}</strong></p>
-    <p>{{ item.description }}</p>
-    <p><strong>${{ item.price }}</strong></p>
-    <p>{{ item.quantity }} en stock</p>
+  <!-- Lista de productos -->
+  <h3 class="text-2xl font-semibold mb-6 text-gray-800">Lista de Productos</h3>
+  <div class="space-y-6">
+    <div *ngFor="let item of items" class="p-6 border border-gray-200 rounded-lg">
+      <img [src]="item.image_url" width="100" class="mb-4 rounded-lg" />
+      <p class="text-xl font-semibold text-gray-800">{{ item.name }}</p>
+      <p class="text-gray-600">{{ item.description }}</p>
+      <p class="text-gray-700"><strong>${{ item.price }}</strong></p>
+      <p class="text-gray-700">{{ item.quantity }} en stock</p>
 
-    <button *ngIf="item.quantity === 0" disabled>Sin stock</button>
-    <button (click)="addToCart(item)" *ngIf="item.quantity > 0">Comprar</button>
+      <!-- Botón de compra o sin stock -->
+      <div class="mt-4">
+        <button 
+          *ngIf="item.quantity === 0" 
+          disabled 
+          class="px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed"
+        >
+          Sin stock
+        </button>
+        <button 
+          *ngIf="item.quantity > 0" 
+          (click)="addToCart(item)" 
+          class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          Comprar
+        </button>
+      </div>
 
-    <div *ngIf="userRole === 'superuser' || userRole === 'admin'">
-      <button (click)="toggleEdit(item)">Editar</button>
-      <form *ngIf="item.editing" (ngSubmit)="updateItem(item)">
-        <input [(ngModel)]="item.name" name="name" />
-        <input [(ngModel)]="item.description" name="description" />
-        <input [(ngModel)]="item.price" name="price" />
-        <input [(ngModel)]="item.quantity" name="quantity" />
-        <button type="submit">Guardar</button>
-      </form>
+      <!-- Editar producto (solo para superuser o admin) -->
+      <div *ngIf="userRole === 'superuser' || userRole === 'admin'" class="mt-6">
+        <button 
+          (click)="toggleEdit(item)" 
+          class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+        >
+          Editar
+        </button>
+        <form *ngIf="item.editing" (ngSubmit)="updateItem(item)" class="mt-4 space-y-4">
+          <input 
+            [(ngModel)]="item.name" 
+            name="name" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input 
+            [(ngModel)]="item.description" 
+            name="description" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input 
+            [(ngModel)]="item.price" 
+            name="price" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input 
+            [(ngModel)]="item.quantity" 
+            name="quantity" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button 
+            type="submit" 
+            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Guardar
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </div>

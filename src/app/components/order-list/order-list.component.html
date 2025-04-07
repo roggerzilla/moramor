@@ -27,6 +27,15 @@
       <label class="form-label">Ítem:</label>
       <input type="text" class="form-control" [(ngModel)]="searchItem" (input)="applyFilters()" placeholder="Buscar ítem">
     </div>
+    <div>
+      <label class="form-label">Estatus:</label>
+      <select class="form-control" [(ngModel)]="searchStatus" (change)="applyFilters()">
+        <option value="">Todos</option>
+        <option value="pedido">Pedido</option>
+        <option value="enviado">Enviado</option>
+        <option value="cancelado">Cancelado</option>
+      </select>
+    </div>
   </div>
 
   <!-- Tabla de pedidos -->
@@ -38,22 +47,35 @@
         <th>Total</th>
         <th>Fecha</th>
         <th>Ítems</th>
+        <th>Estatus</th> <!-- Nueva columna para el estatus -->
+        <th>Acciones</th> <!-- Nueva columna para acciones -->
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let order of filteredOrders">
-        <td>{{ order.id }}</td>
-        <td>{{ order.customer_name }}</td>
-        <td>{{ order.total | currency }}</td>
-        <td>{{ order.created_at | date: 'dd/MM/yyyy' }}</td>
-        <td>
+        <td [ngClass]="getStatusClass(order.estatus)">{{ order.id }}</td>
+        <td [ngClass]="getStatusClass(order.estatus)">{{ order.customer_name }}</td>
+        <td [ngClass]="getStatusClass(order.estatus)">{{ order.total | currency }}</td>
+        <td [ngClass]="getStatusClass(order.estatus)">{{ order.created_at | date: 'dd/MM/yyyy' }}</td>
+        <td [ngClass]="getStatusClass(order.estatus)">
           <ul>
             <li *ngFor="let item of order.items">
               {{ item.name }} ({{ item.quantity }} x {{ item.price | currency }})
             </li>
           </ul>
         </td>
+        <td [ngClass]="getStatusClass(order.estatus)">
+          <select [(ngModel)]="order.estatus" (change)="updateOrderStatus(order)">
+            <option value="pedido">Pedido</option>
+            <option value="enviado">Enviado</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
+        </td>
+        <td>
+          <button (click)="updateOrderStatus(order)" class="btn btn-primary">Guardar</button>
+        </td>
       </tr>
+      
     </tbody>
   </table>
 </div>

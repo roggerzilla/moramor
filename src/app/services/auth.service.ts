@@ -33,4 +33,6 @@ login(credentials: { email: string, password: string }): Observable<any> {
   verifyEmail(id: string, hash: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/email/verify/${id}/${hash}`);
   }
+
+  
 }

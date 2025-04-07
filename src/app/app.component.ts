@@ -1,53 +1,90 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common'; // Importa CommonModule
-import { FormsModule } from '@angular/forms'; // Si usas [(ngModel)]
+import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { GeolocationService } from './services/geolocation.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClientModule, HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { CartService } from './services/cart.service';
+import { CartItem } from './models/cart-item.model';
+import { UserService } from './services/user.service';
+import { OrderService } from './services/order.service';
+import { trigger, transition, style, animate, state } from '@angular/animations';
+import { CarritoComponent } from './components/carrito/carrito.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive,CommonModule,FormsModule],
+  standalone: true,
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FormsModule, HttpClientModule,CarritoComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css'],
+  animations: [
+    trigger('slideInOut', [
+      state('in', style({
+        transform: 'translateX(0)'
+      })),
+      state('out', style({
+        transform: 'translateX(100%)'
+      })),
+      transition('in <=> out', animate('300ms ease-in-out'))
+    ]),
+    trigger('fadeInOut', [
+      state('in', style({
+        opacity: 1
+      })),
+      state('out', style({
+        opacity: 0
+      })),
+      transition('in <=> out', animate('300ms ease-in-out'))
+    ])
+  ]
 })
 export class AppComponent implements OnInit {
   showAgeVerificationModal: boolean = false;
+  userRole: string | null = null;
+  
+  // Variables para el carrito
+  isCartOpen = false;
+  cartItems: CartItem[] = [];
+  cartItemCount = 0;
+
+  constructor(
+    private geolocationService: GeolocationService,
+    private http: HttpClient,
+    private cartService: CartService,
+    private router: Router,
+    private userService: UserService,
+    private orderService: OrderService
+  ) {}
 
   ngOnInit(): void {
     this.checkAgeVerification();
     this.getLocation();
+    this.getUser();
+
   }
 
-  constructor(private geolocationService: GeolocationService, private http: HttpClient) {}
-
-  // Verificar si el usuario ya ha respondido a la pregunta
+  // Métodos existentes (verificación de edad, geolocalización y usuario)
   checkAgeVerification(): void {
     const hasConfirmedAge = localStorage.getItem('hasConfirmedAge');
-
     if (hasConfirmedAge !== 'true') {
       this.showAgeVerificationModal = true;
     }
   }
 
-  // Manejar la respuesta del usuario
   confirmAge(isOfAge: boolean): void {
     if (isOfAge) {
       localStorage.setItem('hasConfirmedAge', 'true');
       this.showAgeVerificationModal = false;
     } else {
-      // Redirigir o mostrar un mensaje si el usuario no es mayor de 18 años
-      window.location.href = 'https://www.google.com'; // Redirige a otra página
+      window.location.href = 'https://www.google.com';
     }
   }
+
   getLocation() {
-    console.log('hola')
     this.geolocationService.getCurrentPosition()
       .then(position => {
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-
-        // Enviar la ubicación al backend
         this.http.post('/api/location', { latitude, longitude })
           .subscribe(response => {
             console.log('Location sent to backend:', response);
@@ -59,4 +96,64 @@ export class AppComponent implements OnInit {
         console.error('Error getting location:', error);
       });
   }
+
+  getUser(): void {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return;
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    this.http.get<any>('http://localhost:8000/api/user', { headers }).subscribe(
+      (response) => {
+        this.userRole = response.role;
+      },
+      (error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          localStorage.removeItem('token');
+        }
+      }
+    );
+  }
+
+
+  toggleCart() {
+    this.isCartOpen = !this.isCartOpen;
+    console.log(this.isCartOpen)
+    
+    // Si el carrito se abre, cargar los items
+    if (this.isCartOpen) {
+      this.loadCartItems();
+    }
+  }
+
+  // Método para cargar los items del carrito
+  loadCartItems() {
+    this.cartService.getCartItems().subscribe({
+      next: (items: CartItem[]) => {
+        this.cartItems = items;
+        this.cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+      },
+      error: (error) => {
+        console.error('Error al cargar el carrito:', error);
+      }
+    });
+  }
+
+  // Método cuando cambian los items del carrito
+  onCartItemsChange(items: CartItem[]) {
+    this.cartItems = items;
+    this.cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
+  // Método para finalizar compra
+  onCheckout() {
+    console.log('Compra realizada', this.cartItems);
+    this.isCartOpen = false;
+    // Aquí puedes añadir lógica adicional para el checkout
+  }
+
+
+  // Métodos para el carrito
+ 
 }

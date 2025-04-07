@@ -1,6 +1,23 @@
-<div>
-  <input [(ngModel)]="user.email" name="email" required placeholder="Email">
-  <input [(ngModel)]="user.password" name="password" type="password" required placeholder="Password">
-  <button (click)="login()">Login</button> <!-- Botón que llama al método login() -->
+<div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+  <input 
+    [(ngModel)]="user.email" 
+    name="email" 
+    required 
+    placeholder="Email" 
+    class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+  <input 
+    [(ngModel)]="user.password" 
+    name="password" 
+    type="password" 
+    required 
+    placeholder="Password" 
+    class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+  <button 
+    (click)="login()" 
+    class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    Login
+  </button>
 </div>
-<p>hola</p>

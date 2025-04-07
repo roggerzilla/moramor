@@ -8,17 +8,30 @@ import {CarritoComponent} from '../../src/app/components/carrito/carrito.compone
 import {VerifyEmailComponent} from '../../src/app/components/verify-email/verify-email.component';
 import {UserManagementComponent} from '../../src/app/components/user-management/user-management.component';
 import {OrderListComponent} from '../../src/app/components/order-list/order-list.component';
+import {ProductsComponent} from '../../src/app/components/products/products.component';
+import {PaymentComponent} from '../../src/app/components/payment/payment.component';
+
+import { RoleGuard } from './guards/role.guard';
 
 export const routes: Routes = [ 
     { path: 'login', component: LoginComponent }, // Login
-    { path: 'register', component: RegisterComponent }, // Registro+
-    { path: 'home', component: HomeComponent },
-    { path: 'inventory', component: InventoryComponent },
-    { path: 'inventory/edit/:id', component: EditarItemComponent },
-    { path: 'cart', component: CarritoComponent },
-    { path: 'verify-email', component: VerifyEmailComponent },
-    { path: 'users', component: UserManagementComponent },
-    { path: 'orders', component: OrderListComponent },
-    { path: '', redirectTo: '/inventory', pathMatch: 'full' },
+    { path: 'register', component: RegisterComponent }, // Registro
+    { path: 'home', component: HomeComponent },   
     
+    //Super usuarios
+    { path: 'users', component: UserManagementComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser'] } },
+    
+    //admin    
+    { path: 'inventory', component: InventoryComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser'] } },
+    { path: 'orders', component: OrderListComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser'] } },    
+    { path: 'inventory/edit/:id', component: EditarItemComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser'] } },
+
+    //usuarios
+    { path: 'products', component: ProductsComponent },
+    { path: 'cart', component: CarritoComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser', 'user'] } },
+    { path: 'pay', component: PaymentComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser', 'user'] } },
+
+
+
+    { path: '', redirectTo: '/inventory', pathMatch: 'full' },
 ];
