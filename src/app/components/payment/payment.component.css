@@ -1,0 +1,102 @@
+/* Contenedor principal */
+.payment-container {
+    min-height: 100vh;
+    background: #f8f9fa;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .payment-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .payment-content {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 30px;
+  }
+  
+  /* Formulario de pago */
+  .payment-form {
+    flex: 1;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+  
+  .stripe-card {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 20px;
+  }
+  
+  .pay-button {
+    width: 100%;
+    padding: 14px;
+    background: #635bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .stripe-brand {
+    text-align: center;
+    margin-top: 30px;
+    color: #888;
+    font-size: 14px;
+  }
+  
+  /* Resumen del pedido */
+  .order-summary {
+    width: 300px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .summary-item, .summary-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+  }
+  
+  .summary-total {
+    font-weight: bold;
+    border-top: 1px solid #eee;
+    margin-top: 10px;
+  }
+
+  .product-image {
+    width: 50px;  /* Ajusta el tamaño de la imagen */
+    height: 50px;
+    margin-right: 10px;  /* Espacio entre la imagen y el nombre del producto */
+    object-fit: cover;  /* Para asegurarse de que la imagen se recorte correctamente */
+  }
+  

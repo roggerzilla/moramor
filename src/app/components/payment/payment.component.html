@@ -1,34 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Accept a payment</title>
-    <meta name="description" content="A demo of a payment on Stripe" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="checkout.css" />
-    <script src="https://js.stripe.com/basil/stripe.js"></script>
-    <script src="checkout.js" defer></script>
-  </head>
-  <body>
-    <!-- Display a payment form -->
-    <form id="payment-form">
-      <h4>Billing Address</h4>
-      <div id="billing-address-element">
-        <!--Stripe.js injects the Address Element-->
+<div class="grid grid-cols-2 gap-4 p-4">
+
+  <div class="flex flex-col">
+    <h3 class="text-xl font-bold mb-4">Método de pago</h3>
+
+    <div id="payment-element" class="mb-4">
       </div>
-      <h4>Shipping Address</h4>
-      <div id="shipping-address-element">
-        <!--Stripe.js injects the Address Element-->
+
+    <button class="pay-button w-full p-3 bg-blue-500 text-white rounded-lg mt-4" (click)="handlePayment()">Pagar ahora</button>
+
+    </div>
+
+  <div class="flex flex-col">
+    <h3 class="text-xl font-bold mb-4">Resumen del pedido</h3>
+
+    <div class="overflow-y-auto flex-grow mb-4">
+      <div *ngFor="let item of cartItems" class="summary-item flex justify-between items-center mb-4 pb-4 border-b">
+        <div class="flex items-center">
+          <img [src]="item.item.image_url" alt="{{ item.item.name }}" class="product-image w-16 h-16 mr-4" />
+
+          <div class="flex flex-col">
+            <span class="font-semibold">{{ item.item.name }}</span>
+            <span class="text-sm text-gray-600">Cantidad: {{ item.quantity }}</span>
+            </div>
+        </div>
+
+        <span class="font-semibold">{{ item.item.price * item.quantity | currency:'MXN' }}</span>
       </div>
-      <h4>Payment</h4>
-      <div id="payment-element">
-        <!--Stripe.js injects the Payment Element-->
-      </div>
-      <button id="submit">
-        <div class="spinner hidden" id="spinner"></div>
-        <span id="button-text">Pay now</span>
-      </button>
-      <div id="payment-message" class="hidden"></div>
-    </form>
-  </body>
-</html>
+    </div>
+
+    <div class="summary-details space-y-2 mb-4">
+      <div class="flex justify-between">
+        <span>Subtotal</span>
+        <span>{{ totalAmount | currency:'MXN' }}</span> </div>
+
+      <div class="flex justify-between">
+        <span>Envío</span>
+    </div>
+
+    <div class="summary-total mt-4 pt-4 border-t flex justify-between font-bold text-lg">
+      <span>Total</span>
+      <span>{{ totalAmount /100 | currency:'MXN' }}</span> </div>
+  </div>
+
+</div>

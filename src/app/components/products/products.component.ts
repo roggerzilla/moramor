@@ -37,6 +37,11 @@ export class ProductsComponent implements OnInit {
   // Agregar producto al carrito
   addToCart(item: any, quantity: any): void {
     const quantityNum = Number(quantity); // Convertimos a número
+
+    if (!this.token) {
+      alert('Debes iniciar sesión para comprar.');
+      return;
+    }
   
     if (!this.token) {
       alert('Debes iniciar sesión para comprar.');
@@ -69,25 +74,30 @@ export class ProductsComponent implements OnInit {
       alert('Debes iniciar sesión para recibir notificaciones.');
       return;
     }
-    if (!this.token) {
-      alert('Debes iniciar sesión para recibir notificaciones.');
-      return;
-    }
   
-    this.http.post('http://localhost:8000/api/stock-alerts', {
-      item_id: item.id
-    }, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${this.token}`
-      })
-    }).subscribe(
-      () => alert('Te notificaremos cuando el producto esté disponible.'),
-      (error) => {
-        console.error('Error al registrar notificación:', error);
-        alert('Hubo un error. Intenta más tarde.');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+  
+    this.http.post('http://localhost:8000/api/stock-alerts', 
+      { item_id: item.id },
+      { 
+        headers,
+        withCredentials: true // Importante para Sanctum
       }
-    );
+    ).subscribe({
+      next: () => alert('Notificación registrada correctamente'),
+      error: (err) => {
+        console.error('Error detallado:', err);
+        if (err.status === 401) {
+          alert('Sesión expirada. Vuelve a iniciar sesión.');
+        } else {
+          alert('Error al registrar notificación');
+        }
+      }
+    });
   }
-  
   
 }

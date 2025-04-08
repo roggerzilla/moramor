@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, style, transition, animate } from '@angular/animations';
 import { CartItem } from '../../models/cart-item.model';
+import { Router } from '@angular/router';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-carrito',
@@ -38,7 +40,7 @@ export class CarritoComponent {
   @Output() cartItemsChange = new EventEmitter<CartItem[]>();
   @Output() checkoutRequested = new EventEmitter<void>();
   @Input() cartItemCount = 0;
-
+  constructor(private router: Router,private cartService: CartService,) {} 
   toggleCart() {
     this.isOpen = !this.isOpen;
     if (!this.isOpen) {
@@ -53,28 +55,41 @@ export class CarritoComponent {
 
   increaseQuantity(item: CartItem) {
     item.quantity += 1;
-    this.updateCart();
+    this.cartService.updateCartItem(item.id, item.quantity).subscribe({
+      next: () => this.updateCart(),
+      error: (err) => console.error('Error al actualizar cantidad:', err)
+    });
   }
-
+  
   decreaseQuantity(item: CartItem) {
     if (item.quantity > 1) {
       item.quantity -= 1;
-      this.updateCart();
+      this.cartService.updateCartItem(item.id, item.quantity).subscribe({
+        next: () => this.updateCart(),
+        error: (err) => console.error('Error al actualizar cantidad:', err)
+      });
     }
   }
-
+  
   updateQuantity(item: CartItem) {
     if (item.quantity < 1) {
       item.quantity = 1;
     }
-    this.updateCart();
+    this.cartService.updateCartItem(item.id, item.quantity).subscribe({
+      next: () => this.updateCart(),
+      error: (err) => console.error('Error al actualizar cantidad:', err)
+    });
   }
 
   removeItem(item: CartItem) {
-    this.cartItems = this.cartItems.filter(i => i !== item);
-    this.updateCart();
+    this.cartService.removeFromCart(item.id).subscribe({
+      next: () => {
+        this.cartItems = this.cartItems.filter(i => i !== item);
+        this.updateCart(); // Actualiza el carrito después de eliminar el ítem
+      },
+      error: (err) => console.error('Error al eliminar el ítem:', err)
+    });
   }
-
   getTotal(): number {
     return this.cartItems.reduce(
       (sum, item) => sum + (item.item.price * item.quantity), 
@@ -88,6 +103,13 @@ export class CarritoComponent {
   }
 
   private updateCart() {
-    this.cartItemsChange.emit(this.cartItems);
+    console.log('Updating cart', this.cartItems);
+    this.cartItemsChange.emit([...this.cartItems]);
   }
+  goToPayment(event: Event) {
+    console.log("hola")
+    event.stopPropagation(); // Previene que se cierre el carrito si está en una modal
+    this.router.navigate(['/pay']);
+  }
+  
 }

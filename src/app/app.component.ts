@@ -7,6 +7,7 @@ import { HttpClientModule, HttpClient, HttpHeaders, HttpErrorResponse } from '@a
 import { CartService } from './services/cart.service';
 import { CartItem } from './models/cart-item.model';
 import { UserService } from './services/user.service';
+import { AuthService } from './services/auth.service';
 import { OrderService } from './services/order.service';
 import { trigger, transition, style, animate, state } from '@angular/animations';
 import { CarritoComponent } from './components/carrito/carrito.component';
@@ -41,6 +42,7 @@ import { CarritoComponent } from './components/carrito/carrito.component';
 export class AppComponent implements OnInit {
   showAgeVerificationModal: boolean = false;
   userRole: string | null = null;
+  isLoggedIn: boolean = false;
   
   // Variables para el carrito
   isCartOpen = false;
@@ -53,14 +55,25 @@ export class AppComponent implements OnInit {
     private cartService: CartService,
     private router: Router,
     private userService: UserService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private authService:AuthService
   ) {}
 
   ngOnInit(): void {
     this.checkAgeVerification();
     this.getLocation();
     this.getUser();
+    this.checkLoginStatus();
 
+  }
+
+  checkLoginStatus(): void {
+    const token = localStorage.getItem('token');
+    if (token) {
+      this.isLoggedIn = true;
+      this.getUser();
+      
+    }
   }
 
   // Métodos existentes (verificación de edad, geolocalización y usuario)
@@ -108,21 +121,29 @@ export class AppComponent implements OnInit {
       (response) => {
         this.userRole = response.role;
       },
-      (error: HttpErrorResponse) => {
+      (error) => {
         if (error.status === 401) {
           localStorage.removeItem('token');
+          this.isLoggedIn = false;
         }
       }
     );
+  }
+  logout(): void {
+    this.authService.logout().subscribe(() => {
+      localStorage.removeItem('token');
+      this.isLoggedIn = false;
+      this.router.navigate(['/home']);  // Redirigir al usuario al home después de cerrar sesión
+    });
   }
 
 
   toggleCart() {
     this.isCartOpen = !this.isCartOpen;
-    console.log(this.isCartOpen)
-    
-    // Si el carrito se abre, cargar los items
-    if (this.isCartOpen) {
+    console.log(this.isCartOpen);
+  
+    // Solo carga si no hay items todavía
+    if (this.isCartOpen && this.cartItems.length === 0) {
       this.loadCartItems();
     }
   }

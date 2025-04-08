@@ -12,6 +12,7 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes), // Configura las rutas
     provideNgxStripe(),
     provideAnimations(),
+    provideNgxStripe('pk_test_51RBMauP5YAunVj6pbcfSdzr2XUkhkd6ryGfqqL0rdOCv3d2YtVZRIvwaMcQVL1uZcmoswy2sXD3OwEfN0eCW2K9v00N7oPp1qB'),
     
   ],
 }).catch((err) => console.error(err));

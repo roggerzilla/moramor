@@ -75,10 +75,13 @@
             <p>Total</p>
             <p>{{ getTotal() | currency }}</p>
           </div>
-          <button (click)="checkout()" 
-                  class="mt-6 w-full bg-blue-600 border border-transparent rounded-md py-3 px-4 text-base font-medium text-white hover:bg-blue-700 focus:outline-none">
-            Comprar
-          </button>
+          <button 
+          (click)="goToPayment($event)"
+          class="mt-6 w-full bg-blue-600 border border-transparent rounded-md py-3 px-4 text-base font-medium text-white hover:bg-blue-700 focus:outline-none">
+          Comprar
+        </button>
+        
+       
         </div>
       </div>
     </div>
