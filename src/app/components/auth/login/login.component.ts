@@ -27,6 +27,7 @@ export class LoginComponent {
         localStorage.setItem('token', response.token);
         const storedToken = localStorage.getItem('token');
       console.log('Token guardado en localStorage:', storedToken);
+      window.location.replace('http://localhost:4200/home');
        // this.router.navigate(['/home']);
       },
       error: (err) => {

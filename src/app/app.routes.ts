@@ -10,6 +10,7 @@ import {UserManagementComponent} from '../../src/app/components/user-management/
 import {OrderListComponent} from '../../src/app/components/order-list/order-list.component';
 import {ProductsComponent} from '../../src/app/components/products/products.component';
 import {PaymentComponent} from '../../src/app/components/payment/payment.component';
+import {MailErrorComponent} from '../../src/app/components/mail-error/mail-error.component';
 
 import { RoleGuard } from './guards/role.guard';
 
@@ -30,6 +31,7 @@ export const routes: Routes = [
     { path: 'products', component: ProductsComponent },
     { path: 'cart', component: CarritoComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser', 'user'] } },
     { path: 'pay', component: PaymentComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser', 'user'] } },
+    { path: 'error', component: MailErrorComponent },
 
 
 

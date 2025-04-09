@@ -19,6 +19,7 @@ export class RegisterComponent {
       next: (response) => {
         console.log('Registro exitoso', response);
         alert('Registro exitoso. Por favor, verifica tu correo electrónico.');
+        window.location.replace('http://localhost:4200/home');
       },
       error: (err) => {
         console.error('Error en registro', err);
