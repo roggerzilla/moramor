@@ -7,175 +7,6 @@
 <!-- * * * * * * * to get started with your project! * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
-<style>
-  :host {
-    --bright-blue: oklch(51.01% 0.274 263.83);
-    --electric-violet: oklch(53.18% 0.28 296.97);
-    --french-violet: oklch(47.66% 0.246 305.88);
-    --vivid-pink: oklch(69.02% 0.277 332.77);
-    --hot-red: oklch(61.42% 0.238 15.34);
-    --orange-red: oklch(63.32% 0.24 31.68);
-
-    --gray-900: oklch(19.37% 0.006 300.98);
-    --gray-700: oklch(36.98% 0.014 302.71);
-    --gray-400: oklch(70.9% 0.015 304.04);
-
-    --red-to-pink-to-purple-vertical-gradient: linear-gradient(
-      180deg,
-      var(--orange-red) 0%,
-      var(--vivid-pink) 50%,
-      var(--electric-violet) 100%
-    );
-
-    --red-to-pink-to-purple-horizontal-gradient: linear-gradient(
-      90deg,
-      var(--orange-red) 0%,
-      var(--vivid-pink) 50%,
-      var(--electric-violet) 100%
-    );
-
-    --pill-accent: var(--bright-blue);
-
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
-    box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  h1 {
-    font-size: 3.125rem;
-    color: var(--gray-900);
-    font-weight: 500;
-    line-height: 100%;
-    letter-spacing: -0.125rem;
-    margin: 0;
-    font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
-  }
-
-  p {
-    margin: 0;
-    color: var(--gray-700);
-  }
-
-  main {
-    width: 100%;
-    min-height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    box-sizing: inherit;
-    position: relative;
-  }
-
-  .angular-logo {
-    max-width: 9.2rem;
-  }
-
-  .content {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    max-width: 700px;
-    margin-bottom: 3rem;
-  }
-
-  .content h1 {
-    margin-top: 1.75rem;
-  }
-
-  .content p {
-    margin-top: 1.5rem;
-  }
-
-  .divider {
-    width: 1px;
-    background: var(--red-to-pink-to-purple-vertical-gradient);
-    margin-inline: 0.5rem;
-  }
-
-  .pill-group {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    flex-wrap: wrap;
-    gap: 1.25rem;
-  }
-
-  .pill {
-    display: flex;
-    align-items: center;
-    --pill-accent: var(--bright-blue);
-    background: color-mix(in srgb, var(--pill-accent) 5%, transparent);
-    color: var(--pill-accent);
-    padding-inline: 0.75rem;
-    padding-block: 0.375rem;
-    border-radius: 2.75rem;
-    border: 0;
-    transition: background 0.3s ease;
-    font-family: var(--inter-font);
-    font-size: 0.875rem;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 1.4rem;
-    letter-spacing: -0.00875rem;
-    text-decoration: none;
-  }
-
-  .pill:hover {
-    background: color-mix(in srgb, var(--pill-accent) 15%, transparent);
-  }
-
-  .pill-group .pill:nth-child(6n + 1) {
-    --pill-accent: var(--bright-blue);
-  }
-  .pill-group .pill:nth-child(6n + 2) {
-    --pill-accent: var(--french-violet);
-  }
-  .pill-group .pill:nth-child(6n + 3),
-  .pill-group .pill:nth-child(6n + 4),
-  .pill-group .pill:nth-child(6n + 5) {
-    --pill-accent: var(--hot-red);
-  }
-
-  .pill-group svg {
-    margin-inline-start: 0.25rem;
-  }
-
-  .social-links {
-    display: flex;
-    align-items: center;
-    gap: 0.73rem;
-    margin-top: 1.5rem;
-  }
-
-  .social-links path {
-    transition: fill 0.3s ease;
-    fill: var(--gray-400);
-  }
-
-  .social-links a:hover svg path {
-    fill: var(--gray-900);
-  }
-
-  @media screen and (max-width: 650px) {
-    .content {
-      flex-direction: column;
-      width: max-content;
-    }
-
-    .divider {
-      height: 1px;
-      width: 100%;
-      background: var(--red-to-pink-to-purple-horizontal-gradient);
-      margin-block: 1.5rem;
-    }
-  }
-</style>
 
 <main class="main">
   <div
@@ -185,24 +16,21 @@
   role="dialog"
   style="display: block; background-color: rgba(0, 0, 0, 0.5);"
 >
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Verificación de edad</h5>
-      </div>
-      <div class="modal-body">
-        <p>¿Eres mayor de 18 años?</p>
-      </div>
-      <div class="modal-footer">
-        <button (click)="confirmAge(true)" type="button" class="btn btn-primary">
-          Sí
-        </button>
-        <button (click)="confirmAge(false)" type="button" class="btn btn-danger">
-          No
-        </button>
-      </div>
+<!-- Age Verification Modal -->
+<div class="age-verification-overlay">
+  <div class="age-verification-box">
+    <h2>Debes de ser mayor de edad para acceder a este sitio.</h2>
+    <div class="age-buttons">
+      <button class="btn-age ">Tengo + 18 años</button>
+      <button class="btn-age">No tengo +18 años</button>
     </div>
+    <p class="age-note">
+      By accessing this website you acknowledge that you accept its terms and conditions of use.<br />
+      <strong>Conditions of use</strong>
+    </p>
   </div>
+</div>
+
 </div>
 
 <header class="bg-white shadow-md w-full relative z-40">
@@ -229,9 +57,9 @@
                matTooltip="Registrarse">Registrarse</a>
           </li>
 
-          <li *ngIf="isLoggedIn">
-            <a routerLink="/profile" class="block px-4 py-2 text-black no-underline hover:no-underline hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white">
-              Perfil
+          <li >
+            <a routerLink="/products" class="block px-4 py-2 text-black no-underline hover:no-underline hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white">
+              Productos
             </a>
           </li>
         </ul>
@@ -297,3 +125,60 @@
   (checkoutRequested)="onCheckout()">
 </app-carrito>
 }
+<footer class="bg-[#1F1F44] text-white py-12 px-4">
+  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8">
+    <div class="mb-6 md:mb-0">
+      <div class="flex items-center mb-4">
+        <img src="moramor-logo-white.png" alt="Moramor Logo" class="h-8 mr-2">
+        <span class="font-bold text-lg">MORAMOR</span>
+      </div>
+      <p class="text-sm mb-2">Obtén 10% de descuento</p>
+      <p class="text-sm mb-4">en tu primera compra.</p>
+      <div class="flex border border-white rounded-full overflow-hidden">
+        <input type="email" placeholder="Ingresa tu correo" class="bg-transparent text-white px-4 py-2 focus:outline-none text-sm">
+        <button class="bg-white text-[#1F1F44] px-4 py-2 text-sm font-semibold">></button>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="font-semibold text-lg mb-4">Soporte</h3>
+      <p class="text-sm mb-2">11 Bijoy Sarani, Dhaka,</p>
+      <p class="text-sm mb-2">DH 1215, Bangladesh.</p>
+      <p class="text-sm mb-2">contactomoramor.com</p>
+      <p class="text-sm">+88015-98888-9999</p>
+    </div>
+
+    <div>
+      <h3 class="font-semibold text-lg mb-4">Cuenta</h3>
+      <div>
+        <a href="#" style="text-decoration: none;" class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Mi Cuenta</a>
+        <a href="#" style="text-decoration: none;" class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Iniciar sesión / Registrarse</a>
+        <a href="#" style="text-decoration: none;" class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Carrito</a>
+        <a href="#"style="text-decoration: none;" class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Wishlist</a>
+        <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block text-sm">Comprar</a>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="font-semibold text-lg mb-4">Moramor</h3>
+      <div>
+        <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Políticas de privacidad</a>
+        <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Términos & condiciones</a>
+        <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">FAQ</a>
+        <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block text-sm">Contacto</a>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="font-semibold text-lg mb-4">Síguenos en redes</h3>
+      <div class="flex space-x-4">
+        <a href="#" class="hover:text-indigo-200"><svg class="h-5 w-5 fill-current text-white" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h3V9.9c0-3.1 1.89-4.7 4.6-4.7 1.3 0 2.4.1 2.7.1V8h-1.8c-1.4 0-1.7.7-1.7 1.7V12h3v3h-3v4.8c4.5-1 8-4.8 8-9.8z"/></svg></a>
+        <a href="#" class="hover:text-indigo-200"><svg class="h-5 w-5 fill-current text-white" viewBox="0 0 24 24"><path d="M22.46 6c-.77.67-1.72 1.13-2.77 1.34a4.85 4.85 0 0 0 2.12-2.68c-.8-.48-1.68-.83-2.6-.99a4.82 4.82 0 0 0-8.13 4.34c-1.39-.07-2.64-.7-3.45-1.64a4.79 4.79 0 0 0-.65 2.47c.4.69.63 1.45.63 2.23a4.85 4.85 0 0 1-2.18-.6c-.23.8.08 1.68.61 2.15a4.8 4.8 0 0 1-2.22.08c.63 1.97 2.47 3.4 4.65 3.47a9.7 9.7 0 0 1-6 2.08c-.39.22-.78.41-1.19.58a16.61 16.61 0 0 0 10.13 4.2c6.02 0 9.32-5 9.32-9.33v-.4c.65-.46 1.2-.99 1.64-1.56z"/></svg></a>
+        <a href="#" class="hover:text-indigo-200"><svg class="h-5 w-5 fill-current text-white" viewBox="0 0 24 24"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19.4c-2.28 0-4.1-1.82-4.1-4.1 0-2.28 1.82-4.1 4.1-4.1 2.28 0 4.1 1.82 4.1 4.1 0 2.28-1.82 4.1-4.1 4.1zm8.6-8.7c-1.46 0-2.76.67-3.5 1.76v-1.6c0-1.54-1.24-2.78-2.78-2.78-1.54 0-2.78 1.24-2.78 2.78v6.2c0 1.54 1.24 2.78 2.78 2.78 1.54 0 2.78-1.24 2.78-2.78v-1.6c.74-1.09 2.04-1.76 3.5-1.76 2.28 0 4.1 1.82 4.1 4.1 0 2.28-1.82 4.1-4.1 4.1-2.28 0-4.1-1.82-4.1-4.1v-6.2c0-2.28 1.82-4.1 4.1-4.1 2.28 0 4.1 1.82 4.1 4.1 0 2.28-1.82 4.1-4.1 4.1h-8.6z"/></svg></a>
+      </div>
+    </div>
+  </div>
+  <div class="max-w-6xl mx-auto mt-8 text-center text-xs text-gray-500">
+    <p>© Copyright Moramor 2025. All rights reserved.</p>
+  </div>
+</footer>

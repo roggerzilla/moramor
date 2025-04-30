@@ -1,0 +1,26 @@
+<div *ngIf="user">
+    <h2>Información del Usuario</h2>
+    <p><strong>Nombre:</strong> {{ user.name }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+  
+    <h3>Direcciones guardadas</h3>
+
+    <ul *ngIf="addresses.length > 0; else sinDirecciones">
+      <li *ngFor="let address of addresses">
+        <strong>{{ address.street }}</strong><br>
+        {{ address.city }}, {{ address.state }}<br>
+        {{ address.postal_code }}, {{ address.country }}
+      </li>
+    </ul>
+    
+    <ng-template #sinDirecciones>
+      <p>No tienes direcciones guardadas.</p>
+    </ng-template>
+    <form (ngSubmit)="addAddress()">
+        <input [(ngModel)]="newAddress.street" name="street" placeholder="Calle" required>
+        <input [(ngModel)]="newAddress.city" name="city" placeholder="Ciudad" required>
+        <input [(ngModel)]="newAddress.state" name="state" placeholder="Estado" required>
+        <input [(ngModel)]="newAddress.postal_code" name="postal_code" placeholder="Código postal" required>
+        <input [(ngModel)]="newAddress.country" name="country" placeholder="País (código ISO: mx, us, fr...)" required>
+        <button type="submit">Agregar</button>
+      </form>

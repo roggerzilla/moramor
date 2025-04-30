@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +26,8 @@ export class PaymentService {
       `${this.apiUrl}/confirm-payment`,
       { payment_intent_id: paymentIntentId }
     );
+  }
+  subtractStock(items: any[]): Observable<any> {
+    return this.http.post('/api/subtract-stock', { items });
   }
 }

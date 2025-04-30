@@ -4,6 +4,7 @@ import { PaymentService } from '../../services/payment.service';
 import { CartService } from '../../services/cart.service';
 import { CartItem } from '../../models/cart-item.model';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-payment',
@@ -24,7 +25,8 @@ export class PaymentComponent implements OnInit {
 
   constructor(
     private paymentService: PaymentService,
-    private cartService: CartService
+    private cartService: CartService,
+    private http: HttpClient
   ) {}
 
   async ngOnInit() {
@@ -100,23 +102,65 @@ export class PaymentComponent implements OnInit {
 
   async handlePayment() {
     this.isLoading = true;
-
+  
     const { error, paymentIntent } = await this.stripe.confirmPayment({
       elements: this.elements,
       confirmParams: {
         return_url: window.location.origin + '/orden-completada',
       },
     });
-
+  
     this.isLoading = false;
-
+  
     if (error) {
       this.error = error.message;
       return;
     }
-
+  
     if (paymentIntent) {
-      this.paymentService.confirmPayment(paymentIntent.id).subscribe();
+      // 1. Confirmar el pago con tu backend
+      this.paymentService.confirmPayment(paymentIntent.id).subscribe({
+        next: () => {
+          // 2. Restar el stock de los items comprados
+          const itemsToUpdate = this.cartItems.map(item => ({
+            item_id: item.item.id,
+            quantity: item.quantity
+          }));
+          
+          this.http.post('/api/subtract-stock', { items: itemsToUpdate }).subscribe({
+            next: () => {
+              console.log('Stock actualizado correctamente');
+              // 3. Limpiar el carrito después de actualizar el stock
+              this.cartService.clearCart().subscribe();
+            },
+            error: (err) => {
+              console.error('Error al actualizar stock', err);
+              // Aquí puedes manejar el error, quizás mostrar un mensaje al usuario
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Error al confirmar el pago', err);
+          this.error = 'Error al confirmar el pago';
+        }
+      });
     }
+  }
+  
+  restarStockDeItems() {
+    this.cartItems.forEach(cartItem => {
+      const itemId = cartItem.item.id;
+      const quantity = cartItem.quantity;
+  
+      this.http.post(`/api/items/${itemId}/subtract-stock`, { quantity })
+        .subscribe({
+          next: () => {
+            console.log(`Stock actualizado para producto ID ${itemId}`);
+          },
+          error: (err) => {
+            console.error(`Error al restar stock para producto ID ${itemId}`, err);
+          }
+        });
+    });
   }
 }
