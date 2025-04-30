@@ -2,47 +2,46 @@
   <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Lista de Productos</h2>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div *ngFor="let item of items" class="bg-white rounded-lg shadow-md overflow-hidden">
-      <img [src]="item.image_url" alt="Imagen del producto" class="w-full h-48 object-cover" />
-      <div class="p-6">
-        <h5 class="text-xl font-semibold text-gray-800 mb-2">{{ item.name }}</h5>
-        <p class="text-gray-600 mb-4">{{ item.description }}</p>
-        <p class="text-lg font-bold text-gray-800">${{ item.price }}</p>
-        <p class="text-gray-700">Stock: {{ item.quantity }}</p>
+    <a *ngFor="let item of items"
+       [routerLink]="item.quantity > 0 ? ['/producto-detalle', item.id] : null"
+       (click)="item.quantity === 0 && $event.preventDefault()"
+       class="bg-white rounded-lg shadow-md overflow-hidden block transition-transform duration-200 no-underline"
+       [ngClass]="{
+         'hover:scale-105 cursor-pointer': item.quantity > 0,
+         'cursor-default': item.quantity === 0
+       }">
 
-        <div class="flex items-center mt-4">
-          <input 
-            type="number" 
-            min="1" 
-            [max]="item.quantity" 
-            [value]="1" 
-            
-            #quantityInput 
-            class="w-20 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button 
-            (click)="addToCart(item, quantityInput.value)" 
-            [hidden]="item.quantity==0"
-            class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Comprar
-          </button>
+      <!-- Contenido principal con opacidad cuando no hay stock -->
+      <div [class.opacity-50]="item.quantity === 0">
+        <img [src]="item.image_url" alt="Imagen del producto" class="w-full h-48 object-cover" />
+        <div class="p-6">
+          <div class="flex justify-between items-center -mb-3">
+            <h5 class="text-xl font-semibold text-gray-800">{{ item.name }}</h5>
+            <p class="text-lg font-bold text-gray-800">${{ item.price }}</p>
+          </div>
+
+          <p class="text-sm text-gray-500 -mt-1">Aquí va un texto placeholder</p>
+
+          <p class="text-gray-600 mb-4">{{ item.description }}</p>
+
+          <p *ngIf="item.quantity === 0" class="text-red-500 mt-2">Sin stock</p>
         </div>
-
-        <p *ngIf="item.quantity === 0" class="text-red-500 mt-2">Sin stock</p>
-
-<button 
-  *ngIf="item.quantity === 0 && token" 
-  (click)="notifyWhenInStock(item)" 
-  class="mt-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
->
-  Notificarme cuando haya stock
-</button>
-
-<p *ngIf="item.quantity === 0 && !token" class="text-sm text-gray-500 mt-2">
-  Inicia sesión para recibir notificación cuando haya stock.
-</p>
       </div>
-    </div>
+
+      <!-- Botón de notificación (sin opacidad) -->
+      <div class="p-6 pt-0" *ngIf="item.quantity === 0">
+        <button
+          *ngIf="token"
+          (click)="notifyWhenInStock($event, item)"
+          class="mt-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 w-full"
+        >
+          Notificarme cuando haya stock
+        </button>
+
+        <p *ngIf="!token" class="text-sm text-gray-500 mt-2">
+          Inicia sesión para recibir notificación cuando haya stock.
+        </p>
+      </div>
+    </a>
   </div>
 </div>

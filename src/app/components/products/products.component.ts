@@ -3,11 +3,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CartService } from '../../services/cart.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule,RouterModule,],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css',
 })
@@ -16,7 +17,7 @@ export class ProductsComponent implements OnInit {
   items: any[] = [];
   token = localStorage.getItem('token');
 
-  constructor(private cartService: CartService) {}
+  constructor(private cartService: CartService,private router: Router) {}
 
   ngOnInit(): void {
     this.loadItems();
@@ -69,7 +70,9 @@ export class ProductsComponent implements OnInit {
     );
   }
 
-  notifyWhenInStock(item: any): void {
+  notifyWhenInStock(event: Event, item: any): void {
+    event.stopPropagation();
+    console.log('Botón de notificación clickeado'); 
     if (!this.token) {
       alert('Debes iniciar sesión para recibir notificaciones.');
       return;
@@ -99,5 +102,7 @@ export class ProductsComponent implements OnInit {
       }
     });
   }
-  
+  goToProductDetail(id: number) {
+    this.router.navigate(['/producto-detalle', id]);
+  }
 }

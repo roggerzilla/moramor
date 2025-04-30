@@ -12,13 +12,15 @@ import {ProductsComponent} from '../../src/app/components/products/products.comp
 import {PaymentComponent} from '../../src/app/components/payment/payment.component';
 import {UserComponent} from '../../src/app/components/user/user.component';
 import {MailErrorComponent} from '../../src/app/components/mail-error/mail-error.component';
+import {AboutUsComponent} from '../../src/app/components/about-us/about-us.component';
 
 import { RoleGuard } from './guards/role.guard';
 
 export const routes: Routes = [ 
     { path: 'login', component: LoginComponent }, // Login
     { path: 'register', component: RegisterComponent }, // Registro
-    { path: 'home', component: HomeComponent },   
+    { path: 'home', component: HomeComponent },  
+    { path: 'about_us', component: AboutUsComponent },    
     
     //Super usuarios
     { path: 'users', component: UserManagementComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser'] } },
