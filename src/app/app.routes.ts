@@ -13,6 +13,7 @@ import {PaymentComponent} from '../../src/app/components/payment/payment.compone
 import {UserComponent} from '../../src/app/components/user/user.component';
 import {MailErrorComponent} from '../../src/app/components/mail-error/mail-error.component';
 import {AboutUsComponent} from '../../src/app/components/about-us/about-us.component';
+import {ProductoDetalleComponent} from '../../src/app/components/producto-detalle/producto-detalle.component';
 
 import { RoleGuard } from './guards/role.guard';
 
@@ -21,7 +22,7 @@ export const routes: Routes = [
     { path: 'register', component: RegisterComponent }, // Registro
     { path: 'home', component: HomeComponent },  
     { path: 'about_us', component: AboutUsComponent },    
-    
+    { path: 'producto-detalle/:id', component: ProductoDetalleComponent },
     //Super usuarios
     { path: 'users', component: UserManagementComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser'] } },
     

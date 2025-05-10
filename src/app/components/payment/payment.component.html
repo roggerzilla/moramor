@@ -1,4 +1,4 @@
-<div class="grid grid-cols-2 gap-4 p-4">
+<div class="grid grid-cols-2 gap-4 p-4 -mt-100">
 
   <div class="flex flex-col">
     <h3 class="text-xl font-bold mb-4">Método de pago</h3>
@@ -31,7 +31,7 @@
     <div class="summary-details space-y-2 mb-4">
       <div class="flex justify-between">
         <span>Subtotal</span>
-        <span>{{ totalAmount | currency:'MXN' }}</span> </div>
+        <span>{{ totalAmount/100 | currency:'MXN' }}</span> </div>
 
       <div class="flex justify-between">
         <span>Envío</span>

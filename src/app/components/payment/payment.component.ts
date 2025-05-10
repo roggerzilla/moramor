@@ -1,44 +1,43 @@
 import { Component, OnInit } from '@angular/core';
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
 import { PaymentService } from '../../services/payment.service';
 import { CartService } from '../../services/cart.service';
 import { CartItem } from '../../models/cart-item.model';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-payment',
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
-  imports: [
-    CommonModule,  // Asegúrate de que CommonModule esté importado
-  ],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class PaymentComponent implements OnInit {
-  stripe: any;
-  paymentElement: any;
-  elements: any;
+  stripe: Stripe | null = null;
+  paymentElement: StripePaymentElement | null = null;
+  elements: StripeElements | null = null;
   isLoading = true;
   error: string | null = null;
   cartItems: CartItem[] = [];
-  totalAmount: number = 0; // Total a pagar
+  totalAmount: number = 0;
 
   constructor(
     private paymentService: PaymentService,
     private cartService: CartService,
-    private http: HttpClient
+    private router: Router
   ) {}
 
   async ngOnInit() {
-    // 1. Cargar Stripe con tu clave pública
     this.stripe = await loadStripe('pk_test_51RBMauP5YAunVj6pbcfSdzr2XUkhkd6ryGfqqL0rdOCv3d2YtVZRIvwaMcQVL1uZcmoswy2sXD3OwEfN0eCW2K9v00N7oPp1qB');
 
-    // 2. Obtener los ítems del carrito
     this.cartService.getCartItems().subscribe({
-      next: (items: CartItem[]) => {
+      next: async (items: CartItem[]) => {
         this.cartItems = items;
         this.calculateTotalAmount();
-        this.createPaymentIntent();
+        await this.initializeStripeElements();
+        this.isLoading = false;
       },
       error: (err: any) => {
         this.error = 'Error al obtener los ítems del carrito';
@@ -47,33 +46,43 @@ export class PaymentComponent implements OnInit {
     });
   }
 
-  // Función para calcular el total del carrito
   calculateTotalAmount() {
     this.totalAmount = this.cartItems.reduce((sum, item) => {
-      return sum + (item.item.price * item.quantity); // Precio * cantidad de cada ítem
-    }, 0);
-
-    // Convertimos a centavos (Stripe usa centavos)
-    this.totalAmount = this.totalAmount * 100; // Ejemplo: $10.00 USD = 1000 centavos
+      return sum + (item.item.price * item.quantity);
+    }, 0) * 100;
   }
 
-  // Función para crear el PaymentIntent en el backend
-  createPaymentIntent() {
-    this.paymentService.createPaymentIntent(this.totalAmount).subscribe({
-      next: (response: { clientSecret: string }) => {
-        this.setupStripeElements(response.clientSecret);
-        this.isLoading = false;
-      },
-      error: (err: any) => {
-        this.error = 'Error al conectar con el servidor';
-        this.isLoading = false;
+  private async initializeStripeElements() {
+    try {
+      const response = await firstValueFrom(
+        this.paymentService.createPaymentIntent(this.totalAmount)
+      );
+      
+      if (!response?.clientSecret) {
+        throw new Error('No se recibió clientSecret del servidor');
       }
-    });
+
+      this.elements = this.stripe!.elements({
+        clientSecret: response.clientSecret,
+        appearance: this.getStripeAppearance()
+      });
+
+      this.paymentElement = this.elements.create('payment', {
+        layout: {
+          type: 'tabs',
+          defaultCollapsed: false,
+        }
+      });
+
+      this.paymentElement.mount('#payment-element');
+    } catch (err) {
+      this.handleError('Error al inicializar Stripe', err);
+    }
   }
 
-  private setupStripeElements(clientSecret: string) {
-    const appearance = {
-      theme: 'flat',
+  private getStripeAppearance() {
+    return {
+      theme: 'flat' as const,
       variables: {
         colorPrimary: '#635bff',
         colorText: '#333',
@@ -87,80 +96,88 @@ export class PaymentComponent implements OnInit {
         }
       }
     };
-
-    this.elements = this.stripe.elements({ clientSecret, appearance });
-
-    this.paymentElement = this.elements.create('payment', {
-      layout: {
-        type: 'tabs',
-        defaultCollapsed: false,
-      }
-    });
-
-    this.paymentElement.mount('#payment-element');
   }
 
   async handlePayment() {
-    this.isLoading = true;
-  
-    const { error, paymentIntent } = await this.stripe.confirmPayment({
-      elements: this.elements,
-      confirmParams: {
-        return_url: window.location.origin + '/orden-completada',
-      },
-    });
-  
-    this.isLoading = false;
-  
-    if (error) {
-      this.error = error.message;
+    if (!this.stripe || !this.elements) {
+      this.error = 'Stripe no está inicializado correctamente';
       return;
     }
-  
-    if (paymentIntent) {
-      // 1. Confirmar el pago con tu backend
-      this.paymentService.confirmPayment(paymentIntent.id).subscribe({
-        next: () => {
-          // 2. Restar el stock de los items comprados
-          const itemsToUpdate = this.cartItems.map(item => ({
-            item_id: item.item.id,
-            quantity: item.quantity
-          }));
-          
-          this.http.post('/api/subtract-stock', { items: itemsToUpdate }).subscribe({
-            next: () => {
-              console.log('Stock actualizado correctamente');
-              // 3. Limpiar el carrito después de actualizar el stock
-              this.cartService.clearCart().subscribe();
-            },
-            error: (err) => {
-              console.error('Error al actualizar stock', err);
-              // Aquí puedes manejar el error, quizás mostrar un mensaje al usuario
-            }
-          });
+
+    this.isLoading = true;
+    this.error = null;
+
+    try {
+      const { error, paymentIntent } = await this.stripe.confirmPayment({
+        elements: this.elements,
+        confirmParams: {
+          receipt_email: 'user@example.com',
         },
-        error: (err) => {
-          console.error('Error al confirmar el pago', err);
-          this.error = 'Error al confirmar el pago';
-        }
+        redirect: 'if_required'
       });
+
+      if (error) {
+        this.handleStripeError(error);
+        return;
+      }
+
+      if (paymentIntent?.status === 'succeeded') {
+        this.processPayment(paymentIntent.id);
+      }
+    } catch (err) {
+      this.handleError('Error inesperado al procesar el pago', err);
+    } finally {
+      this.isLoading = false;
     }
   }
-  
-  restarStockDeItems() {
-    this.cartItems.forEach(cartItem => {
-      const itemId = cartItem.item.id;
-      const quantity = cartItem.quantity;
-  
-      this.http.post(`/api/items/${itemId}/subtract-stock`, { quantity })
-        .subscribe({
+
+  private handleStripeError(error: any) {
+    if (error.code === 'payment_intent_unexpected_state' && 
+        error.paymentIntent?.status === 'succeeded') {
+      this.processPayment(error.paymentIntent.id);
+      return;
+    }
+    this.error = error.message || 'Error al procesar el pago';
+  }
+
+  processPayment(paymentIntentId: string) {
+    const itemsToUpdate = this.cartItems.map(item => ({
+      item_id: item.item.id,
+      quantity: item.quantity
+    }));
+
+    this.paymentService.subtractStock(itemsToUpdate).subscribe({
+      next: () => {
+        const orderData = {
+          items: this.cartItems,
+          totalAmount: this.totalAmount / 100,
+          paymentIntentId: paymentIntentId,
+          status: 'completed'
+        };
+
+        this.paymentService.createOrder(orderData).subscribe({
           next: () => {
-            console.log(`Stock actualizado para producto ID ${itemId}`);
+            this.cartService.clearCart().subscribe();
+            this.router.navigate(['/order-confirmation'], {
+              state: { paymentIntentId }
+            });
           },
           error: (err) => {
-            console.error(`Error al restar stock para producto ID ${itemId}`, err);
+            this.error = 'Error al crear el pedido';
+            console.error(err);
           }
         });
+      },
+      error: (err: any) => {
+        this.error = 'Error al actualizar el stock';
+        console.error(err);
+      }
     });
+  }
+
+  private handleError(message: string, error: any) {
+    this.error = message;
+    this.isLoading = false;
+    console.error(error);
   }
 }

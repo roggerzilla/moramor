@@ -10,6 +10,7 @@ interface Address {
   state: string;
   postal_code: string;
   country: string;
+  editing?: boolean; 
 }
 
 @Component({
@@ -20,7 +21,9 @@ interface Address {
   styleUrl: './user.component.css'
 })
 export class UserComponent implements OnInit {
-  user: any = null;
+  user: any = { name: '', email: '' };
+  password: string = '';
+  updateMessage: string = '';
   addresses: Address[] = [];
   token: string | null = null;
 
@@ -59,16 +62,43 @@ export class UserComponent implements OnInit {
     });
   }
 
+  updateProfile(): void {
+    if (!this.token) return;
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+
+    const body = {
+      name: this.user.name,
+      email: this.user.email,
+      password: this.password || null
+    };
+
+    this.http.put('http://localhost:8000/api/user/profile', body, { headers }).subscribe({
+      next: (res: any) => {
+        this.updateMessage = 'Perfil actualizado correctamente';
+        this.password = '';
+      },
+      error: (err) => {
+        console.error(err);
+        this.updateMessage = 'Error al actualizar perfil';
+      }
+    });
+  }
+
   addAddress(): void {
     if (!this.token) {
       alert('Debes iniciar sesión.');
       return;
     }
 
-    const { country, postal_code, city, state } = this.newAddress;
+    const { country, postal_code, city, state, street } = this.newAddress;
 
-    if (!country || !postal_code || !city || !state) {
-      alert('Completa todos los campos antes de validar.');
+    if (!country || !postal_code || !city || !state || !street) {
+      alert('Completa todos los campos antes de guardar.');
       return;
     }
 
@@ -78,45 +108,68 @@ export class UserComponent implements OnInit {
       'Accept': 'application/json'
     });
 
-    const countryCode = country.toLowerCase();
-
-    // 🔍 Validar con Zippopotam.us
-    this.http.get(`https://api.zippopotam.us/${countryCode}/${postal_code}`).subscribe({
-      next: (data: any) => {
-        const validPlace = data.places[0];
-        const expectedCity = validPlace['place name'];
-        const expectedState = validPlace['state'];
-
-        if (expectedCity.toLowerCase() !== city.toLowerCase() ||
-            expectedState.toLowerCase() !== state.toLowerCase()) {
-          alert(`La ciudad o el estado no coinciden con el código postal.\nEsperado: ${expectedCity}, ${expectedState}`);
-          return;
-        }
-
-        // ✅ Si todo está bien, enviar al backend
-        this.http.post('http://localhost:8000/api/user/address', this.newAddress, {
-          headers
-        }).subscribe({
-          next: (response: any) => {
-            alert('Dirección agregada correctamente');
-            this.addresses.push(response.address ?? this.newAddress);
-            this.newAddress = {
-              street: '',
-              city: '',
-              state: '',
-              postal_code: '',
-              country: ''
-            };
-          },
-          error: (err) => {
-            console.error('Error al agregar dirección', err);
-            alert('Error al agregar dirección.');
-          }
-        });
+    this.http.post('http://localhost:8000/api/user/address', this.newAddress, {
+      headers
+    }).subscribe({
+      next: (response: any) => {
+        alert('Dirección agregada correctamente');
+        this.addresses.push(response.address ?? this.newAddress);
+        this.newAddress = {
+          street: '',
+          city: '',
+          state: '',
+          postal_code: '',
+          country: ''
+        };
       },
-      error: () => {
-        alert('El código postal no fue encontrado para ese país.');
+      error: (err) => {
+        console.error('Error al agregar dirección', err);
+        alert('Error al agregar dirección.');
       }
     });
   }
+
+  updateAddress(address: Address): void {
+    if (!this.token || !address.id) return;
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+
+    this.http.put(`http://localhost:8000/api/user/address/${address.id}`, address, { headers }).subscribe({
+      next: (res: any) => {
+        address.editing = false;
+        alert('Dirección actualizada correctamente');
+      },
+      error: (err) => {
+        console.error('Error al actualizar dirección', err);
+        alert('Error al actualizar dirección.');
+      }
+    });
+  }
+  deleteAddress(address: Address): void {
+    if (!this.token || !address.id) return;
+  
+    const confirmDelete = confirm('¿Estás seguro de que quieres eliminar esta dirección?');
+    if (!confirmDelete) return;
+  
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`,
+      'Accept': 'application/json'
+    });
+  
+    this.http.delete(`http://localhost:8000/api/user/address/${address.id}`, { headers }).subscribe({
+      next: () => {
+        this.addresses = this.addresses.filter(a => a.id !== address.id);
+        alert('Dirección eliminada correctamente');
+      },
+      error: (err) => {
+        console.error('Error al eliminar dirección', err);
+        alert('Error al eliminar dirección.');
+      }
+    });
+  }
+  
 }

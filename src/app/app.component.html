@@ -1,192 +1,201 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
-
 <div class="min-h-screen flex flex-col">
-  <!-- Header y contenido principal -->
-  <main class="flex-grow">
-  <div
-  *ngIf="showAgeVerificationModal"
-  class="modal fade show"
-  tabindex="-1"
-  role="dialog"
-  style="display: block; background-color: rgba(0, 0, 0, 0.5);"
->
-<!-- Age Verification Modal -->
-<div class="age-verification-overlay">
-  <div class="age-verification-box">
-    <h2>Debes de ser mayor de edad para acceder a este sitio.</h2>
-    <div class="age-buttons">
-      <button class="btn-age ">Tengo + 18 años</button>
-      <button class="btn-age">No tengo +18 años</button>
-    </div>
-    <p class="age-note">
-      By accessing this website you acknowledge that you accept its terms and conditions of use.<br />
-      <strong>Conditions of use</strong>
-    </p>
-  </div>
-</div>
+  <!-- Country Selection Overlay (shown first) -->
+  @if (showCountrySelection) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-white">
+      <img 
+      src="tequila.gif"
+      alt="Fondo de tequila"
+      class="absolute top-0 left-0 w-full h-full object-cover z-0 opacity-30"
+    />
+  
+      <div class="relative z-10 text-center p-8 rounded-lg max-w-4xl w-full px-4">
 
-</div>
-
-<header class="bg-white shadow-md w-full relative z-40">
-  <nav class="bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700">
-    <div class="w-full flex justify-between p-4">
-      <!-- Logo -->
-      <a routerLink="/home" class="flex items-center">
-        <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" />
-        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white ml-2">Moramor</span>
-      </a>
-
-      <!-- Menú de navegación -->
-      <div class="hidden w-full md:block md:w-auto" id="navbar-multi-level">
-        <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-          <li>
-            <a routerLink="/home" class="block py-2 px-3 text-black bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent" aria-current="page">Home</a>
-          </li>
-
-          <!-- Opción visible solo si el usuario está deslogueado -->
-          <li *ngIf="!isLoggedIn" class="flex space-x-4">
-            <a routerLink="/login" class="block py-2 px-3 text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600 dark:hover:text-white"
-               matTooltip="Iniciar sesión">Iniciar sesión</a>
-            <a routerLink="/register" class="block py-2 px-3 text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600 dark:hover:text-white"
-               matTooltip="Registrarse">Registrarse</a>
-          </li>
-
-          <li >
-            <a routerLink="/products" class="block px-4 py-2 text-black no-underline hover:no-underline hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white">
-              Productos
-            </a>
-          </li>
-          <li >
-            <a routerLink="/about_us" class="block px-4 py-2 text-black no-underline hover:no-underline hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white">
-              About us
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <!-- Íconos de usuario y carrito -->
-      <div class="flex items-center space-x-6 me-20">
-        <!-- Ícono de usuario -->
-        <a *ngIf="isLoggedIn" (click)="logout()" class="text-gray-700 hover:text-blue-700 dark:text-white dark:hover:text-blue-500">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"></path>
-          </svg>
-        </a>
-        <a *ngIf="!isLoggedIn" routerLink="/login" class="text-gray-700 hover:text-blue-700 dark:text-white dark:hover:text-blue-500">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-        </a>
-      
-        <!-- Ícono de carrito -->
-        <div class="relative">
-          <button (click)="toggleCart()" class="mt-2 text-gray-700 hover:text-blue-700 dark:text-white dark:hover:text-blue-500 relative">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
-            </svg>
-            <span *ngIf="cartItemCount > 0" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-              {{ cartItemCount }}
-            </span>
+        <div class="mb-6 mt-20">
+          <img src="favicon.ico" alt="Logotipo de Moramor" class="mx-auto h-16">
+          <h1 class="text-2xl font-semibold !w-full  !text-[#28388E] ">Bienvenido a la magia del tequila.</h1>
+        </div>
+        <h2 class="text-xl !text-[#28388E] mb-6 !mt-60">¿Cómo le servimos hoy?</h2>
+        <div class="flex justify-center space-x-4 mt-8">
+          <button
+            (click)="
+            selectCountry('MX')"
+ class="!me-10 bg-transparent text-[#28388E] bg-white border-2 border-[#28388E] focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium !rounded-full px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"          >
+            Español
           </button>
+          <button
+            (click)="
+            selectCountry('US')"
+            class="bg-transparent text-[#28388E] bg-white border-2 border-[#28388E] focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium !rounded-full px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+          >
+            English
+          </button>
+        </div>
+        <p class="text-xs text-gray-500 !mt-125">
+          By accessing this website you acknowledge that you accept its terms and conditions of use.
+          <a href="/terminos" class="underline">Conditions of use</a>
+        </p>
+      </div>
+    </div>
+   }
+
+  <!-- Age Verification Modal (shown after country selection) -->
+  @if (showAgeVerificationModal) {
+    <div class="modal fade show" tabindex="-1" role="dialog" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
+      <div class="age-verification-overlay">
+        <div class="age-verification-box">
+          <h2>Debes de ser mayor de edad para acceder a este sitio.</h2>
+          <div class="age-buttons">
+            <button (click)="confirmAge(true)" class="btn-age">Tengo + 18 años</button>
+            <button (click)="confirmAge(false)" class="btn-age">No tengo +18 años</button>
+          </div>
+          <p class="age-note">
+            By accessing this website you acknowledge that you accept its terms and conditions of use.<br />
+            <strong>Conditions of use</strong>
+          </p>
         </div>
       </div>
     </div>
-  </nav>
-</header>
+  }
+
+  <!-- Main Content (shown after age verification) -->
+  @if (!showCountrySelection && !showAgeVerificationModal) {
+    <!-- Header y contenido principal -->
+    <main class="flex-grow">
+      <header class="bg-white shadow-md w-full relative z-40">
+        <nav class="bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+          <div class="w-full flex justify-between p-4">
+            <!-- Logo -->
+            <a routerLink="/home" class="flex items-center">
+              <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Flowbite Logo" />
+              <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white ml-2">Moramor</span>
+            </a>
+
+            <!-- Menú de navegación -->
+            <div class="hidden w-full md:block md:w-auto" id="navbar-multi-level">
+              <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+                <li>
+                  <a routerLink="/home" class="block py-2 px-3 !text-[#28388E]" aria-current="page">Home</a>
+                </li>
+
+                <!-- Opción visible solo si el usuario está deslogueado -->
+                <li *ngIf="!isLoggedIn" class="flex space-x-4" style="color:#28388E;">
+                  <a routerLink="/login" class="block py-2 px-3 text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600 dark:hover:text-white"
+                    matTooltip="Iniciar sesión">Iniciar sesión</a>
+                  <a routerLink="/register" class="block py-2 px-3 text-black hover:bg-gray-100 dark:text-white dark:hover:bg-gray-600 dark:hover:text-white"
+                    matTooltip="Registrarse">Registrarse</a>
+                </li>
+
+                <li>
+                  <a routerLink="/products" class="block px-4 py-2 text-black no-underline hover:no-underline hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white !text-[#28388E]">
+                    Productos
+                  </a>
+                </li>
+                <li>
+                  <a routerLink="/about_us" class="block px-4 py-2 text-black no-underline hover:no-underline hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white !text-[#28388E]">
+                    About us
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Íconos de usuario y carrito -->
+            <div class="flex items-center space-x-6 me-20">
+              <!-- Ícono de usuario -->
+              <a *ngIf="isLoggedIn" (click)="logout()" class="text-gray-700 hover:text-blue-700 dark:text-white dark:hover:text-blue-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"></path>
+                </svg>
+              </a>
+              <a *ngIf="!isLoggedIn" routerLink="/login" class="text-gray-700 hover:text-blue-700 dark:text-white dark:hover:text-blue-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+              </a>
+            
+              <!-- Ícono de carrito -->
+              <div class="relative">
+                <button (click)="toggleCart()" class="mt-2 text-gray-700 hover:text-blue-700 dark:text-white dark:hover:text-blue-500 relative">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  </svg>
+                  <span *ngIf="cartItemCount > 0" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {{ cartItemCount }}
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      <router-outlet></router-outlet>
+
+      @if (isCartOpen) {
+        <div class="fixed inset-0 z-50 overflow-hidden" @fadeInOut>
+          <!-- Fondo con animación -->
+          <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" 
+              (click)="isCartOpen = false"></div>
+        </div>
+        
+        <app-carrito 
+        [isOpen]="isCartOpen"
+        (closed)="isCartOpen = false"
+        [cartItems]="cartItems"
+        [cartItemCount]="cartItemCount"
+        (cartItemsChange)="onCartItemsChange($event)"
+        (checkoutRequested)="onCheckout()">
+        </app-carrito>
+      }
 
 
+    </main>
+    <footer class="bg-[#1F1F44] text-white py-12 px-4 mt-20">
+      <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8">
+        <div class="mb-6 md:mb-0">
+          <div class="flex items-center mb-4">
+            <img src="moramor-logo-white.png" alt="Moramor Logo" class="h-8 mr-2">
+            <span class="font-bold text-lg">MORAMOR</span>
+          </div>
+        </div>
 
-</main>
+        <div>
+          <h3 class="font-semibold text-lg mb-4">Soporte</h3>
+          <p class="text-sm mb-2">11 Bijoy Sarani, Dhaka,</p>
+          <p class="text-sm mb-2">DH 1215, Bangladesh.</p>
+          <p class="text-sm mb-2">contactomoramor.com</p>
+          <p class="text-sm">+88015-98888-9999</p>
+        </div>
 
+        <div>
+          <h3 class="font-semibold text-lg mb-4">Cuenta</h3>
+          <div>
+            <a href="#" style="text-decoration: none;" class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Mi Cuenta</a>
+            <a href="#" style="text-decoration: none;" class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Iniciar sesión / Registrarse</a>
+            <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block text-sm">Comprar</a>
+          </div>
+        </div>
 
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+        <div>
+          <h3 class="font-semibold text-lg mb-4">Moramor</h3>
+          <div>
+            <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Políticas de privacidad</a>
+            <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Términos & condiciones</a>
+            <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block text-sm">Contacto</a>
+          </div>
+        </div>
 
-<router-outlet></router-outlet>
-@if (isCartOpen) {
-  <div class="fixed inset-0 z-50 overflow-hidden" @fadeInOut>
-    <!-- Fondo con animación -->
-    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" 
-         (click)="isCartOpen = false"></div>
-  </div>
-  
-  <app-carrito 
-  [isOpen]="isCartOpen"
-  (closed)="isCartOpen = false"
-  [cartItems]="cartItems"
-  [cartItemCount]="cartItemCount"
-  (cartItemsChange)="onCartItemsChange($event)"
-  (checkoutRequested)="onCheckout()">
-</app-carrito>
-}
-<footer class="bg-[#1F1F44] text-white py-12 px-4">
-  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8">
-    <div class="mb-6 md:mb-0">
-      <div class="flex items-center mb-4">
-        <img src="moramor-logo-white.png" alt="Moramor Logo" class="h-8 mr-2">
-        <span class="font-bold text-lg">MORAMOR</span>
+        <div>
+          <h3 class="font-semibold text-lg mb-4">Síguenos en redes</h3>
+          <div class="flex space-x-4">
+            <a href="#" class="hover:text-indigo-200"><svg class="h-5 w-5 fill-current text-white" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h3V9.9c0-3.1 1.89-4.7 4.6-4.7 1.3 0 2.4.1 2.7.1V8h-1.8c-1.4 0-1.7.7-1.7 1.7V12h3v3h-3v4.8c4.5-1 8-4.8 8-9.8z"/></svg></a>
+            <a href="#" class="hover:text-indigo-200"><svg class="h-5 w-5 fill-current text-white" viewBox="0 0 24 24"><path d="M22.46 6c-.77.67-1.72 1.13-2.77 1.34a4.85 4.85 0 0 0 2.12-2.68c-.8-.48-1.68-.83-2.6-.99a4.82 4.82 0 0 0-8.13 4.34c-1.39-.07-2.64-.7-3.45-1.64a4.79 4.79 0 0 0-.65 2.47c.4.69.63 1.45.63 2.23a4.85 4.85 0 0 1-2.18-.6c-.23.8.08 1.68.61 2.15a4.8 4.8 0 0 1-2.22.08c.63 1.97 2.47 3.4 4.65 3.47a9.7 9.7 0 0 1-6 2.08c-.39.22-.78.41-1.19.58a16.61 16.61 0 0 0 10.13 4.2c6.02 0 9.32-5 9.32-9.33v-.4c.65-.46 1.2-.99 1.64-1.56z"/></svg></a>
+            <a href="#" class="hover:text-indigo-200"><svg class="h-5 w-5 fill-current text-white" viewBox="0 0 24 24"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19.4c-2.28 0-4.1-1.82-4.1-4.1 0-2.28 1.82-4.1 4.1-4.1 2.28 0 4.1 1.82 4.1 4.1 0 2.28-1.82 4.1-4.1 4.1zm8.6-8.7c-1.46 0-2.76.67-3.5 1.76v-1.6c0-1.54-1.24-2.78-2.78-2.78-1.54 0-2.78 1.24-2.78 2.78v6.2c0 1.54 1.24 2.78 2.78 2.78 1.54 0 2.78-1.24 2.78-2.78v-1.6c.74-1.09 2.04-1.76 3.5-1.76 2.28 0 4.1 1.82 4.1 4.1 0 2.28-1.82 4.1-4.1 4.1-2.28 0-4.1-1.82-4.1-4.1v-6.2c0-2.28 1.82-4.1 4.1-4.1 2.28 0 4.1 1.82 4.1 4.1 0 2.28-1.82 4.1-4.1 4.1h-8.6z"/></svg></a>
+          </div>
+        </div>
       </div>
-      <p class="text-sm mb-2">Obtén 10% de descuento</p>
-      <p class="text-sm mb-4">en tu primera compra.</p>
-      <div class="flex border border-white rounded-full overflow-hidden">
-        <input type="email" placeholder="Ingresa tu correo" class="bg-transparent text-white px-4 py-2 focus:outline-none text-sm">
-        <button class="bg-white text-[#1F1F44] px-4 py-2 text-sm font-semibold">></button>
+      <div class="max-w-6xl mx-auto mt-8 text-center text-xs text-gray-500">
+        <p>© Copyright Moramor 2025. All rights reserved.</p>
       </div>
-    </div>
-
-    <div>
-      <h3 class="font-semibold text-lg mb-4">Soporte</h3>
-      <p class="text-sm mb-2">11 Bijoy Sarani, Dhaka,</p>
-      <p class="text-sm mb-2">DH 1215, Bangladesh.</p>
-      <p class="text-sm mb-2">contactomoramor.com</p>
-      <p class="text-sm">+88015-98888-9999</p>
-    </div>
-
-    <div>
-      <h3 class="font-semibold text-lg mb-4">Cuenta</h3>
-      <div>
-        <a href="#" style="text-decoration: none;" class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Mi Cuenta</a>
-        <a href="#" style="text-decoration: none;" class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Iniciar sesión / Registrarse</a>
-        <a href="#" style="text-decoration: none;" class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Carrito</a>
-        <a href="#"style="text-decoration: none;" class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Wishlist</a>
-        <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block text-sm">Comprar</a>
-      </div>
-    </div>
-
-    <div>
-      <h3 class="font-semibold text-lg mb-4">Moramor</h3>
-      <div>
-        <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Políticas de privacidad</a>
-        <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">Términos & condiciones</a>
-        <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block mb-2 text-sm">FAQ</a>
-        <a href="#" style="text-decoration: none;"class="hover:text-indigo-200 text-white no-underline block text-sm">Contacto</a>
-      </div>
-    </div>
-
-    <div>
-      <h3 class="font-semibold text-lg mb-4">Síguenos en redes</h3>
-      <div class="flex space-x-4">
-        <a href="#" class="hover:text-indigo-200"><svg class="h-5 w-5 fill-current text-white" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h3V9.9c0-3.1 1.89-4.7 4.6-4.7 1.3 0 2.4.1 2.7.1V8h-1.8c-1.4 0-1.7.7-1.7 1.7V12h3v3h-3v4.8c4.5-1 8-4.8 8-9.8z"/></svg></a>
-        <a href="#" class="hover:text-indigo-200"><svg class="h-5 w-5 fill-current text-white" viewBox="0 0 24 24"><path d="M22.46 6c-.77.67-1.72 1.13-2.77 1.34a4.85 4.85 0 0 0 2.12-2.68c-.8-.48-1.68-.83-2.6-.99a4.82 4.82 0 0 0-8.13 4.34c-1.39-.07-2.64-.7-3.45-1.64a4.79 4.79 0 0 0-.65 2.47c.4.69.63 1.45.63 2.23a4.85 4.85 0 0 1-2.18-.6c-.23.8.08 1.68.61 2.15a4.8 4.8 0 0 1-2.22.08c.63 1.97 2.47 3.4 4.65 3.47a9.7 9.7 0 0 1-6 2.08c-.39.22-.78.41-1.19.58a16.61 16.61 0 0 0 10.13 4.2c6.02 0 9.32-5 9.32-9.33v-.4c.65-.46 1.2-.99 1.64-1.56z"/></svg></a>
-        <a href="#" class="hover:text-indigo-200"><svg class="h-5 w-5 fill-current text-white" viewBox="0 0 24 24"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19.4c-2.28 0-4.1-1.82-4.1-4.1 0-2.28 1.82-4.1 4.1-4.1 2.28 0 4.1 1.82 4.1 4.1 0 2.28-1.82 4.1-4.1 4.1zm8.6-8.7c-1.46 0-2.76.67-3.5 1.76v-1.6c0-1.54-1.24-2.78-2.78-2.78-1.54 0-2.78 1.24-2.78 2.78v6.2c0 1.54 1.24 2.78 2.78 2.78 1.54 0 2.78-1.24 2.78-2.78v-1.6c.74-1.09 2.04-1.76 3.5-1.76 2.28 0 4.1 1.82 4.1 4.1 0 2.28-1.82 4.1-4.1 4.1-2.28 0-4.1-1.82-4.1-4.1v-6.2c0-2.28 1.82-4.1 4.1-4.1 2.28 0 4.1 1.82 4.1 4.1 0 2.28-1.82 4.1-4.1 4.1h-8.6z"/></svg></a>
-      </div>
-    </div>
-  </div>
-  <div class="max-w-6xl mx-auto mt-8 text-center text-xs text-gray-500">
-    <p>© Copyright Moramor 2025. All rights reserved.</p>
-  </div>
-</footer>
+    </footer>
+  }
 </div>

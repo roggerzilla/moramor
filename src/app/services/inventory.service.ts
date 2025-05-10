@@ -24,4 +24,7 @@ export class InventoryService {
     formData.append('image', image);
     return this.http.post<{ imageUrl: string }>(`${this.apiUrl}/upload-image`, formData);
   }
+  getProductoById(id: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${id}`);
+  }
 }

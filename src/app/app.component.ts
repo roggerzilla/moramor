@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +15,7 @@ import { CarritoComponent } from './components/carrito/carrito.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FormsModule, HttpClientModule,CarritoComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FormsModule, HttpClientModule, CarritoComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   animations: [
@@ -39,10 +39,14 @@ import { CarritoComponent } from './components/carrito/carrito.component';
     ])
   ]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
+  @ViewChild('backgroundVideo') backgroundVideo!: ElementRef<HTMLVideoElement>;
+  
+  showCountrySelection: boolean = true;
   showAgeVerificationModal: boolean = false;
   userRole: string | null = null;
   isLoggedIn: boolean = false;
+  selectedCountry: string | null = null;
   
   // Variables para el carrito
   isCartOpen = false;
@@ -56,15 +60,22 @@ export class AppComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private orderService: OrderService,
-    private authService:AuthService
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    this.checkAgeVerification();
-    this.getLocation();
-    this.getUser();
     this.checkLoginStatus();
+    this.getUser();
+    // No mostramos la verificación de edad aquí, se mostrará después de seleccionar país
+  }
 
+  ngAfterViewInit() {
+    // Intenta reproducir el video (necesario para algunos navegadores móviles)
+    if (this.backgroundVideo) {
+      this.backgroundVideo.nativeElement.play().catch(error => {
+        console.log('Autoplay prevented:', error);
+      });
+    }
   }
 
   checkLoginStatus(): void {
@@ -72,11 +83,23 @@ export class AppComponent implements OnInit {
     if (token) {
       this.isLoggedIn = true;
       this.getUser();
-      
     }
   }
 
-  // Métodos existentes (verificación de edad, geolocalización y usuario)
+  selectCountry(country: string) {
+    this.selectedCountry = country;
+    this.showCountrySelection = false;
+    
+    // Redirigir según el país seleccionado
+    if (country === 'MX') {
+      // Para México, mostramos la verificación de edad
+      this.checkAgeVerification();
+    } else if (country === 'US') {
+      // Para US redirigimos a sitio específico
+      window.location.href = 'https://google.com'; // Cambiar por la URL correcta
+    }
+  }
+
   checkAgeVerification(): void {
     const hasConfirmedAge = localStorage.getItem('hasConfirmedAge');
     if (hasConfirmedAge !== 'true') {
@@ -88,6 +111,8 @@ export class AppComponent implements OnInit {
     if (isOfAge) {
       localStorage.setItem('hasConfirmedAge', 'true');
       this.showAgeVerificationModal = false;
+      // Después de confirmar edad, obtenemos la ubicación
+      this.getLocation();
     } else {
       window.location.href = 'https://www.google.com';
     }
@@ -129,26 +154,24 @@ export class AppComponent implements OnInit {
       }
     );
   }
+
   logout(): void {
     this.authService.logout().subscribe(() => {
       localStorage.removeItem('token');
       this.isLoggedIn = false;
-      this.router.navigate(['/home']);  // Redirigir al usuario al home después de cerrar sesión
+      this.router.navigate(['/home']);
     });
   }
-
 
   toggleCart() {
     this.isCartOpen = !this.isCartOpen;
     console.log(this.isCartOpen);
   
-    // Solo carga si no hay items todavía
     if (this.isCartOpen && this.cartItems.length === 0) {
       this.loadCartItems();
     }
   }
 
-  // Método para cargar los items del carrito
   loadCartItems() {
     this.cartService.getCartItems().subscribe({
       next: (items: CartItem[]) => {
@@ -161,20 +184,14 @@ export class AppComponent implements OnInit {
     });
   }
 
-  // Método cuando cambian los items del carrito
   onCartItemsChange(items: CartItem[]) {
     this.cartItems = items;
     this.cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   }
 
-  // Método para finalizar compra
   onCheckout() {
     console.log('Compra realizada', this.cartItems);
     this.isCartOpen = false;
     // Aquí puedes añadir lógica adicional para el checkout
   }
-
-
-  // Métodos para el carrito
- 
 }

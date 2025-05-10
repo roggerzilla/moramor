@@ -9,8 +9,8 @@ import { CartItem } from '../models/cart-item.model';
 })
 export class CartService {
   private apiUrl = 'http://localhost:8000/api/cart';
-  private cartItemsSubject = new BehaviorSubject<CartItem[]>([]);
-  cartItems$ = this.cartItemsSubject.asObservable();
+  private cartItemsSubject = new BehaviorSubject<CartItem[]>([]); // Observador del carrito
+  cartItems$ = this.cartItemsSubject.asObservable(); // Observable público para suscribirse
 
   constructor(private http: HttpClient) {}
 
@@ -22,8 +22,14 @@ export class CartService {
   // Obtener los ítems del carrito del usuario
   getCartItems(): Observable<CartItem[]> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http.get<CartItem[]>('http://localhost:8000/api/cart', { headers });
+    return this.http.get<CartItem[]>('http://localhost:8000/api/cart', { headers }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error al obtener los ítems del carrito:', error);
+        return of([]); // Si ocurre un error, devolver un carrito vacío
+      })
+    );
   }
+
   // Agregar un ítem al carrito
   addToCart(itemId: number, quantity: number): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
@@ -32,7 +38,7 @@ export class CartService {
       .pipe(
         catchError((error: HttpErrorResponse) => {
           console.error('Error al agregar el ítem al carrito:', error);
-          return of(null); // Devuelve un Observable que no emite ningún valor
+          return of(null); // Devuelve un Observable vacío en caso de error
         })
       );
   }
@@ -45,7 +51,7 @@ export class CartService {
       .pipe(
         catchError((error: HttpErrorResponse) => {
           console.error('Error al actualizar el ítem del carrito:', error);
-          return of(null); // Devuelve un Observable que no emite ningún valor
+          return of(null); // Devuelve un Observable vacío en caso de error
         })
       );
   }
@@ -58,13 +64,18 @@ export class CartService {
       .pipe(
         catchError((error: HttpErrorResponse) => {
           console.error('Error al eliminar el ítem del carrito:', error);
-          return of(null); // Devuelve un Observable que no emite ningún valor
+          return of(null); // Devuelve un Observable vacío en caso de error
         })
       );
   }
 
+  // Clear carrito en el backend (opcional)
   clearCart(): Observable<any> {
     return this.http.post(`${this.apiUrl}/clear`, {}); // Llamada al backend
   }
-  
+
+  // Actualiza el carrito localmente cuando se modifique
+  updateCartState(cartItems: CartItem[]): void {
+    this.cartItemsSubject.next(cartItems); // Emite los nuevos datos del carrito
+  }
 }

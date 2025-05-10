@@ -43,4 +43,9 @@ export class UserService {
       })
     );
   }
+
+  updateProfile(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/user/profile`, data);
+  }
+  
 } 

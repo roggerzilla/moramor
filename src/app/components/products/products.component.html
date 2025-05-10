@@ -1,5 +1,5 @@
-<div class="container mx-auto mt-10 px-4">
-  <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">Lista de Productos</h2>
+<div class="container mx-auto mt-100 px-4">
+  <h2 class="text-3xl font-bold text-center text-gray-800 mb-8 !-mt-100">Lista de Productos</h2>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     <a *ngFor="let item of items"
@@ -13,14 +13,15 @@
 
       <!-- Contenido principal con opacidad cuando no hay stock -->
       <div [class.opacity-50]="item.quantity === 0">
-        <img [src]="item.image_url" alt="Imagen del producto" class="w-full h-48 object-cover" />
+        <!-- Mostrar la primera imagen de las imágenes del producto -->
+        <img [src]="item.images?.[0]?.url" alt="Imagen del producto" class="w-full h-48 object-cover" />
         <div class="p-6">
           <div class="flex justify-between items-center -mb-3">
             <h5 class="text-xl font-semibold text-gray-800">{{ item.name }}</h5>
             <p class="text-lg font-bold text-gray-800">${{ item.price }}</p>
           </div>
 
-          <p class="text-sm text-gray-500 -mt-1">Aquí va un texto placeholder</p>
+          <p class="text-sm text-gray-500 -mt-1">{{item.mililitros}} ml</p>
 
           <p class="text-gray-600 mb-4">{{ item.description }}</p>
 

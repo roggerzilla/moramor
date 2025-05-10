@@ -4,7 +4,6 @@ import { HttpClientModule, HttpClient, HttpHeaders, HttpErrorResponse } from '@a
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-inventory',
@@ -24,7 +23,7 @@ export class InventoryComponent implements OnInit {
     description: '',
     price: 0,
     quantity: 0,
-    image_url: '',
+    image_urls: [] as string[],
   };
 
   constructor(private cartService: CartService) {}
@@ -40,37 +39,32 @@ export class InventoryComponent implements OnInit {
     this.http.get<any[]>('http://localhost:8000/api/items', { headers }).subscribe(
       (items) => {
         this.items = items.map((item) => ({ ...item, editing: false }));
+        console.log(this.items)
       },
       (error: HttpErrorResponse) => {
         console.error('Error al cargar los items:', error);
         alert('No tienes permisos para ver esto o no has iniciado sesión.');
       }
     );
+    
   }
 
   getUser(): void {
-    const token = localStorage.getItem('token');
-    console.log('Token:', token); // Verifica el token en la consola
-
-    if (!token) {
+    if (!this.token) {
       alert('No hay token de autenticación. Por favor, inicia sesión.');
       return;
     }
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    console.log('Headers:', headers); // Verifica las cabeceras en la consola
-
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     this.http.get<any>('http://localhost:8000/api/user', { headers }).subscribe(
       (response) => {
-        console.log('Usuario obtenido:', response);
         this.userRole = response.role;
       },
       (error: HttpErrorResponse) => {
         console.error('Error al obtener el usuario:', error);
         if (error.status === 401) {
           alert('No autorizado. Por favor, inicia sesión nuevamente.');
-          localStorage.removeItem('token'); // Elimina el token inválido
-          // this.router.navigate(['/login']); // Redirige al login
+          localStorage.removeItem('token');
         } else {
           alert('Error al obtener el usuario. Por favor, inténtalo de nuevo.');
         }
@@ -80,16 +74,14 @@ export class InventoryComponent implements OnInit {
 
   // Agregar un item al inventario
   addItem(): void {
-    if (!this.item.image_url) {
-      alert('Por favor, sube una imagen antes de agregar el item.');
+    if (this.item.image_urls.length === 0) {
+      alert('Por favor, sube al menos una imagen antes de agregar el item.');
       return;
     }
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    console.log('items', this.item);
     this.http.post('http://localhost:8000/api/items', this.item, { headers }).subscribe(
-      (response) => {
-        console.log('Item agregado correctamente:', response);
+      () => {
         alert('¡Item agregado!');
         this.loadItems();
         this.resetForm();
@@ -104,10 +96,7 @@ export class InventoryComponent implements OnInit {
   // Subir una imagen
   uploadImage(event: any): void {
     const file = event.target.files[0];
-    if (!file) {
-      alert('Por favor, selecciona una imagen.');
-      return;
-    }
+    if (!file) return;
 
     const formData = new FormData();
     formData.append('image', file);
@@ -115,20 +104,17 @@ export class InventoryComponent implements OnInit {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     this.http.post<{ path: string }>('http://localhost:8000/api/upload-image', formData, { headers }).subscribe(
       (response) => {
-        if (response.path) {
-          // Construye la URL completa de la imagen
-          const baseUrl = 'http://localhost:8000/storage/';
-          const imageUrl = baseUrl + response.path.replace('public/', ''); // Elimina 'public/' de la ruta
-          this.item.image_url = imageUrl;
-          console.log('Imagen subida correctamente:', imageUrl);
+        const baseUrl = 'http://localhost:8000/storage/';
+        const imageUrl = baseUrl + response.path.replace('public/', '');
+        if (this.item.image_urls.length < 4) {
+          this.item.image_urls.push(imageUrl);
         } else {
-          console.error('La respuesta del backend no contiene la ruta de la imagen.');
-          alert('Error: La respuesta del backend no contiene la ruta de la imagen.');
+          alert('Solo puedes subir hasta 4 imágenes por producto.');
         }
       },
       (error: HttpErrorResponse) => {
-        console.error('Error subiendo la imagen:', error);
-        alert('Error al subir la imagen. Por favor, inténtalo de nuevo.');
+        console.error('Error al subir la imagen:', error);
+        alert('Error al subir la imagen.');
       }
     );
   }
@@ -140,7 +126,7 @@ export class InventoryComponent implements OnInit {
       description: '',
       price: 0,
       quantity: 0,
-      image_url: '',
+      image_urls: [],
     };
   }
 
@@ -153,8 +139,7 @@ export class InventoryComponent implements OnInit {
   updateItem(item: any): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     this.http.put(`http://localhost:8000/api/items/${item.id}`, item, { headers }).subscribe(
-      (response) => {
-        console.log('Item actualizado correctamente:', response);
+      () => {
         item.editing = false;
         this.loadItems();
       },
@@ -165,19 +150,17 @@ export class InventoryComponent implements OnInit {
     );
   }
 
-  // Agregar un item al carrito
- // En tu componente
-// En tu componente
-addToCart(item: any): void {
-  this.cartService.addToCart(item.id, 1).subscribe(
-    () => {
-      alert('Ítem agregado al carrito');
-      this.cartService.getCartItems(); // Recargar los ítems del carrito
-    },
-    (error: HttpErrorResponse) => {
-      console.error('Error al agregar el ítem al carrito:', error);
-      alert('No se pudo agregar el ítem al carrito');
-    }
-  );
-}
+  // Agregar al carrito
+  addToCart(item: any): void {
+    this.cartService.addToCart(item.id, 1).subscribe(
+      () => {
+        alert('Ítem agregado al carrito');
+        this.cartService.getCartItems();
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error al agregar el ítem al carrito:', error);
+        alert('No se pudo agregar el ítem al carrito');
+      }
+    );
+  }
 }
