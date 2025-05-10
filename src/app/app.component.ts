@@ -62,11 +62,21 @@ export class AppComponent implements OnInit, AfterViewInit {
     private orderService: OrderService,
     private authService: AuthService
   ) {}
-
   ngOnInit(): void {
     this.checkLoginStatus();
     this.getUser();
-    // No mostramos la verificación de edad aquí, se mostrará después de seleccionar país
+  
+    const savedCountry = localStorage.getItem('selectedCountry');
+    if (savedCountry) {
+      this.selectedCountry = savedCountry;
+      this.showCountrySelection = false;
+  
+      if (savedCountry === 'MX') {
+        this.checkAgeVerification(); // aún necesitas verificar edad
+      } else if (savedCountry === 'US') {
+        window.location.href = 'https://google.com'; // o la URL correcta
+      }
+    }
   }
 
   ngAfterViewInit() {
@@ -88,15 +98,13 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   selectCountry(country: string) {
     this.selectedCountry = country;
+    localStorage.setItem('selectedCountry', country); // 👈 Guardar en localStorage
     this.showCountrySelection = false;
-    
-    // Redirigir según el país seleccionado
+  
     if (country === 'MX') {
-      // Para México, mostramos la verificación de edad
       this.checkAgeVerification();
     } else if (country === 'US') {
-      // Para US redirigimos a sitio específico
-      window.location.href = 'https://google.com'; // Cambiar por la URL correcta
+      window.location.href = 'https://google.com';
     }
   }
 

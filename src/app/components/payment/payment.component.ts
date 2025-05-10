@@ -152,7 +152,7 @@ export class PaymentComponent implements OnInit {
     this.paymentService.createOrder(orderData).subscribe({
       next: () => {
         this.cartService.clearCart().subscribe();
-        this.router.navigate(['/order-confirmation'], {
+        this.router.navigate(['/home'], {
           state: { paymentIntentId }
         });
       },
