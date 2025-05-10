@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
+
 @Component({
   selector: 'app-payment',
   templateUrl: './payment.component.html',
@@ -141,35 +142,22 @@ export class PaymentComponent implements OnInit {
   }
 
   processPayment(paymentIntentId: string) {
-    const itemsToUpdate = this.cartItems.map(item => ({
-      item_id: item.item.id,
-      quantity: item.quantity
-    }));
-
-    this.paymentService.subtractStock(itemsToUpdate).subscribe({
+    const orderData = {
+      items: this.cartItems,
+      totalAmount: this.totalAmount / 100,
+      paymentIntentId: paymentIntentId,
+      status: 'completed'
+    };
+  
+    this.paymentService.createOrder(orderData).subscribe({
       next: () => {
-        const orderData = {
-          items: this.cartItems,
-          totalAmount: this.totalAmount / 100,
-          paymentIntentId: paymentIntentId,
-          status: 'completed'
-        };
-
-        this.paymentService.createOrder(orderData).subscribe({
-          next: () => {
-            this.cartService.clearCart().subscribe();
-            this.router.navigate(['/order-confirmation'], {
-              state: { paymentIntentId }
-            });
-          },
-          error: (err) => {
-            this.error = 'Error al crear el pedido';
-            console.error(err);
-          }
+        this.cartService.clearCart().subscribe();
+        this.router.navigate(['/order-confirmation'], {
+          state: { paymentIntentId }
         });
       },
-      error: (err: any) => {
-        this.error = 'Error al actualizar el stock';
+      error: (err) => {
+        this.error = 'Error al crear el pedido';
         console.error(err);
       }
     });
