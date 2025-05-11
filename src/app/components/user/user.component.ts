@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NotificationService } from '../../services/notification.service';
 
 interface Address {
   id?: number;
@@ -35,12 +36,14 @@ export class UserComponent implements OnInit {
     country: ''
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+    private notification: NotificationService,
+  ) {}
 
   ngOnInit(): void {
     this.token = localStorage.getItem('token');
     if (!this.token) {
-      alert('Debes iniciar sesión.');
+      this.notification.warning('Debes iniciar sesión.');
       return;
     }
 
@@ -91,14 +94,14 @@ export class UserComponent implements OnInit {
 
   addAddress(): void {
     if (!this.token) {
-      alert('Debes iniciar sesión.');
+      this.notification.warning('Debes iniciar sesión.');
       return;
     }
 
     const { country, postal_code, city, state, street } = this.newAddress;
 
     if (!country || !postal_code || !city || !state || !street) {
-      alert('Completa todos los campos antes de guardar.');
+      this.notification.info('Completa todos los campos antes de guardar.');
       return;
     }
 
@@ -112,7 +115,7 @@ export class UserComponent implements OnInit {
       headers
     }).subscribe({
       next: (response: any) => {
-        alert('Dirección agregada correctamente');
+        this.notification.success('Dirección agregada correctamente');
         this.addresses.push(response.address ?? this.newAddress);
         this.newAddress = {
           street: '',
@@ -124,7 +127,7 @@ export class UserComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al agregar dirección', err);
-        alert('Error al agregar dirección.');
+        this.notification.error('Error al agregar dirección.');
       }
     });
   }
@@ -141,11 +144,11 @@ export class UserComponent implements OnInit {
     this.http.put(`http://localhost:8000/api/user/address/${address.id}`, address, { headers }).subscribe({
       next: (res: any) => {
         address.editing = false;
-        alert('Dirección actualizada correctamente');
+        this.notification.success('Dirección actualizada correctamente');
       },
       error: (err) => {
         console.error('Error al actualizar dirección', err);
-        alert('Error al actualizar dirección.');
+        this.notification.error('Error al actualizar dirección.');
       }
     });
   }
@@ -163,11 +166,11 @@ export class UserComponent implements OnInit {
     this.http.delete(`http://localhost:8000/api/user/address/${address.id}`, { headers }).subscribe({
       next: () => {
         this.addresses = this.addresses.filter(a => a.id !== address.id);
-        alert('Dirección eliminada correctamente');
+        this.notification.success('Dirección eliminada correctamente');
       },
       error: (err) => {
         console.error('Error al eliminar dirección', err);
-        alert('Error al eliminar dirección.');
+        this.notification.error('Error al eliminar dirección.');
       }
     });
   }

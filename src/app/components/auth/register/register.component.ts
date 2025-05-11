@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-register',
@@ -15,7 +16,7 @@ export class RegisterComponent {
   user = { name: '', email: '', password: '', password_confirmation: '' };
   passwordMismatch = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private notification: NotificationService) {}
 
   onRegister() {
     // Verificar que las contraseñas coincidan
@@ -29,15 +30,15 @@ export class RegisterComponent {
     this.authService.register(this.user).subscribe({
       next: (response) => {
         console.log('Registro exitoso', response);
-        alert('Registro exitoso. Por favor, verifica tu correo electrónico.');
+        this.notification.success('Registro exitoso. Por favor, verifica tu correo electrónico.');
         window.location.replace('http://localhost:4200/home');
       },
       error: (err) => {
         console.error('Error en registro', err);
         if (err.error && err.error.message) {
-          alert(`Error: ${err.error.message}`);
+          this.notification.error(`Error: ${err.error.message}`);
         } else {
-          alert('Error en el registro. Por favor, inténtalo de nuevo.');
+          this.notification.error('Error en el registro. Por favor, inténtalo de nuevo.');
         }
       },
     });

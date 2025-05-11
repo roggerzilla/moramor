@@ -4,6 +4,7 @@ import { CartService } from '../../services/cart.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-products',
@@ -16,11 +17,13 @@ export class ProductsComponent implements OnInit {
   private http = inject(HttpClient);
   items: any[] = [];
   token = localStorage.getItem('token');
+  isLoading = true;  //carga
 
-  constructor(private cartService: CartService,private router: Router) {}
+  constructor(private cartService: CartService,private router: Router,private notification:NotificationService) {}
 
   ngOnInit(): void {
     this.loadItems();
+    this.isLoading = true; //carga
   }
 
   // Cargar productos desde la API
@@ -28,9 +31,11 @@ export class ProductsComponent implements OnInit {
     this.http.get<any[]>('http://localhost:8000/api/items').subscribe(
       (items) => {
         this.items = items;
+        this.isLoading = false; //carga
       },
       (error) => {
         console.error('Error al cargar los productos:', error);
+        this.isLoading = false; //carga
       }
     );
   }
@@ -40,41 +45,41 @@ export class ProductsComponent implements OnInit {
     const quantityNum = Number(quantity); // Convertimos a número
 
     if (!this.token) {
-      alert('Debes iniciar sesión para comprar.');
+      this.notification.warning('Debes iniciar sesión para comprar.');
       return;
     }
   
     if (!this.token) {
-      alert('Debes iniciar sesión para comprar.');
+      this.notification.warning('Debes iniciar sesión para comprar.');
       return;
     }
   
     if (isNaN(quantityNum) || quantityNum <= 0) {
-      alert('Ingresa una cantidad válida.');
+      this.notification.warning('Ingresa una cantidad válida.');
       return;
     }
   
     if (quantityNum > item.quantity) {
-      alert('No hay suficiente stock para la compra.');
+      this.notification.error('No hay suficiente stock para la compra.');
       return;
     }
   
     this.cartService.addToCart(item.id, quantityNum).subscribe(
       () => {
-        alert('Producto agregado al carrito');
+        this.notification.success('Producto agregado al carrito');
       },
       (error) => {
         console.error('Error al agregar al carrito:', error);
-        alert('Error al agregar el producto.');
+        this.notification.error('Error al agregar el producto.');
       }
     );
   }
 
   notifyWhenInStock(event: Event, item: any): void {
     event.stopPropagation();
-    console.log('Botón de notificación clickeado'); 
+
     if (!this.token) {
-      alert('Debes iniciar sesión para recibir notificaciones.');
+      this.notification.error('Debes iniciar sesión para recibir notificaciones.');
       return;
     }
   
@@ -91,13 +96,13 @@ export class ProductsComponent implements OnInit {
         withCredentials: true // Importante para Sanctum
       }
     ).subscribe({
-      next: () => alert('Notificación registrada correctamente'),
+      next: () => this.notification.success('Notificación registrada correctamente'),
       error: (err) => {
         console.error('Error detallado:', err);
         if (err.status === 401) {
-          alert('Sesión expirada. Vuelve a iniciar sesión.');
+          this.notification.error('Sesión expirada. Vuelve a iniciar sesión.');
         } else {
-          alert('Error al registrar notificación');
+          this.notification.error('Error al registrar notificación');
         }
       }
     });

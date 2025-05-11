@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-user-management',
@@ -19,7 +20,9 @@ export class UserManagementComponent implements OnInit {
   user = { name: '', email: '', password: '', password_confirmation: '', role: 'admin' };
   editingUser: any = null; // Usuario en edición
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,
+    private notification: NotificationService,
+  ) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -55,16 +58,16 @@ export class UserManagementComponent implements OnInit {
     this.authService.registerAdmin(this.user).subscribe({
       next: (response) => {
         console.log('Registro exitoso', response);
-        alert('Registro exitoso.');
+        this.notification.success('Registro exitoso.');
         this.loadUsers(); // Recargar la lista de usuarios
         this.resetForm(); // Reiniciar el formulario
       },
       error: (err) => {
         console.error('Error en registro', err);
         if (err.error && err.error.message) {
-          alert(`Error: ${err.error.message}`);
+          this.notification.error(`Error: ${err.error.message}`);
         } else {
-          alert('Error en el registro. Por favor, inténtalo de nuevo.');
+          this.notification.error('Error en el registro. Por favor, inténtalo de nuevo.');
         }
       },
     });
@@ -74,13 +77,13 @@ export class UserManagementComponent implements OnInit {
   deleteUser(id: number): void {
     this.http.delete(`http://localhost:8000/api/admins/${id}`).subscribe(
       () => {
-        alert('Usuario eliminado correctamente');
+        this.notification.error('Usuario eliminado correctamente');
         this.loadUsers(); // Recargar la lista de usuarios activos
         this.loadDeletedUsers(); // Recargar la lista de usuarios eliminados
       },
       (error) => {
         console.error('Error al eliminar el usuario:', error);
-        alert('Error al eliminar el usuario.');
+        this.notification.error('Error al eliminar el usuario.');
       }
     );
   }
@@ -89,13 +92,13 @@ export class UserManagementComponent implements OnInit {
   restoreUser(id: number): void {
     this.http.post(`http://localhost:8000/api/admins/${id}/restore`, {}).subscribe(
       () => {
-        alert('Usuario restaurado correctamente');
+        this.notification.success('Usuario restaurado correctamente');
         this.loadUsers(); // Recargar la lista de usuarios activos
         this.loadDeletedUsers(); // Recargar la lista de usuarios eliminados
       },
       (error) => {
         console.error('Error al restaurar el usuario:', error);
-        alert('Error al restaurar el usuario.');
+        this.notification.error('Error al restaurar el usuario.');
       }
     );
   }
@@ -110,13 +113,13 @@ export class UserManagementComponent implements OnInit {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
     this.http.put(`http://localhost:8000/api/admins/${this.editingUser.id}`, this.editingUser, { headers }).subscribe(
       () => {
-        alert('Usuario actualizado correctamente');
+        this.notification.success('Usuario actualizado correctamente');
         this.loadUsers(); // Recargar la lista de usuarios
         this.cancelEdit(); // Cancelar la edición
       },
       (error) => {
         console.error('Error al actualizar el usuario:', error);
-        alert('Error al actualizar el usuario.');
+        this.notification.error('Error al actualizar el usuario.');
       }
     );
   }

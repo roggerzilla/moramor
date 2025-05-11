@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { InventoryService } from '../../services/inventory.service';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart.service';
-
+import { NotificationService } from '../../services/notification.service';
 @Component({
   selector: 'app-producto-detalle',
   standalone: true,
@@ -23,7 +23,8 @@ export class ProductoDetalleComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private productoService: InventoryService
+    private productoService: InventoryService,
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -53,23 +54,23 @@ export class ProductoDetalleComponent implements OnInit {
     const quantityNum = Number(this.cantidad);
 
     if (!this.token) {
-      alert('Debes iniciar sesión para comprar.');
+      this.notification.warning('Debes iniciar sesión para comprar.');
       return;
     }
 
     if (isNaN(quantityNum) || quantityNum <= 0) {
-      alert('Ingresa una cantidad válida.');
+      this.notification.error('Ingresa una cantidad válida.');
       return;
     }
 
     if (quantityNum > this.product.quantity) {
-      alert('No hay suficiente stock para la compra.');
+      this.notification.warning('No hay suficiente stock para la compra.');
       return;
     }
 
     this.cartService.addToCart(this.product.id, quantityNum).subscribe({
       next: () => {
-        alert('Producto agregado al carrito');
+        this.notification.success('Producto agregado al carrito');
         
         // Obtén el carrito actualizado desde el servicio y actualiza el estado
         this.cartService.getCartItems().subscribe(cartItems => {
@@ -78,7 +79,7 @@ export class ProductoDetalleComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al agregar al carrito:', error);
-        alert('Error al agregar el producto.');
+        this.notification.error('Error al agregar el producto.');
       }
     });
     

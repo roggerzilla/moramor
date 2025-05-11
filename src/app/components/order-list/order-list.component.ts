@@ -3,7 +3,7 @@ import { OrderService } from '../../services/order.service';
 import { Order } from '../../models/order.model';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
+import { NotificationService } from '../../services/notification.service';
 @Component({
   selector: 'app-order-list',
   standalone: true,
@@ -23,7 +23,9 @@ export class OrderListComponent implements OnInit {
   searchItem: string = '';
   searchStatus: string = '';
 
-  constructor(private orderService: OrderService) {}
+  constructor(private orderService: OrderService,
+    private notification:NotificationService,
+  ) {}
 
   ngOnInit(): void {
     this.loadOrders();
@@ -87,11 +89,11 @@ export class OrderListComponent implements OnInit {
   updateOrderStatus(order: Order): void {
     this.orderService.updateOrderStatus(order.id, order.estatus).subscribe(
       (response) => {
-        alert('Estatus actualizado correctamente');
+        this.notification.success('Estatus actualizado correctamente');
       },
       (error) => {
         console.error('Error al actualizar el estatus:', error);
-        alert('Error al actualizar el estatus');
+        this.notification.error('Error al actualizar el estatus');
       }
     );
   }

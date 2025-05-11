@@ -4,6 +4,8 @@ import { HttpClientModule, HttpClient, HttpHeaders, HttpErrorResponse } from '@a
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
+import { NotificationService } from '../../services/notification.service';
+
 
 @Component({
   selector: 'app-inventory',
@@ -26,7 +28,7 @@ export class InventoryComponent implements OnInit {
     image_urls: [] as string[],
   };
 
-  constructor(private cartService: CartService) {}
+  constructor(private cartService: CartService,private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.loadItems();
@@ -43,7 +45,7 @@ export class InventoryComponent implements OnInit {
       },
       (error: HttpErrorResponse) => {
         console.error('Error al cargar los items:', error);
-        alert('No tienes permisos para ver esto o no has iniciado sesión.');
+        this.notification.error('No tienes permisos para ver esto o no has iniciado sesión.');
       }
     );
     
@@ -51,7 +53,7 @@ export class InventoryComponent implements OnInit {
 
   getUser(): void {
     if (!this.token) {
-      alert('No hay token de autenticación. Por favor, inicia sesión.');
+      this.notification.error('No hay token de autenticación. Por favor, inicia sesión.');
       return;
     }
 
@@ -63,10 +65,10 @@ export class InventoryComponent implements OnInit {
       (error: HttpErrorResponse) => {
         console.error('Error al obtener el usuario:', error);
         if (error.status === 401) {
-          alert('No autorizado. Por favor, inicia sesión nuevamente.');
+          this.notification.error('No autorizado. Por favor, inicia sesión nuevamente.');
           localStorage.removeItem('token');
         } else {
-          alert('Error al obtener el usuario. Por favor, inténtalo de nuevo.');
+          this.notification.error('Error al obtener el usuario. Por favor, inténtalo de nuevo.');
         }
       }
     );
@@ -75,20 +77,20 @@ export class InventoryComponent implements OnInit {
   // Agregar un item al inventario
   addItem(): void {
     if (this.item.image_urls.length === 0) {
-      alert('Por favor, sube al menos una imagen antes de agregar el item.');
+      this.notification.warning('Por favor, sube al menos una imagen antes de agregar el item.');
       return;
     }
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     this.http.post('http://localhost:8000/api/items', this.item, { headers }).subscribe(
       () => {
-        alert('¡Item agregado!');
+        this.notification.success('¡Item agregado!');
         this.loadItems();
         this.resetForm();
       },
       (error: HttpErrorResponse) => {
         console.error('Error al agregar el item:', error);
-        alert('Error al agregar el item. Por favor, inténtalo de nuevo.');
+        this.notification.warning('Error al agregar el item. Por favor, inténtalo de nuevo.');
       }
     );
   }
@@ -109,12 +111,12 @@ export class InventoryComponent implements OnInit {
         if (this.item.image_urls.length < 4) {
           this.item.image_urls.push(imageUrl);
         } else {
-          alert('Solo puedes subir hasta 4 imágenes por producto.');
+          this.notification.warning('Solo puedes subir hasta 4 imágenes por producto.');
         }
       },
       (error: HttpErrorResponse) => {
         console.error('Error al subir la imagen:', error);
-        alert('Error al subir la imagen.');
+        this.notification.error('Error al subir la imagen.');
       }
     );
   }
@@ -145,7 +147,7 @@ export class InventoryComponent implements OnInit {
       },
       (error: HttpErrorResponse) => {
         console.error('Error al actualizar el item:', error);
-        alert('Error al actualizar el item. Por favor, inténtalo de nuevo.');
+        this.notification.error('Error al actualizar el item. Por favor, inténtalo de nuevo.');
       }
     );
   }
@@ -154,12 +156,12 @@ export class InventoryComponent implements OnInit {
   addToCart(item: any): void {
     this.cartService.addToCart(item.id, 1).subscribe(
       () => {
-        alert('Ítem agregado al carrito');
+        this.notification.success('Ítem agregado al carrito');
         this.cartService.getCartItems();
       },
       (error: HttpErrorResponse) => {
         console.error('Error al agregar el ítem al carrito:', error);
-        alert('No se pudo agregar el ítem al carrito');
+        this.notification.error('No se pudo agregar el ítem al carrito');
       }
     );
   }
