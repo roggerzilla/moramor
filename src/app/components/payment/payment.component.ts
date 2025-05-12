@@ -97,17 +97,39 @@ export class PaymentComponent implements OnInit {
     return {
       theme: 'flat' as const,
       variables: {
-        colorPrimary: '#635bff',
-        colorText: '#333',
-        spacingUnit: '4px',
+        colorPrimary: '#0570de',
+        colorBackground: '#ffffff',
+        colorText: '#30313d',
+        colorDanger: '#df1b41',
+        fontFamily: 'Ideal Sans, system-ui, sans-serif',
+        spacingUnit: '5px',
+        borderRadius: '8px',
       },
       rules: {
         '.Input': {
           border: '1px solid #ddd',
           borderRadius: '6px',
           padding: '12px',
-        }
-      }
+          width: '20px',
+        },
+        // Personaliza el tamaño de los campos específicos
+        '.Input--cardNumber': {
+          fontSize: '12px', // Tamaño de la fuente más pequeño para el número de tarjeta
+          padding: '8px', // Menos espacio alrededor del texto
+        },
+        '.Input--expirationDate': {
+          fontSize: '12px', // Tamaño de la fuente más pequeño para la fecha de vencimiento
+          padding: '8px', // Menos espacio alrededor del texto
+        },
+        '.Input--cvc': {
+          fontSize: '12px', // Tamaño de la fuente más pequeño para CVC
+          padding: '8px', // Menos espacio alrededor del texto
+        },
+        '.Input--billingCountry': {
+          fontSize: '12px', // Tamaño de la fuente más pequeño para el campo de país
+          padding: '8px', // Menos espacio alrededor del texto
+        },
+      },
     };
   }
 

@@ -53,7 +53,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let order of filteredOrders">
+      <tr *ngFor="let order of filteredOrders | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
         <td [ngClass]="getStatusClass(order.estatus)">{{ order.id }}</td>
         <td [ngClass]="getStatusClass(order.estatus)">{{ order.customer_name }}</td>
         <td [ngClass]="getStatusClass(order.estatus)">{{ order.total | currency }}</td>
@@ -81,5 +81,9 @@
       </tr>
       
     </tbody>
+
   </table>
+  <div class="mt-4 text-center">
+    <pagination-controls (pageChange)="p = $event"></pagination-controls>
+  </div>
 </div>
