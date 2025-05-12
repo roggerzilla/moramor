@@ -48,6 +48,7 @@
         <th>Fecha</th>
         <th>Ítems</th>
         <th>Estatus</th> <!-- Nueva columna para el estatus -->
+        <th>Dirección</th>
         <th>Acciones</th> <!-- Nueva columna para acciones -->
       </tr>
     </thead>
@@ -70,6 +71,9 @@
             <option value="enviado">Enviado</option>
             <option value="cancelado">Cancelado</option>
           </select>
+        </td>
+        <td [ngClass]="getStatusClass(order.estatus)">
+          <p>{{ order.address?.street }}, {{ order.address?.city }}, {{ order.address?.state }} - {{ order.address?.postalCode }}, {{ order.address?.country }}</p>
         </td>
         <td>
           <button (click)="updateOrderStatus(order)" class="btn btn-primary">Guardar</button>

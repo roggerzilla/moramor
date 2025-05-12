@@ -1,16 +1,27 @@
-// models/order.model.ts
+// order.model.ts
+
+export interface Address {
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
 
 export interface Order {
   id: number;
   user_id: number;
   customer_name: string;
   total: number;
-  estatus: string; // Agregar el campo estatus
+  estatus: string;
   created_at: string;
-  items: {
-    id: number;
-    name: string;
-    quantity: number;
-    price: number;
-  }[];
+  items: Item[];
+  address: Address | null; // Agregar la propiedad address aquí
+}
+
+export interface Item {
+  id: number;
+  name: string;
+  quantity: number;
+  price: number;
 }
