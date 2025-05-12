@@ -34,5 +34,7 @@ login(credentials: { email: string, password: string }): Observable<any> {
     return this.http.get(`${this.apiUrl}/email/verify/${id}/${hash}`);
   }
 
-  
+  getCurrentUser() {
+    return this.http.get<{ id: number; name: string }>(`${this.apiUrl}/user`);
+  }
 }

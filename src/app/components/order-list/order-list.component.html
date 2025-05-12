@@ -16,8 +16,8 @@
     <!-- Filtro por Fecha -->
     <div>
       <label class="form-label">Rango de Fechas:</label>
-      <div class="flex space-x-2">
-        <input type="date" class="form-control" [(ngModel)]="startDate" (change)="applyFilters()">
+      <div class="flex space-x-10">
+        <input type="date" class="form-control !me-2" [(ngModel)]="startDate" (change)="applyFilters()">
         <input type="date" class="form-control" [(ngModel)]="endDate" (change)="applyFilters()">
       </div>
     </div>

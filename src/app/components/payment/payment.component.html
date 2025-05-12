@@ -5,6 +5,14 @@
 
     <div id="payment-element" class="mb-4">
       </div>
+      <div class="mb-4">
+        <label for="shipping-address" class="block font-semibold mb-2">Selecciona una dirección de envío</label>
+        <select id="shipping-address" class="w-full p-2 border rounded" [(ngModel)]="selectedAddressId">
+          <option *ngFor="let address of userAddresses" [value]="address.id">
+            {{ address.street }}, {{ address.city }}, {{ address.state }}, {{ address.zip_code }}
+          </option>
+        </select>
+      </div>
 
     <button class="pay-button w-full p-3 bg-blue-500 text-white rounded-lg mt-4" (click)="handlePayment()">Pagar ahora</button>
 

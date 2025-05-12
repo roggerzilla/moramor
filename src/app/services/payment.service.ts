@@ -13,26 +13,6 @@ interface User {
   role?: string;
 }
 
-interface CartItem {
-  item: {
-    id: number;
-    price: number;
-    name: string;
-    [key: string]: any; // Propiedades adicionales
-  };
-  quantity: number;
-}
-
-interface OrderPayload {
-  user_id: number;
-  customer_name: string;
-  items: Array<{
-    id: number;
-    quantity: number;
-  }>;
-  payment_intent_id: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -41,10 +21,10 @@ export class PaymentService {
   private currentUser = new BehaviorSubject<User | null>(null);
 
   constructor(private http: HttpClient) {
-    this.loadCurrentUser(); // Carga el usuario al inicializar
+    this.loadCurrentUser();
   }
 
-  /** 
+  /**
    * Carga el usuario actual desde el backend
    */
   private loadCurrentUser(): void {
@@ -68,30 +48,23 @@ export class PaymentService {
   }
 
   /**
-   * Crea una nueva orden con validación de usuario
+   * Crea una nueva orden con los datos completos que espera el backend
    */
-  createOrder(orderData: { items: CartItem[], paymentIntentId: string }): Observable<any> {
-    const user = this.currentUser.value;
-    if (!user) {
-      throw new Error('Usuario no autenticado');
-    }
-
-    const payload: OrderPayload = {
-      user_id: user.id,
-      customer_name: user.name || `${user.first_name} ${user.last_name}`.trim(),
-      items: orderData.items.map(item => ({
-        id: item.item.id,
-        quantity: item.quantity
-      })),
-      payment_intent_id: orderData.paymentIntentId
-    };
-
-    return this.http.post(`${this.apiUrl}/ordersStore`, payload, {
+  createOrder(orderData: {
+    items: Array<any>,
+    total: number,
+    paymentIntentId: string,
+    status: string,
+    address_id: number
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/ordersStore`, orderData, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
 
-  // ==================== Métodos adicionales ====================
+  /**
+   * Crea un intent de pago para Stripe
+   */
   createPaymentIntent(amount: number): Observable<{ clientSecret: string }> {
     return this.http.post<{ clientSecret: string }>(
       `${this.apiUrl}/create-payment-intent`, 
@@ -99,6 +72,9 @@ export class PaymentService {
     );
   }
 
+  /**
+   * Resta el stock de los productos comprados
+   */
   subtractStock(items: Array<{ item_id: number, quantity: number }>): Observable<any> {
     return this.http.post(`${this.apiUrl}/subtract-stock`, { items });
   }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { Address } from '../models/address.model';
 
 @Injectable({
   providedIn: 'root',
@@ -47,5 +48,10 @@ export class UserService {
   updateProfile(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/user/profile`, data);
   }
-  
+  getUserAddresses(): Observable<Address[]> {
+    return this.http.get<Address[]>(`${this.apiUrl}/user/addresses`);
+  }
+  getCurrentUser() {
+    return this.http.get<{ id: number; name: string }>(`${this.apiUrl}/user`);
+  }
 } 

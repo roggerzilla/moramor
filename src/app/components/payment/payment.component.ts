@@ -6,6 +6,8 @@ import { CartItem } from '../../models/cart-item.model';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { UserService } from '../../services/user.service';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
@@ -13,7 +15,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule,FormsModule]
 })
 export class PaymentComponent implements OnInit {
   stripe: Stripe | null = null;
@@ -24,10 +26,14 @@ export class PaymentComponent implements OnInit {
   cartItems: CartItem[] = [];
   totalAmount: number = 0;
 
+  userAddresses: any[] = [];
+  selectedAddressId: number | null = null;
+
   constructor(
     private paymentService: PaymentService,
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    private userService: UserService,
   ) {}
 
   async ngOnInit() {
@@ -43,6 +49,12 @@ export class PaymentComponent implements OnInit {
       error: (err: any) => {
         this.error = 'Error al obtener los ítems del carrito';
         this.isLoading = false;
+      }
+    });
+    this.userService.getUserAddresses().subscribe(addresses => {
+      this.userAddresses = addresses;
+      if (addresses.length > 0) {
+        this.selectedAddressId = addresses[0].id;  // Solo almacenamos el 'id', no el objeto completo
       }
     });
   }
@@ -142,26 +154,58 @@ export class PaymentComponent implements OnInit {
   }
 
   processPayment(paymentIntentId: string) {
-    const orderData = {
-      items: this.cartItems,
-      totalAmount: this.totalAmount / 100,
-      paymentIntentId: paymentIntentId,
-      status: 'completed'
-    };
+    const itemsToUpdate = this.cartItems.map(item => ({
+      item_id: item.item.id,
+      quantity: item.quantity
+    }));
   
-    this.paymentService.createOrder(orderData).subscribe({
+    this.paymentService.subtractStock(itemsToUpdate).subscribe({
       next: () => {
-        this.cartService.clearCart().subscribe();
-        this.router.navigate(['/home'], {
-          state: { paymentIntentId }
+        // Obtener el usuario autenticado
+        this.userService.getCurrentUser().subscribe({
+          next: (user) => {
+            const orderData = {
+              user_id: user.id,
+              customer_name: user.name,
+              items: this.cartItems.map(item => ({
+                id: item.item.id,
+                quantity: item.quantity
+              })),
+              total: this.totalAmount / 100,
+              paymentIntentId: paymentIntentId,
+              status: 'completed',
+              address_id: Number(this.selectedAddressId)
+            };
+  
+            console.log('Order data being sent:', orderData);
+  
+            this.paymentService.createOrder(orderData).subscribe({
+              next: () => {
+                this.cartService.clearCart().subscribe();
+                this.router.navigate(['/order-confirmation'], {
+                  state: { paymentIntentId }
+                });
+              },
+              error: (err) => {
+                this.error = 'Error al crear el pedido';
+                console.error(err);
+              }
+            });
+          },
+          error: (err) => {
+            this.error = 'Error al obtener el usuario';
+            console.error(err);
+          }
         });
       },
-      error: (err) => {
-        this.error = 'Error al crear el pedido';
+      error: (err: any) => {
+        this.error = 'Error al actualizar el stock';
         console.error(err);
       }
     });
   }
+  
+  
 
   private handleError(message: string, error: any) {
     this.error = message;
