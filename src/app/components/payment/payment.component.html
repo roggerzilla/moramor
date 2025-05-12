@@ -1,58 +1,67 @@
-<div class="grid grid-cols-2 gap-4 p-4">
-  <!-- Columna izquierda - Método de pago (SOLO AQUÍ HICE CAMBIOS) -->
-  <div class="flex flex-col items-cente">
-    <h3 class="text-xl font-bold mb-4 mx-auto">Método de pago</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full p-6">
+  <!-- Columna izquierda - Método de pago -->
+  <div class="flex flex-col items-center">
+    <h3 class="text-xl font-bold mb-4">Método de pago</h3>
 
-    <!-- Contenedor añadido para controlar el ancho del Payment Element -->
-    <div class="w-[500px] mx-auto "> <!-- Nuevo: Ancho fijo para Stripe -->
+    <!-- Spinner -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Payment element (centrado y con ancho limitado) -->
+    <div class="w-full max-w-md">
       <div id="payment-element" class="mb-4"></div>
-    </div>
 
-    <!-- Resto permanece IGUAL que tu versión original -->
-    <div class="mb-4">
-      <label for="shipping-address" class="block font-semibold mb-2">Selecciona una dirección de envío</label>
-      <select id="shipping-address" class="w-full p-2 border rounded" [(ngModel)]="selectedAddressId">
-        <option *ngFor="let address of userAddresses" [value]="address.id">
-          {{ address.street }}, {{ address.city }}, {{ address.state }}, {{ address.zip_code }}
-        </option>
-      </select>
-    </div>
+      <!-- Selector de dirección -->
+      <div class="mb-4 text-center">
+        <label for="shipping-address" class="block font-semibold mb-2 text-left">Selecciona una dirección de envío</label>
+        <select id="shipping-address" class="w-full p-2 border rounded text-sm" [(ngModel)]="selectedAddressId">
+          <option *ngFor="let address of userAddresses" [value]="address.id">
+            {{ address.street }}, {{ address.city }}, {{ address.state }}, {{ address.zip_code }}
+          </option>
+        </select>
+      </div>
 
-    <button class="pay-button w-full p-3 bg-blue-500 text-white rounded-lg mt-4" (click)="handlePayment()">
-      Pagar ahora
-    </button>
+      <!-- Botón de pagar (más pequeño y centrado) -->
+      <div class="flex justify-center">
+        <button class="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition" (click)="handlePayment()">
+          Pagar ahora
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- Columna derecha - Resumen (EXACTAMENTE igual a tu código) -->
-  <div class="flex flex-col">
+  <!-- Columna derecha - Resumen del pedido -->
+  <div class="flex flex-col mr-20">
     <h3 class="text-xl font-bold mb-4">Resumen del pedido</h3>
 
-    <div class="overflow-y-auto flex-grow mb-4">
-      <div *ngFor="let item of cartItems" class="summary-item flex justify-between items-center mb-4 pb-4 border-b">
+    <div class="overflow-y-auto flex-grow mb-4 max-h-[400px]">
+      <div *ngFor="let item of cartItems" class="flex justify-between items-center mb-4 pb-4 border-b">
         <div class="flex items-center">
-          <img [src]="item.item.image_url" alt="{{ item.item.name }}" class="product-image w-16 h-16 mr-4" />
-          <div class="flex flex-col">
-            <span class="font-semibold">{{ item.item.name }}</span>
-            <span class="text-sm text-gray-600">Cantidad: {{ item.quantity }}</span>
+          <img [src]="item.item.image_url" alt="{{ item.item.name }}" class="w-16 h-16 mr-4 object-cover" />
+          <div>
+            <p class="font-semibold">{{ item.item.name }}</p>
+            <p class="text-sm text-gray-600">Cantidad: {{ item.quantity }}</p>
           </div>
         </div>
-        <span class="font-semibold">{{ item.item.price * item.quantity | currency:'MXN' }}</span>
+        <p class="font-semibold">{{ item.item.price * item.quantity | currency:'MXN' }}</p>
       </div>
     </div>
 
-    <div class="summary-details space-y-2 mb-4">
+    <div class="space-y-2 mb-4">
       <div class="flex justify-between">
         <span>Subtotal</span>
-        <span>{{ totalAmount/100 | currency:'MXN' }}</span>
+        <span>{{ totalAmount / 100 | currency:'MXN' }}</span>
       </div>
       <div class="flex justify-between">
         <span>Envío</span>
+        <span>Incluido</span>
       </div>
     </div>
 
-    <div class="summary-total mt-4 pt-4 border-t flex justify-between font-bold text-lg">
+    <div class="pt-4 border-t flex justify-between font-bold text-lg">
       <span>Total</span>
-      <span>{{ totalAmount /100 | currency:'MXN' }}</span>
+      <span>{{ totalAmount / 100 | currency:'MXN' }}</span>
     </div>
   </div>
 </div>
