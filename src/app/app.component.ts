@@ -77,6 +77,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         window.location.href = 'https://google.com'; // o la URL correcta
       }
     }
+    this.loadCartItems()
   }
 
   ngAfterViewInit() {

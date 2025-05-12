@@ -136,6 +136,7 @@ export class CarritoComponent {
   }
 
   goToPayment(event: Event) {
+    this.closeCart();
     event.stopPropagation();
     this.router.navigate(['/pay']);
   }
