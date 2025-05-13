@@ -14,6 +14,8 @@ import {UserComponent} from '../../src/app/components/user/user.component';
 import {MailErrorComponent} from '../../src/app/components/mail-error/mail-error.component';
 import {AboutUsComponent} from '../../src/app/components/about-us/about-us.component';
 import {ProductoDetalleComponent} from '../../src/app/components/producto-detalle/producto-detalle.component';
+import {UnderComponent} from '../../src/app/components/under/under.component';
+
 
 import { RoleGuard } from './guards/role.guard';
 
@@ -23,6 +25,7 @@ export const routes: Routes = [
     { path: 'home', component: HomeComponent },  
     { path: 'about_us', component: AboutUsComponent },    
     { path: 'producto-detalle/:id', component: ProductoDetalleComponent },
+    { path: 'under', component: UnderComponent },
     //Super usuarios
     { path: 'users', component: UserManagementComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser'] } },
     

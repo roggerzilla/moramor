@@ -1,41 +1,45 @@
 <div class="container mx-auto mt-100 px-4">
   <div *ngIf="isLoading" class="flex justify-center items-center h-64 !-mt-100">
-    <div class="spinner-border " role="status">
-      
-    </div>
+    <div class="spinner-border" role="status"></div>
   </div>
-  
-  <h2  *ngIf="! isLoading" class="text-3xl font-bold text-center text-gray-800 mb-8 !-mt-100">Lista de Productos</h2>
+  <h2 *ngIf="!isLoading" class="abhaya-libre-medium !text-[#28388E] !text-[72px] text-3xl font-bold text-center text-gray-800 mb-8 !-mt-100">
+    Nuestros Productos
+  </h2>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <a *ngFor="let item of items"
-       [routerLink]="item.quantity > 0 ? ['/producto-detalle', item.id] : null"
-       (click)="item.quantity === 0 && $event.preventDefault()"
-       class="bg-white rounded-lg shadow-md overflow-hidden block transition-transform duration-200 no-underline"
-       [ngClass]="{
-         'hover:scale-105 cursor-pointer': item.quantity > 0,
-         'cursor-default': item.quantity === 0
-       }">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-40">
+    <div *ngFor="let item of items | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage }"
+         class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-200 group"
+         [ngClass]="{ 'opacity-50': item.quantity === 0 }">
 
-      <!-- Contenido principal con opacidad cuando no hay stock -->
-      <div [class.opacity-50]="item.quantity === 0">
-        <!-- Mostrar la primera imagen de las imágenes del producto -->
-        <img [src]="item.images?.[0]?.url" alt="Imagen del producto" class="w-full h-48 object-cover" />
-        <div class="p-6">
-          <div class="flex justify-between items-center -mb-3">
-            <h5 class="text-xl font-semibold text-gray-800">{{ item.name }}</h5>
-            <p class="text-lg font-bold text-gray-800">${{ item.price }}</p>
-          </div>
+      <!-- Imagen clickeable con efecto hover -->
+      <img
+        *ngIf="item.quantity > 0"
+        [src]="item.images?.[0]?.url"
+        alt="Imagen del producto"
+        class="w-full h-48 object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+        (click)="goToProductDetail(item.id)"
+      />
 
-          <p class="text-sm text-gray-500 -mt-1">{{item.mililitros}} ml</p>
+      <!-- Imagen estática si no hay stock -->
+      <img
+        *ngIf="item.quantity === 0"
+        [src]="item.images?.[0]?.url"
+        alt="Imagen del producto"
+        class="w-full h-48 object-cover"
+      />
 
-          <p class="text-gray-600 mb-4">{{ item.description }}</p>
-
-          <p *ngIf="item.quantity === 0" class="text-red-500 mt-2">Sin stock</p>
+      <!-- Info del producto -->
+      <div class="p-6">
+        <div class="flex justify-between items-center -mb-3">
+          <h5 class="abhaya-libre-medium !text-[#28388E] !text-[24px] group-hover:!font-bold transition-all duration-300">{{ item.name }}</h5>
+          <p class="abhaya-libre-medium !text-[#28388E] !text-[24px] group-hover:!font-bold transition-all duration-300">${{ item.price }}</p>
         </div>
+        <p class="abhaya-libre-medium !text-[#28388E] !text-[16px] group-hover:!font-bold transition-all duration-300">{{ item.mililitros }} ml</p>
+        <p class="text-gray-600 mb-4">{{ item.description }}</p>
+        <p *ngIf="item.quantity === 0" class="text-red-500 mt-2">Sin stock</p>
       </div>
 
-      <!-- Botón de notificación (sin opacidad) -->
+      <!-- Botón de notificación -->
       <div class="p-6 pt-0" *ngIf="item.quantity === 0">
         <button
           *ngIf="token"
@@ -44,11 +48,21 @@
         >
           Notificarme cuando haya stock
         </button>
-
         <p *ngIf="!token" class="text-sm text-gray-500 mt-2">
           Inicia sesión para recibir notificación cuando haya stock.
         </p>
       </div>
-    </a>
+    </div>
+  </div>
+
+  <!-- Controles de paginación -->
+  <div class="mt-6 flex justify-center">
+    <pagination-controls
+      (pageChange)="currentPage = $event"
+      previousLabel="«"
+      nextLabel="»"
+      [maxSize]="5"
+      class="text-center"
+    ></pagination-controls>
   </div>
 </div>

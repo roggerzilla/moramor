@@ -5,13 +5,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-user-management',
   standalone: true,
-  imports: [FormsModule, CommonModule, RouterModule],
+  imports: [FormsModule, CommonModule, RouterModule, NgxPaginationModule],
   templateUrl: './user-management.component.html',
-  styleUrl: './user-management.component.css',
+  styleUrls: ['./user-management.component.css'],
 })
 export class UserManagementComponent implements OnInit {
   private http = inject(HttpClient);
@@ -20,9 +21,11 @@ export class UserManagementComponent implements OnInit {
   user = { name: '', email: '', password: '', password_confirmation: '', role: 'admin' };
   editingUser: any = null; // Usuario en edición
 
-  constructor(private authService: AuthService,
-    private notification: NotificationService,
-  ) {}
+  // Paginación
+  p: number = 1; // Página actual
+  itemsPerPage: number = 10; // Elementos por página
+
+  constructor(private authService: AuthService, private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -132,5 +135,11 @@ export class UserManagementComponent implements OnInit {
   // Reiniciar el formulario
   resetForm(): void {
     this.user = { name: '', email: '', password: '', password_confirmation: '', role: 'admin' };
+  }
+
+  // Getter para obtener los usuarios paginados
+  get paginatedUsers(): any[] {
+    const startIndex = (this.p - 1) * this.itemsPerPage;
+    return this.users.slice(startIndex, startIndex + this.itemsPerPage);
   }
 }

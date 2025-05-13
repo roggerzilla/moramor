@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GeolocationService } from './services/geolocation.service';
@@ -11,11 +11,13 @@ import { AuthService } from './services/auth.service';
 import { OrderService } from './services/order.service';
 import { trigger, transition, style, animate, state } from '@angular/animations';
 import { CarritoComponent } from './components/carrito/carrito.component';
+import { filter } from 'rxjs/operators';
+import { UnderComponent } from './components/under/under.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FormsModule, HttpClientModule, CarritoComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FormsModule, HttpClientModule, CarritoComponent,UnderComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   animations: [
@@ -41,17 +43,18 @@ import { CarritoComponent } from './components/carrito/carrito.component';
 })
 export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('backgroundVideo') backgroundVideo!: ElementRef<HTMLVideoElement>;
-  
+
   showCountrySelection: boolean = true;
   showAgeVerificationModal: boolean = false;
   userRole: string | null = null;
   isLoggedIn: boolean = false;
   selectedCountry: string | null = null;
-  
+
   // Variables para el carrito
   isCartOpen = false;
   cartItems: CartItem[] = [];
   cartItemCount = 0;
+  isUnderRoute: boolean = false;
 
   constructor(
     private geolocationService: GeolocationService,
@@ -62,22 +65,36 @@ export class AppComponent implements OnInit, AfterViewInit {
     private orderService: OrderService,
     private authService: AuthService
   ) {}
+
   ngOnInit(): void {
     this.checkLoginStatus();
     this.getUser();
-  
+
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.isUnderRoute = event.url === '/under'; // Verifica si la ruta actual es '/under'
+        if (!this.isUnderRoute) {
+          this.checkCountryAndAge(); // Realiza la verificación solo si no estamos en la ruta 'under'
+        }
+      });
+
     const savedCountry = localStorage.getItem('selectedCountry');
     if (savedCountry) {
       this.selectedCountry = savedCountry;
       this.showCountrySelection = false;
-  
-      if (savedCountry === 'MX') {
-        this.checkAgeVerification(); // aún necesitas verificar edad
-      } else if (savedCountry === 'US') {
+      if (this.selectedCountry === 'US') {
         window.location.href = 'https://google.com'; // o la URL correcta
       }
     }
-    this.loadCartItems()
+
+    if (this.isLoggedIn) {
+      this.loadCartItems();
+      this.cartService.cartItems$.subscribe(items => {
+        this.cartItems = items;
+        this.cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+      });
+    }
   }
 
   ngAfterViewInit() {
@@ -101,7 +118,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.selectedCountry = country;
     localStorage.setItem('selectedCountry', country); // 👈 Guardar en localStorage
     this.showCountrySelection = false;
-  
+
     if (country === 'MX') {
       this.checkAgeVerification();
     } else if (country === 'US') {
@@ -122,8 +139,9 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.showAgeVerificationModal = false;
       // Después de confirmar edad, obtenemos la ubicación
       this.getLocation();
+      this.router.navigate(['/home']);
     } else {
-      window.location.href = 'https://www.google.com';
+      window.location.href = '/under';
     }
   }
 
@@ -175,7 +193,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   toggleCart() {
     this.isCartOpen = !this.isCartOpen;
     console.log(this.isCartOpen);
-  
+
     if (this.isCartOpen && this.cartItems.length === 0) {
       this.loadCartItems();
     }
@@ -196,11 +214,24 @@ export class AppComponent implements OnInit, AfterViewInit {
   onCartItemsChange(items: CartItem[]) {
     this.cartItems = items;
     this.cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+    this.loadCartItems();
   }
 
   onCheckout() {
     console.log('Compra realizada', this.cartItems);
     this.isCartOpen = false;
     // Aquí puedes añadir lógica adicional para el checkout
+  }
+
+  checkCountryAndAge(): void {
+    const savedCountry = localStorage.getItem('selectedCountry');
+    if (!savedCountry) {
+      this.showCountrySelection = true;
+      return;
+    }
+
+    if (savedCountry === 'MX') {
+      this.checkAgeVerification();
+    }
   }
 }

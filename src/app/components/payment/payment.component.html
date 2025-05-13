@@ -1,7 +1,7 @@
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full p-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full p-6 !ml-20">
   <!-- Columna izquierda - Método de pago -->
   <div class="flex flex-col items-center">
-    <h3 class="text-xl font-bold mb-4">Método de pago</h3>
+    <h3 class="abhaya-libre-medium text-xl font-bold mb-4">Método de pago</h3>
 
     <!-- Spinner -->
     <div *ngIf="isLoading" class="flex justify-center items-center h-64">
@@ -11,6 +11,14 @@
     <!-- Payment element (centrado y con ancho limitado) -->
     <div class="w-full max-w-md">
       <div id="payment-element" class="mb-4"></div>
+      <div class="grid-cols-2 items-center">
+        <button class="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition" (click)="handlePayment()">
+          Pagar ahora
+        </button>
+        <button class="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition" (click)="handlePayment()">
+          Pagar ahora
+        </button>
+      </div>
 
       <!-- Selector de dirección -->
       <div class="mb-4 text-center">
@@ -32,16 +40,16 @@
   </div>
 
   <!-- Columna derecha - Resumen del pedido -->
-  <div class="flex flex-col mr-20">
-    <h3 class="text-xl font-bold mb-4">Resumen del pedido</h3>
+  <div class="flex flex-col !mr-100">
+    <h3 class="abhaya-libre-medium text-xl font-bold mb-4">Resumen del pedido</h3>
 
     <div class="overflow-y-auto flex-grow mb-4 max-h-[400px]">
       <div *ngFor="let item of cartItems" class="flex justify-between items-center mb-4 pb-4 border-b">
         <div class="flex items-center">
           <img [src]="item.item.image_url" alt="{{ item.item.name }}" class="w-16 h-16 mr-4 object-cover" />
           <div>
-            <p class="font-semibold">{{ item.item.name }}</p>
-            <p class="text-sm text-gray-600">Cantidad: {{ item.quantity }}</p>
+            <p class="abhaya-libre-medium text-[22px] font-semibold">{{ item.item.name }}</p>
+            <p class="abhaya-libre-medium text-[18px] text-sm text-gray-600">Cantidad: {{ item.quantity }}</p>
           </div>
         </div>
         <p class="font-semibold">{{ item.item.price * item.quantity | currency:'MXN' }}</p>
@@ -50,18 +58,18 @@
 
     <div class="space-y-2 mb-4">
       <div class="flex justify-between">
-        <span>Subtotal</span>
-        <span>{{ totalAmount / 100 | currency:'MXN' }}</span>
+        <span class="abhaya-libre-medium text-[18px]">Subtotal</span>
+        <span class="abhaya-libre-medium text-[18px]">{{ totalAmount / 100 | currency:'MXN' }}</span>
       </div>
       <div class="flex justify-between">
-        <span>Envío</span>
-        <span>Incluido</span>
+        <span class="abhaya-libre-medium text-[18px]">Envío</span>
+        <span class="abhaya-libre-medium text-[18px]">Incluido</span>
       </div>
     </div>
 
     <div class="pt-4 border-t flex justify-between font-bold text-lg">
-      <span>Total</span>
-      <span>{{ totalAmount / 100 | currency:'MXN' }}</span>
+      <span class="abhaya-libre-medium text-[18px]">Total</span>
+      <span class="abhaya-libre-medium text-[18px]">{{ totalAmount / 100 | currency:'MXN' }}</span>
     </div>
   </div>
 </div>

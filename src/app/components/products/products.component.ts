@@ -5,11 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
+import { NgxPaginationModule } from 'ngx-pagination';
+
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [FormsModule, CommonModule,RouterModule,],
+  imports: [FormsModule, CommonModule,RouterModule,NgxPaginationModule],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css',
 })
@@ -18,6 +20,8 @@ export class ProductsComponent implements OnInit {
   items: any[] = [];
   token = localStorage.getItem('token');
   isLoading = true;  //carga
+  currentPage = 1;
+  itemsPerPage: number = 9;
 
   constructor(private cartService: CartService,private router: Router,private notification:NotificationService) {}
 
