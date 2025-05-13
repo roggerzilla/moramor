@@ -5,11 +5,11 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { NotificationService } from '../../services/notification.service';
-
+import { NgxPaginationModule } from 'ngx-pagination'; // Importa el módulo de paginación
 
 @Component({
   selector: 'app-inventory',
-  imports: [FormsModule, HttpClientModule, CommonModule, RouterModule],
+  imports: [FormsModule, HttpClientModule, CommonModule, RouterModule, NgxPaginationModule], // Asegúrate de tener NgxPaginationModule importado
   standalone: true,
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css',
@@ -19,6 +19,8 @@ export class InventoryComponent implements OnInit {
   items: any[] = [];
   userRole: string | null = null;
   token = localStorage.getItem('token');
+  pageSize = 9; // Número de items por página (3x3)
+  currentPage = 1;
 
   item = {
     name: '',
@@ -28,7 +30,7 @@ export class InventoryComponent implements OnInit {
     image_urls: [] as string[],
   };
 
-  constructor(private cartService: CartService,private notification: NotificationService) {}
+  constructor(private cartService: CartService, private notification: NotificationService) {}
 
   ngOnInit(): void {
     this.loadItems();
@@ -41,14 +43,17 @@ export class InventoryComponent implements OnInit {
     this.http.get<any[]>('http://localhost:8000/api/items', { headers }).subscribe(
       (items) => {
         this.items = items.map((item) => ({ ...item, editing: false }));
-        console.log(this.items)
+        console.log(this.items);
       },
       (error: HttpErrorResponse) => {
         console.error('Error al cargar los items:', error);
         this.notification.error('No tienes permisos para ver esto o no has iniciado sesión.');
       }
     );
-    
+  }
+
+  onPageChange(pageNumber: number): void {
+    this.currentPage = pageNumber;
   }
 
   getUser(): void {

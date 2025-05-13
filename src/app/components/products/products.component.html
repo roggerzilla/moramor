@@ -35,8 +35,8 @@
           <p class="abhaya-libre-medium !text-[#28388E] !text-[24px] group-hover:!font-bold transition-all duration-300">${{ item.price }}</p>
         </div>
         <p class="abhaya-libre-medium !text-[#28388E] !text-[16px] group-hover:!font-bold transition-all duration-300">{{ item.mililitros }} ml</p>
-        <p class="text-gray-600 mb-4">{{ item.description }}</p>
-        <p *ngIf="item.quantity === 0" class="text-red-500 mt-2">Sin stock</p>
+        <p class="noto-sans-regular text-gray-600 mb-4">{{ item.description }}</p>
+        <p *ngIf="item.quantity === 0" class="noto-sans-regular text-red-500 mt-2">Sin stock</p>
       </div>
 
       <!-- Botón de notificación -->
@@ -44,11 +44,11 @@
         <button
           *ngIf="token"
           (click)="notifyWhenInStock($event, item)"
-          class="mt-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 w-full"
+          class="noto-sans-regular mt-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 w-full"
         >
           Notificarme cuando haya stock
         </button>
-        <p *ngIf="!token" class="text-sm text-gray-500 mt-2">
+        <p *ngIf="!token" class="noto-sans-regular text-sm text-gray-500 mt-2">
           Inicia sesión para recibir notificación cuando haya stock.
         </p>
       </div>

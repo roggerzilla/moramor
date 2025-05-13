@@ -32,3 +32,22 @@
   .noto-sans-regular { font-family: "Noto Sans", sans-serif; font-weight: 400; font-style: normal; }
 .noto-sans-bold { font-family: "Noto Sans", sans-serif; font-weight: 700; font-style: normal; }
 .noto-sans-italic { font-family: "Noto Sans", sans-serif; font-weight: 400; font-style: italic; }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animate-slide-in-left {
+    animation: slide-in-left 0.3s ease-out forwards;
+  }
+
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+}
