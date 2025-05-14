@@ -1,12 +1,11 @@
 <div class="container mx-auto px-4 py-8" *ngIf="product">
-    <h2 class="text-3xl font-bold text-center text-[#283593] mb-6">Our Products</h2>
+    <h2 class="abhaya-libre-medium text-center !text-[#28388E] mb-6 !text-[72px]">Our Products</h2>
   
     <div class="flex flex-col items-center">
       <!-- Imagen principal -->
       <img [src]="selectedImage || product.image_url"
-           alt="Imagen principal"
-           class="w-full max-w-md h-auto object-contain mb-4"
-           style="background-color: transparent;" />
+      alt="Imagen principal"
+      class="w-full max-w-[700px] h-auto object-contain mb-4" />
   
       <!-- Miniaturas debajo -->
       <div class="flex gap-2 justify-center mb-4">
@@ -19,14 +18,16 @@
       </div>
   
       <!-- Nombre y descripción -->
-      <h1 class="text-2xl font-semibold text-gray-800 text-center mb-2">{{ product.name }}</h1>
-      <p class="text-gray-600 text-center mb-4">{{ product.short_description || product.description.substring(0, 150) + '...' }}</p>
+      <h1 class="abhaya-libre-medium !text-[#28388E] mb-6 !text-[48px] text-center mb-2">{{ product.name }}</h1>
+        <img src="separador.svg" alt="separador" class="max-h-16 max-w-[264px]">
+
+      <p class="noto-sans-regular abhaya-libre-medium !text-[20px] !text-[#A9A9A9] text-center !mt-40 !max-w-[850px] !mb-15">{{ product.short_description || product.description.substring(0, 150) + '...' }}</p>
   
       <!-- Precio, cantidad y botón -->
       <div class="w-full flex justify-center items-center mb-4">
         <div class="flex flex-col me-100">
-          <p class="text-2xl font-bold text-[#283593]">${{ product.price }}</p>
-          <p class="text-sm text-gray-500 !-mt-2">a {{ product.mililitros }} ml</p>
+          <p class="abhaya-libre-medium !text-[#28388E] mb-6 !text-[72px] text-[#283593]">${{ product.price }}</p>
+          <p class="abhaya-libre-medium !text-[#28388E] mb-6 !text-[24px] !-mt-2">a {{ product.mililitros }} ml</p>
         </div>
   
         <div class="flex items-center gap-1">
@@ -66,7 +67,7 @@
           </div>
   
           <button 
-            class="px-3 py-1.5 bg-[#283593] text-white rounded-md hover:bg-[#1F1F44] transition focus:outline-none text-sm"
+            class="btn-void px-3 py-1.5 bg-[#283593] !ml-3 rounded-md hover:bg-[#1F1F44] transition focus:outline-none text-sm"
             [disabled]="cantidad < 1 || cantidad > product.quantity"
             (click)="agregarAlCarrito()">
             Agregar

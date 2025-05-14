@@ -37,3 +37,8 @@
     margin: 0 auto;
     min-width: 200px;
   }
+
+  .btn-void:hover {
+    background: #1c2b7b;
+    color: white;
+  }

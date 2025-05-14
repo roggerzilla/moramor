@@ -68,6 +68,7 @@ header {
     gap: 1rem;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
+    min-width: 267px;
   }
   
   .btn-age {
@@ -88,7 +89,8 @@ header {
   }
   
   .btn-age:hover {
-    opacity: 0.9;
+    background: #1c2b7b;
+    color: white;
   }
   
   .age-note {
