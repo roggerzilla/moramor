@@ -5,22 +5,27 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { NotificationService } from '../../services/notification.service';
-import { NgxPaginationModule } from 'ngx-pagination'; // Importa el módulo de paginación
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-inventory',
-  imports: [FormsModule, HttpClientModule, CommonModule, RouterModule, NgxPaginationModule], // Asegúrate de tener NgxPaginationModule importado
   standalone: true,
+  imports: [FormsModule, HttpClientModule, CommonModule, RouterModule, NgxPaginationModule],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css',
 })
 export class InventoryComponent implements OnInit {
   private http = inject(HttpClient);
-  items: any[] = [];
+  activeItems: any[] = [];
+  deletedItems: any[] = [];
   userRole: string | null = null;
   token = localStorage.getItem('token');
-  pageSize = 9; // Número de items por página (3x3)
+  pageSize = 9;
   currentPage = 1;
+  deletedPage = 1;
+pageSizeDeleted = 9;
+  currentPageDeleted = 1;
+
 
   item = {
     name: '',
@@ -34,16 +39,15 @@ export class InventoryComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadItems();
+      this.loadDeletedItems();
     this.getUser();
   }
 
-  // Cargar los items del inventario
   loadItems(): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     this.http.get<any[]>('http://localhost:8000/api/items', { headers }).subscribe(
       (items) => {
-        this.items = items.map((item) => ({ ...item, editing: false }));
-        console.log(this.items);
+        this.activeItems = items.filter(item => !item.deleted).map(item => ({ ...item, editing: false }));
       },
       (error: HttpErrorResponse) => {
         console.error('Error al cargar los items:', error);
@@ -51,9 +55,47 @@ export class InventoryComponent implements OnInit {
       }
     );
   }
+  loadDeletedItems(): void {
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+  this.http.get<any[]>('http://localhost:8000/api/items/getdeleted', { headers }).subscribe(
+    (items) => {
+      console.log('Items eliminados cargados desde backend:', items);
+      this.deletedItems = items.map(item => ({ ...item, editing: false }));
+    },
+    (error: HttpErrorResponse) => {
+    }
+  );
+}
 
-  onPageChange(pageNumber: number): void {
-    this.currentPage = pageNumber;
+  deleteItem(item: any): void {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+    this.http.delete(`http://localhost:8000/api/items/${item.id}`, { headers }).subscribe(
+      () => {
+        this.notification.success('Producto eliminado.');
+        this.loadItems();
+      this.loadDeletedItems();
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error al eliminar el producto:', error);
+        this.notification.error('No se pudo eliminar el producto.');
+      }
+    );
+  }
+
+  restoreItem(item: any): void {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+    this.http.put(`http://localhost:8000/api/items/${item.id}/restore`, {}, { headers }).subscribe(
+      () => {
+        this.notification.success('Producto restaurado.');
+        this.loadItems();
+    this.deletedItems = [];
+      this.loadDeletedItems();
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error al restaurar el producto:', error);
+        this.notification.error('No se pudo restaurar el producto.');
+      }
+    );
   }
 
   getUser(): void {
@@ -79,7 +121,6 @@ export class InventoryComponent implements OnInit {
     );
   }
 
-  // Agregar un item al inventario
   addItem(): void {
     if (this.item.image_urls.length === 0) {
       this.notification.warning('Por favor, sube al menos una imagen antes de agregar el item.');
@@ -100,7 +141,6 @@ export class InventoryComponent implements OnInit {
     );
   }
 
-  // Subir una imagen
   uploadImage(event: any): void {
     const file = event.target.files[0];
     if (!file) return;
@@ -126,7 +166,6 @@ export class InventoryComponent implements OnInit {
     );
   }
 
-  // Reiniciar el formulario
   resetForm(): void {
     this.item = {
       name: '',
@@ -137,12 +176,10 @@ export class InventoryComponent implements OnInit {
     };
   }
 
-  // Alternar la edición de un item
   toggleEdit(item: any): void {
     item.editing = !item.editing;
   }
 
-  // Actualizar un item
   updateItem(item: any): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     this.http.put(`http://localhost:8000/api/items/${item.id}`, item, { headers }).subscribe(
@@ -157,17 +194,11 @@ export class InventoryComponent implements OnInit {
     );
   }
 
-  // Agregar al carrito
-  addToCart(item: any): void {
-    this.cartService.addToCart(item.id, 1).subscribe(
-      () => {
-        this.notification.success('Ítem agregado al carrito');
-        this.cartService.getCartItems();
-      },
-      (error: HttpErrorResponse) => {
-        console.error('Error al agregar el ítem al carrito:', error);
-        this.notification.error('No se pudo agregar el ítem al carrito');
-      }
-    );
+  onPageChange(page: number): void {
+    this.currentPage = page;
+  }
+
+  onPageChangeDeleted(page: number): void {
+    this.deletedPage = page;
   }
 }

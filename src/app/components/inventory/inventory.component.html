@@ -70,74 +70,109 @@
     </form>
   </div>
 
-  <h3 class="text-2xl font-semibold mb-6 text-gray-800">Lista de Productos</h3>
+<h3 class="text-2xl font-semibold mb-6 text-gray-800">Lista de Productos</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+  <div *ngFor="let item of activeItems | paginate: { itemsPerPage: pageSize, currentPage: currentPage, id: 'inventoryItems' }"
+       class="p-6 border border-gray-200 rounded-lg shadow-sm">
+    <div class="flex flex-wrap gap-2 mb-4">
+      <img *ngFor="let img of item.images" [src]="img.url" alt="{{ item.name }}" class="w-20 h-20 object-cover rounded-lg border" />
+    </div>
+    <p class="text-xl font-semibold text-gray-800">{{ item.name }}</p>
+    <p class="text-gray-600">{{ item.description }}</p>
+    <p class="text-gray-700"><strong>${{ item.price }}</strong></p>
+    <p class="text-gray-700">{{ item.quantity }} en stock</p>
+
+    <div *ngIf="userRole === 'superuser' || userRole === 'admin'" class="mt-6 flex gap-2">
+      <button
+        (click)="toggleEdit(item)"
+        class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+      >
+        Editar
+      </button>
+
+      <button
+        (click)="deleteItem(item)"
+        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600"
+      >
+        Eliminar
+      </button>
+    </div>
+
+    <form *ngIf="item.editing" (ngSubmit)="updateItem(item)" class="mt-4 space-y-4">
+      <div>
+        <label for="edit-name-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
+        <input
+          [(ngModel)]="item.name"
+          name="name"
+          id="edit-name-{{ item.id }}"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label for="edit-description-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Descripción</label>
+        <input
+          [(ngModel)]="item.description"
+          name="description"
+          id="edit-description-{{ item.id }}"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label for="edit-price-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Precio</label>
+        <input
+          [(ngModel)]="item.price"
+          name="price"
+          id="edit-price-{{ item.id }}"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <div>
+        <label for="edit-quantity-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Cantidad</label>
+        <input
+          [(ngModel)]="item.quantity"
+          name="quantity"
+          id="edit-quantity-{{ item.id }}"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+      <button
+        type="submit"
+        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        Guardar
+      </button>
+    </form>
+  </div>
+</div>
+
+  <div class="flex justify-center">
+    <pagination-controls (pageChange)="onPageChange($event)" id="inventoryItems"></pagination-controls>
+  </div>
+
+  <!-- AGREGADO: Sección productos eliminados con paginación -->
+  <h3 class="text-2xl font-semibold mb-6 mt-12 text-gray-800">Productos Eliminados</h3>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-    <div *ngFor="let item of items | paginate: { itemsPerPage: pageSize, currentPage: currentPage, id: 'inventoryItems' }" class="p-6 border border-gray-200 rounded-lg shadow-sm">
+    <div *ngFor="let item of deletedItems | paginate: { itemsPerPage: pageSizeDeleted, currentPage: currentPageDeleted, id: 'deletedItems' }" class="p-6 border border-gray-200 rounded-lg shadow-sm bg-red-50">
       <div class="flex flex-wrap gap-2 mb-4">
         <img *ngFor="let img of item.images" [src]="img.url" alt="{{ item.name }}" class="w-20 h-20 object-cover rounded-lg border" />
       </div>
-      <p class="text-xl font-semibold text-gray-800">{{ item.name }}</p>
-      <p class="text-gray-600">{{ item.description }}</p>
-      <p class="text-gray-700"><strong>${{ item.price }}</strong></p>
-      <p class="text-gray-700">{{ item.quantity }} en stock</p>
-
+      <p class="text-xl font-semibold text-gray-800 line-through">{{ item.name }}</p>
+      <p class="text-gray-600 line-through">{{ item.description }}</p>
+      <p class="text-gray-700 line-through"><strong>${{ item.price }}</strong></p>
+      <p class="text-gray-700 line-through">{{ item.quantity }} en stock</p>
 
       <div *ngIf="userRole === 'superuser' || userRole === 'admin'" class="mt-6">
         <button
-          (click)="toggleEdit(item)"
-          class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          (click)="restoreItem(item)"
+          class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
-          Editar
+          Restaurar
         </button>
-        <form *ngIf="item.editing" (ngSubmit)="updateItem(item)" class="mt-4 space-y-4">
-          <div>
-            <label for="edit-name-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
-            <input
-              [(ngModel)]="item.name"
-              name="name"
-              id="edit-name-{{ item.id }}"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label for="edit-description-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Descripción</label>
-            <input
-              [(ngModel)]="item.description"
-              name="description"
-              id="edit-description-{{ item.id }}"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label for="edit-price-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Precio</label>
-            <input
-              [(ngModel)]="item.price"
-              name="price"
-              id="edit-price-{{ item.id }}"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label for="edit-quantity-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Cantidad</label>
-            <input
-              [(ngModel)]="item.quantity"
-              name="quantity"
-              id="edit-quantity-{{ item.id }}"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <button
-            type="submit"
-            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Guardar
-          </button>
-        </form>
       </div>
     </div>
   </div>
 
-  <div class="flex justify-center">
-    <pagination-controls (pageChange)="onPageChange($event)" id="inventoryItems"></pagination-controls>
+  <div class="flex justify-center mb-12">
+    <pagination-controls (pageChange)="onPageChangeDeleted($event)" id="deletedItems"></pagination-controls>
   </div>
 </div>
