@@ -80,7 +80,7 @@ export class UserManagementComponent implements OnInit {
   deleteUser(id: number): void {
     this.http.delete(`http://localhost:8000/api/admins/${id}`).subscribe(
       () => {
-        this.notification.error('Usuario eliminado correctamente');
+        this.notification.warning ('Usuario eliminado correctamente');
         this.loadUsers(); // Recargar la lista de usuarios activos
         this.loadDeletedUsers(); // Recargar la lista de usuarios eliminados
       },

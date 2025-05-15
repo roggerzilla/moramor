@@ -18,13 +18,7 @@
         <label for="password_confirmation" class="form-label">Confirmar Contraseña:</label>
         <input type="password" class="form-control" id="password_confirmation" [(ngModel)]="user.password_confirmation" name="password_confirmation" required>
       </div>
-      <div class="mb-3">
-        <label for="role" class="form-label">Rol:</label>
-        <select class="form-control" id="role" [(ngModel)]="user.role" name="role">
-          <option value="admin">Administrador</option>
-          <option value="user">Usuario</option>
-        </select>
-      </div>
+
       <button type="submit" class="btn btn-success">Registrar</button>
     </form>
   </div>
@@ -32,30 +26,75 @@
   <!-- Filtros (puedes agregar más filtros si lo deseas) -->
 
   <!-- Lista de administradores -->
-  <h3>Administradores Registrados</h3>
-  <ul class="space-y-3">
-    <li *ngFor="let user of paginatedUsers">
-      <strong>{{ user.name }}</strong> - {{ user.email }}
-      <button class="btn btn-primary" (click)="editUser(user)">Editar</button>
-      <button class="btn btn-danger" (click)="deleteUser(user.id)">Eliminar</button>
-    </li>
-  </ul>
+  <h3 class="mt-4">Administradores Registrados</h3>
+<div class="table-responsive">
+  <table class="table table-bordered table-striped align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th style="width: 180px;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of paginatedUsers">
+        <ng-container *ngIf="editingUser?.id === user.id; else displayRow">
+          <td>
+            <input type="text" [(ngModel)]="editingUser.name" class="form-control" placeholder="Nombre">
+          </td>
+          <td>
+            <input type="email" [(ngModel)]="editingUser.email" class="form-control" placeholder="Correo">
+          </td>
+          <td>
+            <button class="btn btn-success btn-sm me-2" (click)="updateUser()">Guardar</button>
+            <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">Cancelar</button>
+          </td>
+        </ng-container>
 
-  <!-- Paginación -->
-  <div class="mt-4 text-center">
-    <pagination-controls (pageChange)="p = $event"></pagination-controls>
-  </div>
+        <ng-template #displayRow>
+          <td><strong>{{ user.name }}</strong></td>
+          <td>{{ user.email }}</td>
+          <td>
+            <button class="btn btn-primary btn-sm me-2" (click)="editUser(user)">Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Eliminar</button>
+          </td>
+        </ng-template>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Paginación -->
+<div class="mt-3 text-center">
+  <pagination-controls (pageChange)="p = $event"></pagination-controls>
+</div>
+
 
   <!-- Formulario para registrar un nuevo usuario -->
 
   <!-- Sección de usuarios eliminados (si tienes esta funcionalidad) -->
   <div class="mt-4">
     <h4>Administradores Eliminados</h4>
-    <ul class="space-y-3">
-      <li *ngFor="let user of deletedUsers">
-        <strong>{{ user.name }}</strong> - {{ user.email }}
-        <button class="btn btn-warning" (click)="restoreUser(user.id)">Restaurar</button>
-      </li>
-    </ul>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th style="width: 150px;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of deletedUsers">
+            <td><strong>{{ user.name }}</strong></td>
+            <td>{{ user.email }}</td>
+            <td>
+              <button class="btn btn-warning btn-sm" (click)="restoreUser(user.id)">Restaurar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
+  
 </div>

@@ -31,11 +31,14 @@
         </div>
   
         <div class="flex items-center gap-1">
-          <div class="bg-white border border-gray-200 rounded-lg">
-            <div class="w-full flex justify-between items-center gap-x-1">
-              <div class="grow py-2 px-3">
+          <div class="bg-white border-2 border-[#1A237E] rounded-[1.5rem] px-4 py-2">
+            <div class="w-full flex justify-between items-center gap-x-2">
+              
+              <!-- Input numérico -->
+              <div class="grow">
                 <input 
-                  class="w-full p-0 bg-transparent border-0 text-gray-800 focus:ring-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  class="w-full p-0 bg-transparent border-0 text-[#1A237E] text-center text-lg font-medium focus:ring-0 
+                         appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   style="-moz-appearance: textfield;" 
                   type="number" 
                   aria-roledescription="Number field" 
@@ -43,28 +46,34 @@
                   min="1" 
                   [max]="product.quantity" />
               </div>
-              <div class="flex flex-col -gap-y-px divide-y divide-gray-200 border-s border-gray-200">
+          
+              <!-- Botones ↑ ↓ -->
+              <div class="flex flex-col gap-1">
                 <button 
                   type="button" 
-                  class="size-7 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-se-lg bg-gray-50 text-gray-800 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none" 
+                  class="w-6 h-6 flex justify-center items-center text-[#1A237E] hover:scale-110 transition" 
                   aria-label="Increase" 
                   (click)="cantidad = cantidad < product.quantity ? cantidad + 1 : product.quantity">
-                  <svg class="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 5l7 7H5l7-7z"></path>
+                  <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5l7 7H5l7-7z" />
                   </svg>
                 </button>
                 <button 
                   type="button" 
-                  class="size-7 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-ee-lg bg-gray-50 text-gray-800 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none" 
+                  class="w-6 h-6 flex justify-center items-center text-[#1A237E] hover:scale-110 transition" 
                   aria-label="Decrease" 
                   (click)="cantidad = cantidad > 1 ? cantidad - 1 : 1">
-                  <svg class="shrink-0 size-3.5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 19l-7-7h14l-7 7z"></path>
+                  <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 19l-7-7h14l-7 7z" />
                   </svg>
                 </button>
               </div>
+          
             </div>
           </div>
+          
   
           <button 
             class="btn-void px-3 py-1.5 bg-[#283593] !ml-3 rounded-md hover:bg-[#1F1F44] transition focus:outline-none text-sm"

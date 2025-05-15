@@ -10,5 +10,6 @@ export interface CartItem {
     price: number;
     image_url: string;
     quantity: number; // Agregar esta línea
+    mililitros: number;
   };
 }

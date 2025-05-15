@@ -73,7 +73,7 @@
           </select>
         </td>
         <td [ngClass]="getStatusClass(order.estatus)">
-          <p>{{ order.address?.street }}, {{ order.address?.city }}, {{ order.address?.state }} - {{ order.address?.postalCode }}, {{ order.address?.country }}</p>
+          <p>{{ order.address?.street }}, {{ order.address?.address2 }},{{ order.address?.city }}, {{ order.address?.state }} - {{ order.address?.postalCode }}, {{ order.address?.country }}</p>
         </td>
         <td>
           <button (click)="updateOrderStatus(order)" class="btn btn-primary">Guardar</button>

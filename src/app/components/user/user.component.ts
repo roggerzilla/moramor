@@ -7,6 +7,7 @@ import { NotificationService } from '../../services/notification.service';
 interface Address {
   id?: number;
   street: string;
+  address2:string;
   city: string;
   state: string;
   postal_code: string;
@@ -30,6 +31,7 @@ export class UserComponent implements OnInit {
 
   newAddress: Address = {
     street: '',
+    address2: '',
     city: '',
     state: '',
     postal_code: '',
@@ -110,6 +112,8 @@ export class UserComponent implements OnInit {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
+    console.log('Enviando nueva dirección:', this.newAddress); // <--- aquí
+
 
     this.http.post('http://localhost:8000/api/user/address', this.newAddress, {
       headers
@@ -119,6 +123,7 @@ export class UserComponent implements OnInit {
         this.addresses.push(response.address ?? this.newAddress);
         this.newAddress = {
           street: '',
+          address2:'',
           city: '',
           state: '',
           postal_code: '',

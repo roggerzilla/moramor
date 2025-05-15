@@ -100,3 +100,20 @@ header {
   .my-link {
     text-decoration: none;
   }
+
+  .btn-idioma {
+    border: 2px solid #1c2b7b;
+    background: transparent;
+    color: #1c2b7b;
+    font-weight: bold;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px; 
+    min-height: 46px;
+  }
+
+  .btn-idioma:hover {
+    background: #1c2b7b;
+    color: white;
+  }

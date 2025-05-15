@@ -22,13 +22,13 @@
           <button
             (click)="
             selectCountry('MX')"
- class=" min-w-[200px] !me-10 bg-transparent text-[#28388E] bg-white border-2 border-[#28388E] focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium !rounded-full px-5 py-2.5 me-2 mb-2 dark:bg-gray-800  dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"          >
+ class="  !me-10 btn-idioma"          >
             Español
           </button>
           <button
             (click)="
             selectCountry('US')"
-            class="min-w-[200px] bg-transparent text-[#28388E] bg-white border-2 border-[#28388E] focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium !rounded-full px-5 py-2.5 me-2 mb-2 dark:bg-gray-800  dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+            class="btn-idioma"
           >
             English
           </button>
@@ -191,18 +191,18 @@
         <div>
           <h3 class="noto-sans-regular text-lg mb-4 !text-[20px]">Cuenta</h3>
           <div>
-            <a href="#" style="text-decoration: none;" class="noto-sans-regular hover:text-indigo-200 text-white no-underline block mb-2 text-sm !text-[16px]">Mi Cuenta</a>
+            <a  routerLink="/usuario" style="text-decoration: none;" class="noto-sans-regular hover:text-indigo-200 text-white no-underline block mb-2 text-sm !text-[16px]">Mi Cuenta</a>
             <a href="#" style="text-decoration: none;" class="noto-sans-regular hover:text-indigo-200 text-white no-underline block mb-2 text-sm !text-[16px]">Iniciar sesión / Registrarse</a>
-            <a href="#" style="text-decoration: none;"class="noto-sans-regular hover:text-indigo-200 text-white no-underline block text-sm !text-[16px]">Comprar</a>
+            <a  routerLink="/products" style="text-decoration: none;"class="noto-sans-regular hover:text-indigo-200 text-white no-underline block text-sm !text-[16px]">Comprar</a>
           </div>
         </div>
 
         <div>
           <h3 class="noto-sans-regular text-lg mb-4 !text-[20px]">Moramor</h3>
           <div>
-            <a href="#" style="text-decoration: none;"class="noto-sans-regular hover:text-indigo-200 text-white no-underline block mb-2 text-sm !text-[16px]">Políticas de privacidad</a>
-            <a href="#" style="text-decoration: none;"class="noto-sans-regular hover:text-indigo-200 text-white no-underline block mb-2 text-sm !text-[16px]">Términos & condiciones</a>
-            <a href="#" style="text-decoration: none;"class="noto-sans-regular hover:text-indigo-200 text-white no-underline block text-sm !text-[16px]">Contacto</a>
+            <a routerLink="/politicas"style="text-decoration: none;"class="noto-sans-regular hover:text-indigo-200 text-white no-underline block mb-2 text-sm !text-[16px]">Políticas de privacidad</a>
+            <a routerLink="/terminos" style="text-decoration: none;"class="noto-sans-regular hover:text-indigo-200 text-white no-underline block mb-2 text-sm !text-[16px]">Términos & condiciones</a>
+            <a routerLink="/contacto" style="text-decoration: none;"class="noto-sans-regular hover:text-indigo-200 text-white no-underline block text-sm !text-[16px]">Contacto</a>
           </div>
         </div>
 

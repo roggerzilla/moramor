@@ -25,7 +25,7 @@
         <label for="shipping-address" class="block font-semibold mb-2 text-left">Selecciona una dirección de envío</label>
         <select id="shipping-address" class="w-full p-2 border rounded text-sm" [(ngModel)]="selectedAddressId">
           <option *ngFor="let address of userAddresses" [value]="address.id">
-            {{ address.street }}, {{ address.city }}, {{ address.state }}, {{ address.zip_code }}
+            {{ address.street }}, {{ address.address2 }} ,{{ address.city }}, {{ address.state }}, {{ address.zip_code }}
           </option>
         </select>
       </div>

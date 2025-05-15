@@ -4,6 +4,9 @@ import { AuthService } from '../../../services/auth.service';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NotificationService } from '../../../services/notification.service';
+import { UserStoreService } from '../../../services/user-store.service'; 
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-register',
@@ -16,7 +19,8 @@ export class RegisterComponent {
   user = { name: '', email: '', password: '', password_confirmation: '' };
   passwordMismatch = false;
 
-  constructor(private authService: AuthService, private notification: NotificationService) {}
+  constructor(private authService: AuthService, private notification: NotificationService, private userStore: UserStoreService,  private router: Router
+  ) {}
 
   onRegister() {
     // Verificar que las contraseñas coincidan
@@ -29,10 +33,11 @@ export class RegisterComponent {
 
     this.authService.register(this.user).subscribe({
       next: (response) => {
+        this.userStore.setEmail(this.user.email);
         console.log('Registro exitoso', response);
         this.notification.success('Registro exitoso. Por favor, verifica tu correo electrónico.');
-        window.location.replace('http://localhost:4200/home');
-      },
+        this.router.navigateByUrl('/correo-enviado');
+            },
       error: (err) => {
         console.error('Error en registro', err);
         if (err.error && err.error.message) {
