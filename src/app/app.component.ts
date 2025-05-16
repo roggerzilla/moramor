@@ -55,6 +55,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   cartItems: CartItem[] = [];
   cartItemCount = 0;
   isUnderRoute: boolean = false;
+  userIconSrc: string = '';
+cartIconSrc: string = '';
+
 
   constructor(
     private geolocationService: GeolocationService,

@@ -9,34 +9,77 @@
     </div>
 
     <!-- Payment element (centrado y con ancho limitado) -->
-    <div class="w-full max-w-md">
-      <div id="payment-element" class="mb-4"></div>
-      <div class="grid-cols-2 items-center">
-        <button class="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition" (click)="handlePayment()">
-          Pagar ahora
-        </button>
-        <button class="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition" (click)="handlePayment()">
-          Pagar ahora
-        </button>
-      </div>
+<div class="w-full max-w-md">
+  <div id="payment-element" class="mb-4"></div>
 
-      <!-- Selector de dirección -->
-      <div class="mb-4 text-center">
-        <label for="shipping-address" class="block font-semibold mb-2 text-left">Selecciona una dirección de envío</label>
-        <select id="shipping-address" class="w-full p-2 border rounded text-sm" [(ngModel)]="selectedAddressId">
-          <option *ngFor="let address of userAddresses" [value]="address.id">
-            {{ address.street }}, {{ address.address2 }} ,{{ address.city }}, {{ address.state }}, {{ address.zip_code }}
-          </option>
-        </select>
-      </div>
+  <!-- Selector tipo de dirección -->
+<div class="mb-6">
+  <label class="block text-sm font-medium text-gray-700 mb-2">¿Cómo deseas ingresar la dirección?</label>
+<div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+  <label
+    class="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer text-center transition-all duration-200
+           hover:border-blue-500 hover:shadow-md"
+    [class.border-blue-500]="addressMode === 'saved'"
+  >
+    <input
+      type="radio"
+      name="addressType"
+      class="form-radio text-blue-600 mb-2"
+      [(ngModel)]="addressMode"
+      value="saved"
+    />
+    <span class="text-sm text-gray-800">Utilizar una dirección guardada</span>
+  </label>
 
-      <!-- Botón de pagar (más pequeño y centrado) -->
-      <div class="flex justify-center">
-        <button class="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition" (click)="handlePayment()">
-          Pagar ahora
-        </button>
-      </div>
+  <label
+    class="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer text-center transition-all duration-200
+           hover:border-blue-500 hover:shadow-md"
+    [class.border-blue-500]="addressMode === 'new'"
+  >
+    <input
+      type="radio"
+      name="addressType"
+      class="form-radio text-blue-600 mb-2"
+      [(ngModel)]="addressMode"
+      value="new"
+    />
+    <span class="text-sm text-gray-800">Agregar una nueva dirección</span>
+  </label>
+</div>
+
+</div>
+
+
+  <!-- Mostrar si usa dirección guardada -->
+  <div *ngIf="addressMode === 'saved'" class="mb-4 text-center">
+    <label for="shipping-address" class="block font-semibold mb-2 text-left">Selecciona una dirección de envío</label>
+    <select id="shipping-address" class="w-full p-2 border rounded text-sm" [(ngModel)]="selectedAddressId">
+      <option *ngFor="let address of userAddresses" [value]="address.id">
+        {{ address.street }}, {{ address.address2 }}, {{ address.city }}, {{ address.state }}, {{ address.zip_code }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Formulario nueva dirección -->
+  <div *ngIf="addressMode === 'new'" class="mb-4">
+    <div class="space-y-2">
+      <input class="w-full p-2 border rounded text-sm" placeholder="Calle" [(ngModel)]="newAddress.street" />
+      <input class="w-full p-2 border rounded text-sm" placeholder="Dirección 2" [(ngModel)]="newAddress.address2" />
+      <input class="w-full p-2 border rounded text-sm" placeholder="Ciudad" [(ngModel)]="newAddress.city" />
+      <input class="w-full p-2 border rounded text-sm" placeholder="Estado" [(ngModel)]="newAddress.state" />
+      <input class="w-full p-2 border rounded text-sm" placeholder="Código postal" [(ngModel)]="newAddress.zip_code" />
     </div>
+  </div>
+
+  <!-- Botón de pagar -->
+  <div class="flex justify-center mt-4">
+    <button class="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition"
+            (click)="handlePayment()">
+      Pagar ahora
+    </button>
+  </div>
+</div>
+
   </div>
 
   <!-- Columna derecha - Resumen del pedido -->

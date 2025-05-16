@@ -28,6 +28,15 @@ export class PaymentComponent implements OnInit {
 
   userAddresses: any[] = [];
   selectedAddressId: number | null = null;
+  addressMode: 'saved' | 'new' = 'saved'; // Por defecto: usar dirección guardada
+
+newAddress = {
+  street: '',
+  address2: '',
+  city: '',
+  state: '',
+  zip_code: ''
+};
 
   constructor(
     private paymentService: PaymentService,

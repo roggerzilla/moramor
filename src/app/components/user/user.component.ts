@@ -3,16 +3,17 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/notification.service';
+import { UserService } from '../../services/user.service';
 
 interface Address {
   id?: number;
   street: string;
-  address2:string;
+  address2: string;
   city: string;
   state: string;
   postal_code: string;
   country: string;
-  editing?: boolean; 
+  editing?: boolean;
 }
 
 @Component({
@@ -20,7 +21,7 @@ interface Address {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './user.component.html',
-  styleUrl: './user.component.css'
+  styleUrls: ['./user.component.css']
 })
 export class UserComponent implements OnInit {
   user: any = { name: '', email: '' };
@@ -37,9 +38,15 @@ export class UserComponent implements OnInit {
     postal_code: '',
     country: ''
   };
+  addressMode: 'saved' | 'new' = 'saved';
 
-  constructor(private http: HttpClient,
+  selectedAddress: Address | null = null;
+  error: string | null = null;
+
+  constructor(
+    private http: HttpClient,
     private notification: NotificationService,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -62,6 +69,9 @@ export class UserComponent implements OnInit {
     this.http.get('http://localhost:8000/api/user/addresses', { headers }).subscribe({
       next: (data: any) => {
         this.addresses = data ?? [];
+        if (this.addresses.length > 0) {
+          this.selectedAddress = JSON.parse(JSON.stringify(this.addresses[0]));
+        }
       },
       error: (err) => console.error(err)
     });
@@ -112,8 +122,6 @@ export class UserComponent implements OnInit {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
-    console.log('Enviando nueva dirección:', this.newAddress); // <--- aquí
-
 
     this.http.post('http://localhost:8000/api/user/address', this.newAddress, {
       headers
@@ -123,7 +131,7 @@ export class UserComponent implements OnInit {
         this.addresses.push(response.address ?? this.newAddress);
         this.newAddress = {
           street: '',
-          address2:'',
+          address2: '',
           city: '',
           state: '',
           postal_code: '',
@@ -148,8 +156,12 @@ export class UserComponent implements OnInit {
 
     this.http.put(`http://localhost:8000/api/user/address/${address.id}`, address, { headers }).subscribe({
       next: (res: any) => {
-        address.editing = false;
         this.notification.success('Dirección actualizada correctamente');
+
+        const index = this.addresses.findIndex(a => a.id === address.id);
+        if (index !== -1) {
+          this.addresses[index] = JSON.parse(JSON.stringify(address));
+        }
       },
       error: (err) => {
         console.error('Error al actualizar dirección', err);
@@ -157,21 +169,26 @@ export class UserComponent implements OnInit {
       }
     });
   }
+
   deleteAddress(address: Address): void {
     if (!this.token || !address.id) return;
-  
+
     const confirmDelete = confirm('¿Estás seguro de que quieres eliminar esta dirección?');
     if (!confirmDelete) return;
-  
+
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.token}`,
       'Accept': 'application/json'
     });
-  
+
     this.http.delete(`http://localhost:8000/api/user/address/${address.id}`, { headers }).subscribe({
       next: () => {
         this.addresses = this.addresses.filter(a => a.id !== address.id);
         this.notification.success('Dirección eliminada correctamente');
+
+        if (this.selectedAddress?.id === address.id) {
+          this.selectedAddress = this.addresses.length > 0 ? JSON.parse(JSON.stringify(this.addresses[0])) : null;
+        }
       },
       error: (err) => {
         console.error('Error al eliminar dirección', err);
@@ -179,5 +196,27 @@ export class UserComponent implements OnInit {
       }
     });
   }
-  
+
+  logout(): void {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  }
+
+  onAddressChange(): void {
+    if (this.selectedAddress) {
+      this.selectedAddress = JSON.parse(JSON.stringify(this.selectedAddress));
+    }
+  }
+
+  saveSelectedAddress(): void {
+    if (!this.selectedAddress) {
+      this.notification.info('Selecciona una dirección primero.');
+      return;
+    }
+    this.updateAddress(this.selectedAddress);
+  }
+
+  compareAddress(a: Address, b: Address): boolean {
+    return a && b ? a.id === b.id : a === b;
+  }
 }

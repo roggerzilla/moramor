@@ -1,66 +1,150 @@
-<div *ngIf="user">
-  <h2>Editar Perfil</h2>
+<div class="user-container">
+  <h2 class="text-center abhaya-libre-extrabold !text-[#28388E] mb-2">¡Hola, {{ user.name }}!</h2>
+  <p class="text-center text-base noto-sans-regular !text-[#28388E] mb-6">Bienvenido a tu perfil</p>
 
-  <form (ngSubmit)="updateProfile()">
-    <label>
-      Nombre:
-      <input [(ngModel)]="user.name" name="name" required />
-    </label>
-    <br />
-    <label>
-      Email:
-      <input [(ngModel)]="user.email" name="email" type="email" required />
-    </label>
-    <br />
-    <label>
-      Nueva contraseña:
-      <input [(ngModel)]="password" name="password" type="password" placeholder="Opcional" />
-    </label>
-    <br />
-    <button type="submit">Guardar Cambios</button>
-    <p *ngIf="updateMessage">{{ updateMessage }}</p>
-  </form>
+  <div class="card shadow p-6 max-w-md mx-auto rounded-lg border border-gray-200 bg-white">
+    <section class="mb-6">
+      <h3 class="noto-sans-regular !text-[#28388E] text-lg mb-2 !text-[24px] !text-[#28388E]">Perfil</h3>
 
-  <hr />
+      <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Nombre</label>
+      <input
+        class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
+        [(ngModel)]="user.name" />
 
-  <h3>Direcciones guardadas</h3>
+      <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Correo</label>
+      <input
+        class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
+        [(ngModel)]="user.email" />
 
-  <ul *ngIf="addresses.length > 0; else sinDirecciones">
-    <li *ngFor="let address of addresses">
-      <div *ngIf="!address.editing">
-        <strong>{{ address.street }}</strong><br />
-        {{ address.address2 }},{{ address.city }} ,{{ address.state }}<br />
-        {{ address.postal_code }}, {{ address.country }}<br />
-        <button (click)="address.editing = true">Editar</button>
-        <button (click)="deleteAddress(address)">Eliminar</button>
+      <button
+        class="btn-void"
+        (click)="updateProfile()">Guardar cambios</button>
+    </section>
 
+    <hr class="my-6 border-t-2 border-gray-300" />
+
+    <section class="mb-6">
+      <h3 class="text-lg mb-2 noto-sans-regular !text-[24px] !text-[#28388E]">Dirección</h3>
+
+      <!-- Selector bonito con grid y estilos -->
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-6">
+        <label
+          class="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer text-center transition-all duration-200
+                 hover:border-blue-500 hover:shadow-md"
+          [class.border-blue-500]="addressMode === 'saved'">
+          <input
+            type="radio"
+            name="addressType"
+            class="form-radio text-blue-600 mb-2"
+            [(ngModel)]="addressMode"
+            value="saved" />
+          <span class="text-sm text-gray-800">Editar  una dirección guardada</span>
+        </label>
+
+        <label
+          class="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer text-center transition-all duration-200
+                 hover:border-blue-500 hover:shadow-md"
+          [class.border-blue-500]="addressMode === 'new'">
+          <input
+            type="radio"
+            name="addressType"
+            class="form-radio text-blue-600 mb-2"
+            [(ngModel)]="addressMode"
+            value="new" />
+          <span class="text-sm text-gray-800">Agregar una nueva dirección</span>
+        </label>
       </div>
-  
-      <div *ngIf="address.editing">
-        <input [(ngModel)]="address.street" placeholder="Calle" />
-        <input [(ngModel)]="address.address2" placeholder="direccion2" />
-        <input [(ngModel)]="address.city" placeholder="Ciudad" />
-        <input [(ngModel)]="address.state" placeholder="Estado" />
-        <input [(ngModel)]="address.postal_code" placeholder="Código postal" />
-        <input [(ngModel)]="address.country" placeholder="País (código ISO)" />
-        <button (click)="updateAddress(address)">Guardar</button>
-        <button (click)="address.editing = false">Cancelar</button>
-      </div>
-    </li>
-  </ul>
-  
-  <ng-template #sinDirecciones>
-    <p>No tienes direcciones guardadas.</p>
-  </ng-template>
-  
 
-  <form (ngSubmit)="addAddress()">
-    <input [(ngModel)]="newAddress.street" name="street" placeholder="Calle" required />
-    <input [(ngModel)]="newAddress.address2" name="address2" placeholder="direccion2" required />
-    <input [(ngModel)]="newAddress.city" name="city" placeholder="Ciudad" required />
-    <input [(ngModel)]="newAddress.state" name="state" placeholder="Estado" required />
-    <input [(ngModel)]="newAddress.postal_code" name="postal_code" placeholder="Código postal" required />
-    <input [(ngModel)]="newAddress.country" name="country" placeholder="País (código ISO: mx, us, fr...)" required />
-    <button type="submit">Agregar Dirección</button>
-  </form>
+      <!-- Dirección guardada -->
+      <div *ngIf="addressMode === 'saved'">
+        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Seleccione la dirección guardada</label>
+        <select
+          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
+          [(ngModel)]="selectedAddress"
+          [compareWith]="compareAddress"
+          (change)="onAddressChange()">
+          <option *ngFor="let address of addresses" [ngValue]="address">
+            {{ address.street }}
+          </option>
+        </select>
+
+        <section *ngIf="selectedAddress">
+          <h4 class="font-semibold text-md mb-2 !text-[24px] !text-[#28388E]">Datos</h4>
+
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Dirección 1</label>
+          <input
+            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            [(ngModel)]="selectedAddress.street" />
+
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Dirección 2</label>
+          <input
+            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            [(ngModel)]="selectedAddress.address2" />
+
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Ciudad</label>
+          <input
+            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            [(ngModel)]="selectedAddress.city" />
+
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Estado</label>
+          <input
+            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            [(ngModel)]="selectedAddress.state" />
+
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Código Postal</label>
+          <input
+            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            [(ngModel)]="selectedAddress.postal_code" />
+
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">País</label>
+          <input
+            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            [(ngModel)]="selectedAddress.country" />
+
+          <button class="btn-void mt-4" (click)="saveSelectedAddress()">Guardar cambios</button>
+        </section>
+      </div>
+
+      <!-- Nueva dirección -->
+      <div *ngIf="addressMode === 'new'">
+        <h4 class="font-semibold text-md mb-2 !text-[24px] !text-[#28388E]">Nueva dirección</h4>
+
+        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Dirección 1</label>
+        <input
+          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+          [(ngModel)]="newAddress.street" />
+
+        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Dirección 2</label>
+        <input
+          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+          [(ngModel)]="newAddress.address2" />
+
+        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Ciudad</label>
+        <input
+          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+          [(ngModel)]="newAddress.city" />
+
+        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Estado</label>
+        <input
+          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+          [(ngModel)]="newAddress.state" />
+
+        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Código Postal</label>
+        <input
+          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+          [(ngModel)]="newAddress.postal_code" />
+
+        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">País</label>
+        <input
+          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+          [(ngModel)]="newAddress.country" />
+
+        <button class="btn-void mt-4" (click)="addAddress()">Guardar dirección</button>
+      </div>
+    </section>
+
+    <div class="flex justify-between items-center mt-6">
+      <a class="text-sm !text-[#B20808] cursor-pointer" (click)="logout()">Cerrar sesión</a>
+    </div>
+  </div>
 </div>
