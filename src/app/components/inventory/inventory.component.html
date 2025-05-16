@@ -1,178 +1,205 @@
-<div class="max-w-6xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-  <h2 class="text-3xl font-bold mb-6 text-gray-800">Inventario</h2>
+<div class="container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">Inventario de Productos</h1>
 
-  <div *ngIf="userRole === 'superuser' || userRole === 'admin'" class="mb-8">
-    <h3 class="text-2xl font-semibold mb-4 text-gray-800">Agregar Producto</h3>
-    <form (ngSubmit)="addItem()" class="space-y-4">
-      <div>
-        <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
-        <input
-          [(ngModel)]="item.name"
-          name="name"
-          id="name"
-          placeholder="Nombre"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  <!-- Formulario para agregar un nuevo producto -->
+  <form (ngSubmit)="addItem()" class="mb-8">
+    <h2 class="text-xl font-semibold mb-2">Agregar nuevo producto</h2>
+
+    <input
+      type="text"
+      [(ngModel)]="item.name"
+      name="name"
+      placeholder="Nombre"
+      required
+      class="border p-2 w-full mb-2"
+    />
+
+    <textarea
+      [(ngModel)]="item.description"
+      name="description"
+      placeholder="Descripción"
+      required
+      class="border p-2 w-full mb-2"
+    ></textarea>
+
+    <input
+      type="number"
+      [(ngModel)]="item.price"
+      name="price"
+      placeholder="Precio"
+      min="0"
+      required
+      class="border p-2 w-full mb-2"
+    />
+
+    <input
+      type="number"
+      [(ngModel)]="item.quantity"
+      name="quantity"
+      placeholder="Cantidad"
+      min="0"
+      required
+      class="border p-2 w-full mb-2"
+    />
+
+    <!-- Imágenes para nuevo producto -->
+    <label class="block mb-2">Imágenes (máximo 4):</label>
+    <input
+      type="file"
+      (change)="uploadImage($event)"
+      accept="image/*"
+      class="mb-2"
+    />
+
+    <div class="flex gap-2 mb-4">
+      <div
+        *ngFor="let img of item.image_urls"
+        class="relative w-20 h-20 border rounded overflow-hidden"
+      >
+        <img
+          [src]="img"
+          alt="Imagen del producto"
+          class="w-full h-full object-cover"
         />
+        <button
+          type="button"
+          (click)="removeImage(item, img)"
+          class="absolute top-0 right-0 bg-red-600 text-white rounded-full px-1 text-xs"
+          title="Eliminar imagen"
+        >
+          &times;
+        </button>
       </div>
-      <div>
-        <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Descripción</label>
-        <input
-          [(ngModel)]="item.description"
-          name="description"
-          id="description"
-          placeholder="Descripción"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Precio</label>
-        <input
-          [(ngModel)]="item.price"
-          name="price"
-          id="price"
-          placeholder="Precio"
-          type="number"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label for="quantity" class="block text-gray-700 text-sm font-bold mb-2">Cantidad</label>
-        <input
-          [(ngModel)]="item.quantity"
-          name="quantity"
-          id="quantity"
-          placeholder="Cantidad"
-          type="number"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Imagenes</label>
-        <div class="flex items-center space-x-2">
-          <input
-            type="file"
-            id="image"
-            (change)="uploadImage($event)"
-            class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+    </div>
+
+    <button
+      type="submit"
+      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    >
+      Agregar Producto
+    </button>
+  </form>
+
+  <hr class="my-6" />
+
+  <h2 class="text-xl font-semibold mb-4">Productos activos</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div
+      *ngFor="let product of activeItems | paginate: { itemsPerPage: pageSize, currentPage: currentPage }"
+      class="border p-4 rounded shadow"
+    >
+      <div *ngIf="!product.editing">
+        <h3 class="font-bold text-lg mb-2">{{ product.name }}</h3>
+        <p class="mb-2">{{ product.description }}</p>
+        <p class="mb-2">Precio: ${{ product.price }}</p>
+        <p class="mb-2">Cantidad: {{ product.quantity }}</p>
+
+        <!-- Mostrar imágenes -->
+        <div class="flex gap-2 mb-2">
+          <img
+            *ngFor="let img of product.image_urls"
+            [src]="img"
+            alt="Imagen producto"
+            class="w-16 h-16 object-cover rounded"
           />
-          <div class="flex space-x-1">
-            <img *ngFor="let url of item.image_urls" [src]="url" alt="Imagen del producto" class="w-12 h-12 rounded-md border" />
+        </div>
+
+        <button
+          (click)="toggleEdit(product)"
+          class="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
+        >
+          Editar
+        </button>
+        <button
+          (click)="deleteItem(product)"
+          class="bg-red-600 text-white px-3 py-1 rounded"
+        >
+          Eliminar
+        </button>
+      </div>
+
+      <!-- Formulario edición -->
+      <div *ngIf="product.editing">
+        <input
+          type="text"
+          [(ngModel)]="product.name"
+          name="editName{{ product.id }}"
+          class="border p-2 w-full mb-2"
+          required
+        />
+        <textarea
+          [(ngModel)]="product.description"
+          name="editDescription{{ product.id }}"
+          class="border p-2 w-full mb-2"
+          required
+        ></textarea>
+        <input
+          type="number"
+          [(ngModel)]="product.price"
+          name="editPrice{{ product.id }}"
+          min="0"
+          class="border p-2 w-full mb-2"
+          required
+        />
+        <input
+          type="number"
+          [(ngModel)]="product.quantity"
+          name="editQuantity{{ product.id }}"
+          min="0"
+          class="border p-2 w-full mb-2"
+          required
+        />
+
+        <!-- Imágenes edición -->
+        <label class="block mb-2">Imágenes (máximo 4):</label>
+        <input
+          type="file"
+          (change)="uploadImage($event, product)"
+          accept="image/*"
+          class="mb-2"
+          [disabled]="product.image_urls.length >= 4"
+        />
+        <div class="flex gap-2 mb-4">
+          <div
+            *ngFor="let img of product.image_urls"
+            class="relative w-20 h-20 border rounded overflow-hidden"
+          >
+            <img
+              [src]="img"
+              alt="Imagen producto"
+              class="w-full h-full object-cover"
+            />
+            <button
+              type="button"
+              (click)="removeImage(product, img)"
+              class="absolute top-0 right-0 bg-red-600 text-white rounded-full px-1 text-xs"
+              title="Eliminar imagen"
+            >
+              &times;
+            </button>
           </div>
         </div>
-      </div>
-      <button
-        [disabled]="item.image_urls.length === 0"
-        type="submit"
-        class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-      >
-        Agregar Producto
-      </button>
-    </form>
-  </div>
 
-<h3 class="text-2xl font-semibold mb-6 text-gray-800">Lista de Productos</h3>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-  <div *ngFor="let item of activeItems | paginate: { itemsPerPage: pageSize, currentPage: currentPage, id: 'inventoryItems' }"
-       class="p-6 border border-gray-200 rounded-lg shadow-sm">
-    <div class="flex flex-wrap gap-2 mb-4">
-      <img *ngFor="let img of item.images" [src]="img.url" alt="{{ item.name }}" class="w-20 h-20 object-cover rounded-lg border" />
-    </div>
-    <p class="text-xl font-semibold text-gray-800">{{ item.name }}</p>
-    <p class="text-gray-600">{{ item.description }}</p>
-    <p class="text-gray-700"><strong>${{ item.price }}</strong></p>
-    <p class="text-gray-700">{{ item.quantity }} en stock</p>
-
-    <div *ngIf="userRole === 'superuser' || userRole === 'admin'" class="mt-6 flex gap-2">
-      <button
-        (click)="toggleEdit(item)"
-        class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-      >
-        Editar
-      </button>
-
-      <button
-        (click)="deleteItem(item)"
-        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600"
-      >
-        Eliminar
-      </button>
-    </div>
-
-    <form *ngIf="item.editing" (ngSubmit)="updateItem(item)" class="mt-4 space-y-4">
-      <div>
-        <label for="edit-name-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
-        <input
-          [(ngModel)]="item.name"
-          name="name"
-          id="edit-name-{{ item.id }}"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label for="edit-description-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Descripción</label>
-        <input
-          [(ngModel)]="item.description"
-          name="description"
-          id="edit-description-{{ item.id }}"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label for="edit-price-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Precio</label>
-        <input
-          [(ngModel)]="item.price"
-          name="price"
-          id="edit-price-{{ item.id }}"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <div>
-        <label for="edit-quantity-{{ item.id }}" class="block text-gray-700 text-sm font-bold mb-2">Cantidad</label>
-        <input
-          [(ngModel)]="item.quantity"
-          name="quantity"
-          id="edit-quantity-{{ item.id }}"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-      <button
-        type="submit"
-        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        Guardar
-      </button>
-    </form>
-  </div>
-</div>
-
-  <div class="flex justify-center">
-    <pagination-controls (pageChange)="onPageChange($event)" id="inventoryItems"></pagination-controls>
-  </div>
-
-  <!-- AGREGADO: Sección productos eliminados con paginación -->
-  <h3 class="text-2xl font-semibold mb-6 mt-12 text-gray-800">Productos Eliminados</h3>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-    <div *ngFor="let item of deletedItems | paginate: { itemsPerPage: pageSizeDeleted, currentPage: currentPageDeleted, id: 'deletedItems' }" class="p-6 border border-gray-200 rounded-lg shadow-sm bg-red-50">
-      <div class="flex flex-wrap gap-2 mb-4">
-        <img *ngFor="let img of item.images" [src]="img.url" alt="{{ item.name }}" class="w-20 h-20 object-cover rounded-lg border" />
-      </div>
-      <p class="text-xl font-semibold text-gray-800 line-through">{{ item.name }}</p>
-      <p class="text-gray-600 line-through">{{ item.description }}</p>
-      <p class="text-gray-700 line-through"><strong>${{ item.price }}</strong></p>
-      <p class="text-gray-700 line-through">{{ item.quantity }} en stock</p>
-
-      <div *ngIf="userRole === 'superuser' || userRole === 'admin'" class="mt-6">
         <button
-          (click)="restoreItem(item)"
-          class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+          (click)="updateItem(product)"
+          class="bg-green-600 text-white px-3 py-1 rounded mr-2"
         >
-          Restaurar
+          Guardar
+        </button>
+        <button
+          (click)="toggleEdit(product)"
+          class="bg-gray-500 text-white px-3 py-1 rounded"
+        >
+          Cancelar
         </button>
       </div>
     </div>
   </div>
 
-  <div class="flex justify-center mb-12">
-    <pagination-controls (pageChange)="onPageChangeDeleted($event)" id="deletedItems"></pagination-controls>
-  </div>
+  <!-- Paginación -->
+  <pagination-controls
+    (pageChange)="onPageChange($event)"
+    [maxSize]="5"
+    [autoHide]="true"
+  ></pagination-controls>
 </div>

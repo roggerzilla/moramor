@@ -23,9 +23,7 @@ export class InventoryComponent implements OnInit {
   pageSize = 9;
   currentPage = 1;
   deletedPage = 1;
-pageSizeDeleted = 9;
-  currentPageDeleted = 1;
-
+  pageSizeDeleted = 9;
 
   item = {
     name: '',
@@ -39,7 +37,7 @@ pageSizeDeleted = 9;
 
   ngOnInit(): void {
     this.loadItems();
-      this.loadDeletedItems();
+    this.loadDeletedItems();
     this.getUser();
   }
 
@@ -47,7 +45,13 @@ pageSizeDeleted = 9;
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     this.http.get<any[]>('http://localhost:8000/api/items', { headers }).subscribe(
       (items) => {
-        this.activeItems = items.filter(item => !item.deleted).map(item => ({ ...item, editing: false }));
+        this.activeItems = items
+          .filter(item => !item.deleted)
+          .map(item => ({
+            ...item,
+            editing: false,
+            image_urls: item.images?.map((img: any) => img.url) || [],
+          }));
       },
       (error: HttpErrorResponse) => {
         console.error('Error al cargar los items:', error);
@@ -55,17 +59,20 @@ pageSizeDeleted = 9;
       }
     );
   }
+
   loadDeletedItems(): void {
-  const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-  this.http.get<any[]>('http://localhost:8000/api/items/getdeleted', { headers }).subscribe(
-    (items) => {
-      console.log('Items eliminados cargados desde backend:', items);
-      this.deletedItems = items.map(item => ({ ...item, editing: false }));
-    },
-    (error: HttpErrorResponse) => {
-    }
-  );
-}
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+    this.http.get<any[]>('http://localhost:8000/api/items/getdeleted', { headers }).subscribe(
+      (items) => {
+        this.deletedItems = items.map(item => ({
+          ...item,
+          editing: false,
+          image_urls: item.images?.map((img: any) => img.url) || [],
+        }));
+      },
+      (error: HttpErrorResponse) => {}
+    );
+  }
 
   deleteItem(item: any): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
@@ -73,7 +80,7 @@ pageSizeDeleted = 9;
       () => {
         this.notification.success('Producto eliminado.');
         this.loadItems();
-      this.loadDeletedItems();
+        this.loadDeletedItems();
       },
       (error: HttpErrorResponse) => {
         console.error('Error al eliminar el producto:', error);
@@ -88,8 +95,7 @@ pageSizeDeleted = 9;
       () => {
         this.notification.success('Producto restaurado.');
         this.loadItems();
-    this.deletedItems = [];
-      this.loadDeletedItems();
+        this.loadDeletedItems();
       },
       (error: HttpErrorResponse) => {
         console.error('Error al restaurar el producto:', error);
@@ -140,30 +146,55 @@ pageSizeDeleted = 9;
       }
     );
   }
+uploadImage(event: any, itemToUpdate?: any): void {
+  const file = event.target.files[0];
+  if (!file) {
+    console.log('No file selected');
+    return;
+  }
 
-  uploadImage(event: any): void {
-    const file = event.target.files[0];
-    if (!file) return;
+  console.log('Archivo seleccionado:', file);
 
-    const formData = new FormData();
-    formData.append('image', file);
+  const formData = new FormData();
+  formData.append('image', file);
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.post<{ path: string }>('http://localhost:8000/api/upload-image', formData, { headers }).subscribe(
-      (response) => {
-        const baseUrl = 'http://localhost:8000/storage/';
-        const imageUrl = baseUrl + response.path.replace('public/', '');
-        if (this.item.image_urls.length < 4) {
-          this.item.image_urls.push(imageUrl);
-        } else {
-          this.notification.warning('Solo puedes subir hasta 4 imágenes por producto.');
-        }
-      },
-      (error: HttpErrorResponse) => {
-        console.error('Error al subir la imagen:', error);
-        this.notification.error('Error al subir la imagen.');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+
+  this.http.post<{ path: string }>('http://localhost:8000/api/upload-image', formData, { headers }).subscribe(
+    (response) => {
+      console.log('Respuesta de la API:', response);
+      
+       const imageUrl = response.path;
+
+      console.log('URL final de la imagen:', imageUrl);
+
+      // Dependiendo si itemToUpdate existe, agrega imagen a ese o a this.item
+      const targetItem = itemToUpdate || this.item;
+
+      if (!targetItem.image_urls) {
+        targetItem.image_urls = [];
       }
-    );
+
+      if (targetItem.image_urls.length >= 4) {
+        console.warn('Intentas subir más de 4 imágenes');
+        this.notification.warning('Solo puedes subir hasta 4 imágenes por producto.');
+        return;
+      }
+
+      targetItem.image_urls.push(imageUrl);
+      console.log('Imágenes actuales del producto:', targetItem.image_urls);
+    },
+    (error: HttpErrorResponse) => {
+      console.error('Error al subir la imagen:', error);
+      this.notification.error('Error al subir la imagen.');
+    }
+  );
+}
+
+
+
+  removeImage(item: any, imageUrl: string): void {
+    item.image_urls = item.image_urls.filter((url: string) => url !== imageUrl);
   }
 
   resetForm(): void {
