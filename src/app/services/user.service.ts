@@ -54,4 +54,8 @@ export class UserService {
   getCurrentUser() {
     return this.http.get<{ id: number; name: string }>(`${this.apiUrl}/user`);
   }
+saveAddress(addressData: any) {
+  return this.http.post<any>(`${this.apiUrl}/user/address`, addressData);
+}
+
 } 

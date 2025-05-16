@@ -5,6 +5,8 @@ import { trigger, style, transition, animate } from '@angular/animations';
 import { CartItem } from '../../models/cart-item.model';
 import { Router } from '@angular/router';
 import { CartService } from '../../services/cart.service';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-carrito',
@@ -38,11 +40,8 @@ export class CarritoComponent {
 
   @Input() set isOpen(value: boolean) {
     this._isOpen = value;
-    if (value) {
-      this.isVisible = true;
-    } else {
-      this.startClosing = true;
-    }
+    this.isVisible = value;
+    if (!value) this.startClosing = true;
   }
   get isOpen(): boolean {
     return this._isOpen;
@@ -72,50 +71,62 @@ export class CarritoComponent {
   }
 
   increaseQuantity(item: CartItem) {
-    item.quantity += 1;
-    this.cartService.updateCartItem(item.id, item.quantity).subscribe({
-      next: () => this.updateCart(),
-      error: (err) => console.error('Error al actualizar cantidad:', err)
-    });
-    this.cartService.getCartItems().subscribe(cartItems => {
-      this.cartService.updateCartState(cartItems);
-    });
+    if (item.quantity < item.item.quantity) {
+      item.quantity++;
+      this.updateQuantity(item);
+    }
   }
 
   decreaseQuantity(item: CartItem) {
     if (item.quantity > 1) {
-      item.quantity -= 1;
-      this.cartService.updateCartItem(item.id, item.quantity).subscribe({
-        next: () => this.updateCart(),
-        error: (err) => console.error('Error al actualizar cantidad:', err)
-      });
+      item.quantity--;
+      this.updateQuantity(item);
     }
-    this.cartService.getCartItems().subscribe(cartItems => {
-      this.cartService.updateCartState(cartItems);
+  }
+
+updateQuantity(item: CartItem) {
+  if (item.quantity < 1) {
+    item.quantity = 1;
+  }
+
+  if (item.quantity > item.item.quantity) {
+    item.quantity = item.item.quantity;
+
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'warning',
+      title: `Solo hay ${item.item.quantity} unidades de "${item.item.name}"`,
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      background: '#ffffff',
+      color: '#28388E',
     });
   }
 
-  updateQuantity(item: CartItem) {
-    if (item.quantity < 1) item.quantity = 1;
-    this.cartService.updateCartItem(item.id, item.quantity).subscribe({
-      next: () => this.updateCart(),
-      error: (err) => console.error('Error al actualizar cantidad:', err)
-    });
-    this.cartService.getCartItems().subscribe(cartItems => {
-      this.cartService.updateCartState(cartItems);
-    });
-  }
+  this.cartService.updateCartItem(item.id, item.quantity).subscribe({
+    next: () => {
+      this.updateCart();
+      this.cartService.getCartItems().subscribe(cartItems => {
+        this.cartService.updateCartState(cartItems);
+      });
+    },
+    error: (err) => console.error('Error al actualizar cantidad:', err)
+  });
+}
+
 
   removeItem(item: CartItem) {
     this.cartService.removeFromCart(item.id).subscribe({
       next: () => {
         this.cartItems = this.cartItems.filter(i => i !== item);
         this.updateCart();
+        this.cartService.getCartItems().subscribe(cartItems => {
+          this.cartService.updateCartState(cartItems);
+        });
       },
       error: (err) => console.error('Error al eliminar el ítem:', err)
-    });
-    this.cartService.getCartItems().subscribe(cartItems => {
-      this.cartService.updateCartState(cartItems);
     });
   }
 
@@ -136,8 +147,8 @@ export class CarritoComponent {
   }
 
   goToPayment(event: Event) {
-    this.closeCart();
     event.stopPropagation();
+    this.closeCart();
     this.router.navigate(['/pay']);
   }
 }

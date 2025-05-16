@@ -19,6 +19,7 @@ import {CorreoEviadoComponent} from '../../src/app/components/correo-eviado/corr
 import {PoliticasComponent} from '../../src/app/components/politicas/politicas.component';
 import {TerminosComponent} from '../../src/app/components/terminos/terminos.component';
 import {ContactoComponent} from '../../src/app/components/contacto/contacto.component';
+import {ExitosoComponent} from '../../src/app/components/exitoso/exitoso.component';
 
 import { RoleGuard } from './guards/role.guard';
 
@@ -33,6 +34,7 @@ export const routes: Routes = [
     { path: 'politicas', component: PoliticasComponent },
     { path: 'terminos', component: TerminosComponent },
     { path: 'contacto', component: ContactoComponent },
+    { path: 'exitoso', component: ExitosoComponent },
     //Super usuarios
     { path: 'users', component: UserManagementComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser'] } },
     

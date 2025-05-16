@@ -13,8 +13,8 @@
     class="fixed inset-y-0 right-0 w-full max-w-[600px] z-50 overflow-y-auto bg-white shadow-xl">
 
     <div class="h-full flex flex-col">
-      <div class="">
-        <!-- Primera fila: título y botón -->
+      <div>
+        <!-- Encabezado -->
         <div class="flex items-start justify-between p-4">
           <h2 class="!ml-47 abhaya-libre-bold text-lg font-medium text-gray-900 !text-[48px] !text-[#28388E]">Su orden</h2>
           <button (click)="closeCart()" class="p-2 text-gray-400 hover:text-gray-500">
@@ -25,29 +25,27 @@
             </svg>
           </button>
         </div>
-        
-        <!-- Segunda fila: imagen centrada -->
+
+        <!-- Separador -->
         <div class="flex justify-center pb-2 px-4">
           <img src="separador.svg" alt="separador" class="max-h-16 max-w-80">
         </div>
       </div>
 
+      <!-- Lista de productos -->
       <div class="flex-1 overflow-y-auto p-4">
         <div *ngIf="cartItems.length > 0; else emptyCart">
-          <ul class="divide-y divide-gray-200">
+          <ul class="divide-y divide-gray-200 gap-y-6 flex flex-col">
             <li *ngFor="let cartItem of cartItems" class="py-6 flex justify-between">
-              
-              <!-- Columna izquierda: Imagen + nombre + mililitros -->
+              <!-- Columna izquierda: Imagen + nombre -->
               <div class="flex">
                 <div>
-                  <!-- Imagen -->
                   <div class="h-32 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                     <img [src]="cartItem.item.image_url || 'assets/placeholder-product.png'"
                          [alt]="cartItem.item.name"
                          class="h-full w-full object-cover object-center" />
                   </div>
-        
-                  <!-- Nombre y mililitros debajo de la imagen -->
+
                   <div class="mt-2">
                     <h3 class="abhaya-libre-medium text-[#28388E] text-lg leading-tight">
                       {{ cartItem.item.name }}
@@ -57,49 +55,42 @@
                     </p>
                   </div>
                 </div>
-        
-                <!-- Selector de cantidad a la derecha de la imagen -->
+
+                <!-- Selector cantidad -->
                 <div class="ml-4 flex items-center !ml-25 !-mt-20">
                   <div class="bg-white border-2 border-[#1A237E] rounded-[1.5rem] px-4 py-2 flex items-center justify-between gap-4 w-[120px]">
-                    
-                    <!-- Input numérico centrado -->
                     <input
                       type="number"
                       [(ngModel)]="cartItem.quantity"
                       min="1"
                       [max]="cartItem.item.quantity"
-                      (change)="updateQuantity(cartItem)"
+                      (blur)="updateQuantity(cartItem)"
                       class="text-[#1A237E] w-8 text-center text-lg font-medium bg-transparent border-none focus:outline-none 
                              appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                       style="-moz-appearance: textfield;" />
-                
-                    <!-- Flechas -->
+
                     <div class="flex flex-col gap-1">
                       <button type="button"
                         class="text-[#1A237E] text-sm hover:scale-110 transition"
-                        (click)="cartItem.quantity = cartItem.quantity < cartItem.item.quantity ? cartItem.quantity + 1 : cartItem.item.quantity; updateQuantity(cartItem); $event.stopPropagation()">
+                        (click)="increaseQuantity(cartItem); $event.stopPropagation()">
                         ▲
                       </button>
                       <button type="button"
                         class="text-[#1A237E] text-sm hover:scale-110 transition"
-                        (click)="cartItem.quantity = cartItem.quantity > 1 ? cartItem.quantity - 1 : 1; updateQuantity(cartItem); $event.stopPropagation()">
+                        (click)="decreaseQuantity(cartItem); $event.stopPropagation()">
                         ▼
                       </button>
                     </div>
                   </div>
                 </div>
-                
               </div>
-        
+
               <!-- Columna derecha: Precio y eliminar -->
               <div class="flex flex-col justify-between mt-3 mr-5 items-end ml-4">
                 <div class="flex flex-col items-end">
-                  <!-- Precio -->
                   <p class="abhaya-libre-medium text-[24px] text-[#28388E]">
                     {{ cartItem.item.price | currency }}
                   </p>
-        
-                  <!-- Botón eliminar -->
                   <button (click)="removeItem(cartItem); $event.stopPropagation()"
                           class="font-medium text-red-600 hover:text-red-500 mt-2">
                     X Eliminar
@@ -109,22 +100,20 @@
             </li>
           </ul>
         </div>
-        
-        
-        
-        <!-- Plantilla cuando el carrito está vacío -->
+
+        <!-- Carrito vacío -->
         <ng-template #emptyCart>
           <div class="text-center text-gray-500">Tu carrito está vacío</div>
         </ng-template>
       </div>
 
+      <!-- Total y botón de compra -->
       <div *ngIf="cartItems.length > 0" class="border-t border-gray-200 py-6 px-4 text-center">
         <div class="flex justify-between text-base font-medium text-gray-900">
           <p class="abhaya-libre-medium !text-[24px] !text-[#28388E]">Total</p>
           <p class="abhaya-libre-medium !text-[24px] !text-[#28388E]">{{ getTotal() | currency }}</p>
         </div>
-        <button (click)="goToPayment($event)"
-                class="btn-void">
+        <button (click)="goToPayment($event)" class="btn-void">
           Comprar
         </button>
       </div>

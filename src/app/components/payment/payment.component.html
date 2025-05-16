@@ -67,8 +67,14 @@
       <input class="w-full p-2 border rounded text-sm" placeholder="Dirección 2" [(ngModel)]="newAddress.address2" />
       <input class="w-full p-2 border rounded text-sm" placeholder="Ciudad" [(ngModel)]="newAddress.city" />
       <input class="w-full p-2 border rounded text-sm" placeholder="Estado" [(ngModel)]="newAddress.state" />
-      <input class="w-full p-2 border rounded text-sm" placeholder="Código postal" [(ngModel)]="newAddress.zip_code" />
+      <input class="w-full p-2 border rounded text-sm" placeholder="Código postal" [(ngModel)]="newAddress.postal_code" />
     </div>
+    <div *ngIf="addressMode === 'new'" class="mt-4 flex justify-center">
+  <button class="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition"
+          (click)="saveNewAddress()">
+    Guardar dirección
+  </button>
+</div>
   </div>
 
   <!-- Botón de pagar -->

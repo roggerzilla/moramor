@@ -1,3 +1,4 @@
+// ... imports
 import { Component, OnInit } from '@angular/core';
 import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
 import { PaymentService } from '../../services/payment.service';
@@ -9,13 +10,12 @@ import { firstValueFrom } from 'rxjs';
 import { UserService } from '../../services/user.service';
 import { FormsModule } from '@angular/forms';
 
-
 @Component({
   selector: 'app-payment',
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.css'],
   standalone: true,
-  imports: [CommonModule,FormsModule]
+  imports: [CommonModule, FormsModule]
 })
 export class PaymentComponent implements OnInit {
   stripe: Stripe | null = null;
@@ -28,42 +28,50 @@ export class PaymentComponent implements OnInit {
 
   userAddresses: any[] = [];
   selectedAddressId: number | null = null;
-  addressMode: 'saved' | 'new' = 'saved'; // Por defecto: usar dirección guardada
+  addressMode: 'saved' | 'new' = 'saved';
 
-newAddress = {
-  street: '',
-  address2: '',
-  city: '',
-  state: '',
-  zip_code: ''
-};
+  newAddress = {
+    street: '',
+    address2: '',
+    city: '',
+    state: '',
+    postal_code: '', // ✅ nombre correcto
+    country: 'México' // ✅ país fijo
+  };
+  
+  
+  stripeInitialized = false;
+
 
   constructor(
     private paymentService: PaymentService,
     private cartService: CartService,
     private router: Router,
-    private userService: UserService,
+    private userService: UserService
   ) {}
 
   async ngOnInit() {
     this.stripe = await loadStripe('pk_test_51RBMauP5YAunVj6pbcfSdzr2XUkhkd6ryGfqqL0rdOCv3d2YtVZRIvwaMcQVL1uZcmoswy2sXD3OwEfN0eCW2K9v00N7oPp1qB');
 
-    this.cartService.getCartItems().subscribe({
-      next: async (items: CartItem[]) => {
-        this.cartItems = items;
-        this.calculateTotalAmount();
-        await this.initializeStripeElements();
+  this.cartService.getCartItems().subscribe();
+
+  // Luego suscríbete solo a cartItems$
+  this.cartService.cartItems$.subscribe(items => {
+    this.cartItems = items;
+            this.calculateTotalAmount();
+         if (!this.stripeInitialized && this.cartItems.length > 0) {
+    this.initializeStripeElements();
+    this.stripeInitialized = true;
+  }
         this.isLoading = false;
-      },
-      error: (err: any) => {
-        this.error = 'Error al obtener los ítems del carrito';
-        this.isLoading = false;
-      }
-    });
+      
+  });
+
+
     this.userService.getUserAddresses().subscribe(addresses => {
       this.userAddresses = addresses;
       if (addresses.length > 0) {
-        this.selectedAddressId = addresses[0].id;  // Solo almacenamos el 'id', no el objeto completo
+        this.selectedAddressId = addresses[0].id;
       }
     });
   }
@@ -76,10 +84,8 @@ newAddress = {
 
   private async initializeStripeElements() {
     try {
-      const response = await firstValueFrom(
-        this.paymentService.createPaymentIntent(this.totalAmount)
-      );
-      
+      const response = await firstValueFrom(this.paymentService.createPaymentIntent(this.totalAmount));
+
       if (!response?.clientSecret) {
         throw new Error('No se recibió clientSecret del servidor');
       }
@@ -121,22 +127,21 @@ newAddress = {
           padding: '12px',
           width: '20px',
         },
-        // Personaliza el tamaño de los campos específicos
         '.Input--cardNumber': {
-          fontSize: '12px', // Tamaño de la fuente más pequeño para el número de tarjeta
-          padding: '8px', // Menos espacio alrededor del texto
+          fontSize: '12px',
+          padding: '8px',
         },
         '.Input--expirationDate': {
-          fontSize: '12px', // Tamaño de la fuente más pequeño para la fecha de vencimiento
-          padding: '8px', // Menos espacio alrededor del texto
+          fontSize: '12px',
+          padding: '8px',
         },
         '.Input--cvc': {
-          fontSize: '12px', // Tamaño de la fuente más pequeño para CVC
-          padding: '8px', // Menos espacio alrededor del texto
+          fontSize: '12px',
+          padding: '8px',
         },
         '.Input--billingCountry': {
-          fontSize: '12px', // Tamaño de la fuente más pequeño para el campo de país
-          padding: '8px', // Menos espacio alrededor del texto
+          fontSize: '12px',
+          padding: '8px',
         },
       },
     };
@@ -176,8 +181,8 @@ newAddress = {
   }
 
   private handleStripeError(error: any) {
-    if (error.code === 'payment_intent_unexpected_state' && 
-        error.paymentIntent?.status === 'succeeded') {
+    if (error.code === 'payment_intent_unexpected_state' &&
+      error.paymentIntent?.status === 'succeeded') {
       this.processPayment(error.paymentIntent.id);
       return;
     }
@@ -189,10 +194,9 @@ newAddress = {
       item_id: item.item.id,
       quantity: item.quantity
     }));
-  
+
     this.paymentService.subtractStock(itemsToUpdate).subscribe({
       next: () => {
-        // Obtener el usuario autenticado
         this.userService.getCurrentUser().subscribe({
           next: (user) => {
             const orderData = {
@@ -207,9 +211,7 @@ newAddress = {
               status: 'completed',
               address_id: Number(this.selectedAddressId)
             };
-  
-            console.log('Order data being sent:', orderData);
-  
+
             this.paymentService.createOrder(orderData).subscribe({
               next: () => {
                 this.cartService.clearCart().subscribe();
@@ -229,18 +231,54 @@ newAddress = {
           }
         });
       },
-      error: (err: any) => {
+      error: (err) => {
         this.error = 'Error al actualizar el stock';
         console.error(err);
       }
     });
   }
-  
-  
 
   private handleError(message: string, error: any) {
     this.error = message;
     this.isLoading = false;
     console.error(error);
+  }
+
+  async saveNewAddress() {
+    const { street, address2, city, state, postal_code, country } = this.newAddress;
+
+    if (!street || !city || !state || !postal_code) {
+      this.error = 'Completa todos los campos obligatorios.';
+      return;
+    }
+
+    try {
+      const user = await firstValueFrom(this.userService.getCurrentUser());
+
+      const newAddressPayload = {
+        street,
+        address2,
+        city,
+        state,
+        postal_code,
+        country, // ✅ Incluimos el país fijo
+        user_id: user.id
+      };
+
+      const saved = await firstValueFrom(this.userService.saveAddress(newAddressPayload));
+
+      this.userAddresses.push(saved);
+      this.selectedAddressId = saved.id;
+      this.addressMode = 'saved';
+          this.userService.getUserAddresses().subscribe(addresses => {
+      this.userAddresses = addresses;
+      if (addresses.length > 0) {
+        this.selectedAddressId = addresses[0].id;
+      }
+    });
+    } catch (error) {
+      this.error = 'Error al guardar la dirección.';
+      console.error(error);
+    }
   }
 }

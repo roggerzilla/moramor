@@ -9,8 +9,7 @@ import { CartItem } from '../models/cart-item.model';
 })
 export class CartService {
   private apiUrl = 'http://localhost:8000/api/cart';
-  private cartItemsSubject = new BehaviorSubject<CartItem[]>([]);
-  cartItems$ = this.cartItemsSubject.asObservable();
+
 
   constructor(private http: HttpClient) {}
 
@@ -18,56 +17,39 @@ export class CartService {
     return localStorage.getItem('token');
   }
 
-  getCartItems(): Observable<CartItem[]> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http.get<CartItem[]>(`${this.apiUrl}`, { headers }).pipe(
-      tap(items => this.cartItemsSubject.next(items)), // actualiza localmente
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error al obtener los ítems del carrito:', error);
-        this.cartItemsSubject.next([]); // también limpia local si hay error
-        return of([]);
-      })
-    );
-  }
+private cartItemsSubject = new BehaviorSubject<CartItem[]>([]);
+cartItems$ = this.cartItemsSubject.asObservable();
 
-  addToCart(itemId: number, quantity: number): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http
-      .post(`${this.apiUrl}/add`, { item_id: itemId, quantity }, { headers })
-      .pipe(
-        switchMap(() => this.getCartItems()), // recarga automáticamente después de agregar
-        catchError((error: HttpErrorResponse) => {
-          console.error('Error al agregar el ítem al carrito:', error);
-          return of(null);
-        })
-      );
-  }
+getCartItems(): Observable<CartItem[]> {
+  return this.http.get<CartItem[]>(this.apiUrl).pipe(
+    tap(items => {
+      this.cartItemsSubject.next(items); // Solo este BehaviorSubject, no dos.
+    }),
+    catchError(() => {
+      this.cartItemsSubject.next([]); // En error, limpiar carrito.
+      return of([]);
+    })
+  );
+}
 
-  updateCartItem(cartItemId: number, quantity: number): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http
-      .put(`${this.apiUrl}/update/${cartItemId}`, { quantity }, { headers })
-      .pipe(
-        switchMap(() => this.getCartItems()),
-        catchError((error: HttpErrorResponse) => {
-          console.error('Error al actualizar el ítem del carrito:', error);
-          return of(null);
-        })
-      );
-  }
 
-  removeFromCart(cartItemId: number): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http
-      .delete(`${this.apiUrl}/remove/${cartItemId}`, { headers })
-      .pipe(
-        switchMap(() => this.getCartItems()),
-        catchError((error: HttpErrorResponse) => {
-          console.error('Error al eliminar el ítem del carrito:', error);
-          return of(null);
-        })
-      );
-  }
+addToCart(itemId: number, quantity: number): Observable<any> {
+  return this.http.post(`${this.apiUrl}/add`, { item_id: itemId, quantity }).pipe(
+    switchMap(() => this.getCartItems()) // Actualiza y emite el nuevo estado
+  );
+}
+
+updateCartItem(cartItemId: number, quantity: number): Observable<any> {
+  return this.http.put(`${this.apiUrl}/update/${cartItemId}`, { quantity }).pipe(
+    switchMap(() => this.getCartItems())
+  );
+}
+
+removeFromCart(cartItemId: number): Observable<any> {
+  return this.http.delete(`${this.apiUrl}/remove/${cartItemId}`).pipe(
+    switchMap(() => this.getCartItems())
+  );
+}
 
   clearCart(): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
@@ -83,4 +65,8 @@ export class CartService {
   updateCartState(cartItems: CartItem[]): void {
     this.cartItemsSubject.next(cartItems);
   }
+
+  private cartState = new BehaviorSubject<CartItem[]>([]);
+cartState$ = this.cartState.asObservable();
+
 }
