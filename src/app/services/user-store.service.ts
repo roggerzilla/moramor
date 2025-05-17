@@ -1,21 +1,35 @@
 import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class UserStoreService {
+  private token = '';
+  private email = '';
+  private name = '';
 
-  private email: string | null = null;
+  setToken(token: string) {
+    this.token = token;
+    localStorage.setItem('token', token);
+  }
 
   setEmail(email: string) {
     this.email = email;
+    localStorage.setItem('email', email);
   }
 
-  getEmail(): string | null {
-    return this.email;
+  setName(name: string) {
+    this.name = name;
+    localStorage.setItem('name', name);
   }
 
-  clearEmail() {
-    this.email = null;
+  getToken() {
+    return this.token || localStorage.getItem('token');
+  }
+
+  getEmail() {
+    return this.email || localStorage.getItem('email');
+  }
+
+  getName() {
+    return this.name || localStorage.getItem('name');
   }
 }

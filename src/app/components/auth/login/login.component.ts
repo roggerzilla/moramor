@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { UserStoreService } from '../../../services/user-store.service';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +15,24 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 export class LoginComponent {
   user = { email: '', password: '' }; // Inicializa el objeto user
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router,private route: ActivatedRoute,private userStore: UserStoreService) {}
+
+
+ngOnInit() {
+  this.route.queryParams.subscribe(params => {
+    const token = params['token'];
+    const name = params['name'];
+    const email = params['email'];
+
+    if (token && name && email) {
+      this.userStore.setToken(token);
+      this.userStore.setName(name);
+      this.userStore.setEmail(email);
+
+window.location.href = '/usuario';
+    }
+  });
+}
 
   login() {
     console.log('Formulario enviado'); // Verifica que el método se llame
@@ -35,4 +54,8 @@ export class LoginComponent {
       },
     });
   }
+
+  loginWithGoogle() {
+  window.location.href = 'http://localhost:8000/api/auth/google/redirect';
+}
 }

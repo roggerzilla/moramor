@@ -48,4 +48,8 @@ export class RegisterComponent {
       },
     });
   }
+  loginWithGoogle() {
+  // Redirige al backend Laravel
+  window.location.href = 'http://localhost:8000/api/auth/google/redirect';
+}
 }
