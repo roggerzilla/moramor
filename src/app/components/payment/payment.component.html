@@ -1,7 +1,7 @@
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full p-6 !ml-20">
   <!-- Columna izquierda - Método de pago -->
   <div class="flex flex-col items-center">
-    <h3 class="abhaya-libre-medium text-xl font-bold mb-4">Método de pago</h3>
+    <h3 class="abhaya-libre-medium text-xl font-bold mb-4 text-[#28388E]">Método de pago</h3>
 
     <!-- Spinner -->
     <div *ngIf="isLoading" class="flex justify-center items-center h-64">
@@ -9,116 +9,102 @@
     </div>
 
     <!-- Payment element (centrado y con ancho limitado) -->
-<div class="w-full max-w-md">
-  <div id="payment-element" class="mb-4"></div>
+    <div class="w-full max-w-md">
+      <div id="payment-element" class="mb-4"></div>
 
-  <!-- Selector tipo de dirección -->
-<div class="mb-6">
-  <label class="block text-sm font-medium text-gray-700 mb-2">¿Cómo deseas ingresar la dirección?</label>
-<div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-  <label
-    class="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer text-center transition-all duration-200
-           hover:border-blue-500 hover:shadow-md"
-    [class.border-blue-500]="addressMode === 'saved'"
-  >
-    <input
-      type="radio"
-      name="addressType"
-      class="form-radio text-blue-600 mb-2"
-      [(ngModel)]="addressMode"
-      value="saved"
-    />
-    <span class="text-sm text-gray-800">Utilizar una dirección guardada</span>
-  </label>
+      <!-- Selector tipo de dirección -->
+      <div class="mb-6 mt-15">
+        <div class="flex justify-center pb-2 px-4">
+          <img src="separador.svg" alt="separador" class="max-h-16 max-w-80">
+        </div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">¿Cómo deseas ingresar la dirección?</label>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+<button
+  class="btn-void rounded-lg cursor-pointer text-center transition-all duration-200 flex items-center justify-center"
+  [class.border-blue-500]="addressMode === 'saved'"
+  (click)="addressMode = 'saved'"
+  style="width: 193px; height: 68px;"
+>
+  <span class="text-[16px]">Utilizar una dirección guardada</span>
+</button>
+<button
+  class="btn-void rounded-lg cursor-pointer text-center transition-all duration-200 flex items-center justify-center"
+  [class.border-blue-500]="addressMode === 'new'"
+  (click)="addressMode = 'new'"
+  style="width: 193px; height: 68px;"
+>
+  <span class="text-[16px]">Agregar una nueva dirección</span>
+</button>
+        </div>
+      </div>
 
-  <label
-    class="flex flex-col items-center justify-center p-4 border rounded-lg cursor-pointer text-center transition-all duration-200
-           hover:border-blue-500 hover:shadow-md"
-    [class.border-blue-500]="addressMode === 'new'"
-  >
-    <input
-      type="radio"
-      name="addressType"
-      class="form-radio text-blue-600 mb-2"
-      [(ngModel)]="addressMode"
-      value="new"
-    />
-    <span class="text-sm text-gray-800">Agregar una nueva dirección</span>
-  </label>
-</div>
+      <!-- Mostrar si usa dirección guardada -->
+      <div *ngIf="addressMode === 'saved'" class="mb-4 text-center">
+        <label for="shipping-address" class="noto-sans-regular !text-[#28388E] block font-semibold mb-2 text-left">Selecciona una dirección de envío</label>
+        <select id="shipping-address" class="w-full p-2 border rounded text-sm" [(ngModel)]="selectedAddressId">
+          <option *ngFor="let address of userAddresses" [value]="address.id">
+            {{ address.street }}, {{ address.address2 }}, {{ address.city }}, {{ address.state }}, {{ address.zip_code }}
+          </option>
+        </select>
+      </div>
 
-</div>
+      <!-- Formulario nueva dirección -->
+      <div *ngIf="addressMode === 'new'" class="mb-4">
+        <div class="space-y-2">
+          <input class="w-full p-2 border rounded text-sm text-[#28388E]" placeholder="Calle" [(ngModel)]="newAddress.street" />
+          <input class="w-full p-2 border rounded text-sm text-[#28388E]" placeholder="Dirección 2" [(ngModel)]="newAddress.address2" />
+          <input class="w-full p-2 border rounded text-sm text-[#28388E]" placeholder="Ciudad" [(ngModel)]="newAddress.city" />
+          <input class="w-full p-2 border rounded text-sm text-[#28388E]" placeholder="Estado" [(ngModel)]="newAddress.state" />
+          <input class="w-full p-2 border rounded text-sm text-[#28388E]" placeholder="Código postal" [(ngModel)]="newAddress.postal_code" />
+        </div>
+        <div *ngIf="addressMode === 'new'" class="mt-4 flex justify-center">
+          <button class="btn-void px-4 py-2 text-sm rounded transition"
+                  (click)="saveNewAddress()">
+            Guardar dirección
+          </button>
+        </div>
+      </div>
 
-
-  <!-- Mostrar si usa dirección guardada -->
-  <div *ngIf="addressMode === 'saved'" class="mb-4 text-center">
-    <label for="shipping-address" class="block font-semibold mb-2 text-left">Selecciona una dirección de envío</label>
-    <select id="shipping-address" class="w-full p-2 border rounded text-sm" [(ngModel)]="selectedAddressId">
-      <option *ngFor="let address of userAddresses" [value]="address.id">
-        {{ address.street }}, {{ address.address2 }}, {{ address.city }}, {{ address.state }}, {{ address.zip_code }}
-      </option>
-    </select>
-  </div>
-
-  <!-- Formulario nueva dirección -->
-  <div *ngIf="addressMode === 'new'" class="mb-4">
-    <div class="space-y-2">
-      <input class="w-full p-2 border rounded text-sm" placeholder="Calle" [(ngModel)]="newAddress.street" />
-      <input class="w-full p-2 border rounded text-sm" placeholder="Dirección 2" [(ngModel)]="newAddress.address2" />
-      <input class="w-full p-2 border rounded text-sm" placeholder="Ciudad" [(ngModel)]="newAddress.city" />
-      <input class="w-full p-2 border rounded text-sm" placeholder="Estado" [(ngModel)]="newAddress.state" />
-      <input class="w-full p-2 border rounded text-sm" placeholder="Código postal" [(ngModel)]="newAddress.postal_code" />
+      <!-- Botón de pagar -->
+      <div class="flex justify-center mt-4">
+        <button class="btn-void px-4 py-2"
+                (click)="handlePayment()">
+          Pagar ahora
+        </button>
+      </div>
     </div>
-    <div *ngIf="addressMode === 'new'" class="mt-4 flex justify-center">
-  <button class="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition"
-          (click)="saveNewAddress()">
-    Guardar dirección
-  </button>
-</div>
   </div>
-
-  <!-- Botón de pagar -->
-  <div class="flex justify-center mt-4">
-    <button class="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition"
-            (click)="handlePayment()">
-      Pagar ahora
-    </button>
-  </div>
-</div>
-
-  </div>
-
   <!-- Columna derecha - Resumen del pedido -->
   <div class="flex flex-col !mr-100">
-    <h3 class="abhaya-libre-medium text-xl font-bold mb-4">Resumen del pedido</h3>
+    <h3 class="abhaya-libre-medium text-xl font-bold mb-4 !text-[#28388E]">Resumen del pedido</h3>
 
     <div class="overflow-y-auto flex-grow mb-4 max-h-[400px]">
       <div *ngFor="let item of cartItems" class="flex justify-between items-center mb-4 pb-4 border-b">
         <div class="flex items-center">
           <img [src]="item.item.image_url" alt="{{ item.item.name }}" class="w-16 h-16 mr-4 object-cover" />
           <div>
-            <p class="abhaya-libre-medium text-[22px] font-semibold">{{ item.item.name }}</p>
-            <p class="abhaya-libre-medium text-[18px] text-sm text-gray-600">Cantidad: {{ item.quantity }}</p>
+            <p class="abhaya-libre-medium text-[22px] font-semibold !text-[#28388E]">{{ item.item.name }}</p>
+            <p class="abhaya-libre-medium text-[18px] text-sm text-gray-600 !text-[#28388E]">Cantidad: {{ item.quantity }}</p>
           </div>
         </div>
-        <p class="font-semibold">{{ item.item.price * item.quantity | currency:'MXN' }}</p>
+        <p class="abhaya-libre-medium !text-[32px] !text-[#28388E]">{{ item.item.price * item.quantity | currency:'MXN' }}</p>
       </div>
     </div>
 
     <div class="space-y-2 mb-4">
       <div class="flex justify-between">
-        <span class="abhaya-libre-medium text-[18px]">Subtotal</span>
-        <span class="abhaya-libre-medium text-[18px]">{{ totalAmount / 100 | currency:'MXN' }}</span>
+        <span class="abhaya-libre-medium text-[18px] !text-[#28388E]">Subtotal</span>
+        <span class="abhaya-libre-medium text-[18px] !text-[#28388E]">{{ totalAmount / 100 | currency:'MXN' }}</span>
       </div>
       <div class="flex justify-between">
-        <span class="abhaya-libre-medium text-[18px]">Envío</span>
-        <span class="abhaya-libre-medium text-[18px]">Incluido</span>
+        <span class="abhaya-libre-medium text-[18px] !text-[#28388E]">Envío</span>
+        <span class="abhaya-libre-medium text-[18px] !text-[#28388E]">Incluido</span>
       </div>
     </div>
 
     <div class="pt-4 border-t flex justify-between font-bold text-lg">
-      <span class="abhaya-libre-medium text-[18px]">Total</span>
-      <span class="abhaya-libre-medium text-[18px]">{{ totalAmount / 100 | currency:'MXN' }}</span>
+      <span class="abhaya-libre-medium text-[18px] !text-[#28388E]">Total</span>
+      <span class="abhaya-libre-medium text-[18px] !text-[#28388E]">{{ totalAmount / 100 | currency:'MXN' }}</span>
     </div>
   </div>
 </div>

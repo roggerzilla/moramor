@@ -6,7 +6,6 @@ import { NotificationService } from '../../services/notification.service';
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
 
-
 interface Address {
   id?: number;
   street: string;
@@ -18,14 +17,15 @@ interface Address {
   editing?: boolean;
 }
 
+
 @Component({
-  selector: 'app-user',
-  standalone: true,
+  selector: 'app-user-edit',
   imports: [CommonModule, FormsModule],
-  templateUrl: './user.component.html',
-  styleUrls: ['./user.component.css']
+  templateUrl: './user-edit.component.html',
+  styleUrl: './user-edit.component.css',
+  
 })
-export class UserComponent implements OnInit {
+export class UserEditComponent implements OnInit {
   user: any = { name: '', email: '' };
   password: string = '';
   updateMessage: string = '';
@@ -49,8 +49,7 @@ export class UserComponent implements OnInit {
     private http: HttpClient,
     private notification: NotificationService,
     private userService: UserService,
-        private router: Router
-
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -139,7 +138,7 @@ export class UserComponent implements OnInit {
           city: '',
           state: '',
           postal_code: '',
-          country: 'Mexico'
+          country: ''
         };
       },
       error: (err) => {
@@ -207,19 +206,8 @@ export class UserComponent implements OnInit {
   }
 
   onAddressChange(): void {
-    if (this.selectedAddress === null) {
-      // Usuario seleccionó "Agregar nueva dirección"
-      this.addressMode = 'new';
-      this.newAddress = {
-        street: '',
-        address2: '',
-        city: '',
-        state: '',
-        postal_code: '',
-        country: 'Mexico'
-      };
-    } else {
-      this.addressMode = 'saved';
+    if (this.selectedAddress) {
+      this.selectedAddress = JSON.parse(JSON.stringify(this.selectedAddress));
     }
   }
 
@@ -234,17 +222,5 @@ export class UserComponent implements OnInit {
   compareAddress(a: Address, b: Address): boolean {
     return a && b ? a.id === b.id : a === b;
   }
-    navigateToEdit() {
-  this.router.navigate(['/usuario-edit']);
-}
- isAddressFormValid(): boolean {
-    return (
-      !!this.newAddress.street &&
-      !!this.newAddress.address2 &&
-      !!this.newAddress.city &&
-      !!this.newAddress.state &&
-      !!this.newAddress.postal_code &&
-      this.newAddress.postal_code.length === 5
-    );
-  }
+
 }

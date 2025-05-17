@@ -20,6 +20,7 @@ import {PoliticasComponent} from '../../src/app/components/politicas/politicas.c
 import {TerminosComponent} from '../../src/app/components/terminos/terminos.component';
 import {ContactoComponent} from '../../src/app/components/contacto/contacto.component';
 import {ExitosoComponent} from '../../src/app/components/exitoso/exitoso.component';
+import {UserEditComponent} from '../../src/app/components/user-edit/user-edit.component';
 
 import { RoleGuard } from './guards/role.guard';
 
@@ -49,6 +50,7 @@ export const routes: Routes = [
     { path: 'pay', component: PaymentComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser', 'user'] } },
     { path: 'error', component: MailErrorComponent },
     { path: 'usuario', component:UserComponent , canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser', 'user'] } },
+     { path: 'usuario-edit', component:UserEditComponent , canActivate: [RoleGuard], data: { expectedRoles: ['admin', 'superuser', 'user'] } },
 
 
 
