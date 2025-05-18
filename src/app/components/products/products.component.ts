@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { environment } from '../../../environments/environment'; 
+
 
 
 @Component({
@@ -22,6 +24,7 @@ export class ProductsComponent implements OnInit {
   isLoading = true;  //carga
   currentPage = 1;
   itemsPerPage: number = 9;
+  private apiUrl = environment.apiUrl;
 
   constructor(private cartService: CartService,private router: Router,private notification:NotificationService) {}
 
@@ -32,7 +35,7 @@ export class ProductsComponent implements OnInit {
 
   // Cargar productos desde la API
   loadItems(): void {
-    this.http.get<any[]>('http://localhost:8000/api/items').subscribe(
+    this.http.get<any[]>(`${this.apiUrl}/items`).subscribe(
       (items) => {
         this.items = items;
         this.isLoading = false; //carga
@@ -93,7 +96,7 @@ export class ProductsComponent implements OnInit {
       'Accept': 'application/json'
     });
   
-    this.http.post('http://localhost:8000/api/stock-alerts', 
+    this.http.post(`${this.apiUrl}/stock-alerts`, 
       { item_id: item.id },
       { 
         headers,

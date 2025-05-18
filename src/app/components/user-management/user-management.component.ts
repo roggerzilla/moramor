@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { environment } from '../../../environments/environment'; // Añadido
 
 @Component({
   selector: 'app-user-management',
@@ -16,6 +17,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 })
 export class UserManagementComponent implements OnInit {
   private http = inject(HttpClient);
+  private apiUrl = environment.apiUrl; // Añadido
   users: any[] = []; // Lista de usuarios activos
   deletedUsers: any[] = []; // Lista de usuarios eliminados
   user = { name: '', email: '', password: '', password_confirmation: '', role: 'admin' };
@@ -34,7 +36,7 @@ export class UserManagementComponent implements OnInit {
 
   // Cargar la lista de usuarios activos
   loadUsers(): void {
-    this.http.get<any[]>('http://localhost:8000/api/admins').subscribe(
+    this.http.get<any[]>(`${this.apiUrl}/admins`).subscribe( // Modificado
       (response) => {
         this.users = response;
       },
@@ -46,7 +48,7 @@ export class UserManagementComponent implements OnInit {
 
   // Cargar la lista de usuarios eliminados
   loadDeletedUsers(): void {
-    this.http.get<any[]>('http://localhost:8000/api/admins/deleted').subscribe(
+    this.http.get<any[]>(`${this.apiUrl}/admins/deleted`).subscribe( // Modificado
       (response) => {
         this.deletedUsers = response;
       },
@@ -78,7 +80,7 @@ export class UserManagementComponent implements OnInit {
 
   // Eliminar un usuario (soft delete)
   deleteUser(id: number): void {
-    this.http.delete(`http://localhost:8000/api/admins/${id}`).subscribe(
+    this.http.delete(`${this.apiUrl}/admins/${id}`).subscribe( // Modificado
       () => {
         this.notification.warning ('Usuario eliminado correctamente');
         this.loadUsers(); // Recargar la lista de usuarios activos
@@ -93,7 +95,7 @@ export class UserManagementComponent implements OnInit {
 
   // Restaurar un usuario eliminado
   restoreUser(id: number): void {
-    this.http.post(`http://localhost:8000/api/admins/${id}/restore`, {}).subscribe(
+    this.http.post(`${this.apiUrl}/admins/${id}/restore`, {}).subscribe( // Modificado
       () => {
         this.notification.success('Usuario restaurado correctamente');
         this.loadUsers(); // Recargar la lista de usuarios activos
@@ -114,7 +116,7 @@ export class UserManagementComponent implements OnInit {
   // Actualizar un usuario
   updateUser(): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('token')}`);
-    this.http.put(`http://localhost:8000/api/admins/${this.editingUser.id}`, this.editingUser, { headers }).subscribe(
+    this.http.put(`${this.apiUrl}/admins/${this.editingUser.id}`, this.editingUser, { headers }).subscribe( // Modificado
       () => {
         this.notification.success('Usuario actualizado correctamente');
         this.loadUsers(); // Recargar la lista de usuarios

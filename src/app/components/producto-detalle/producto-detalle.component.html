@@ -18,24 +18,27 @@
       </div>
   
       <!-- Nombre y descripción -->
-      <h1 class="abhaya-libre-medium !text-[#28388E] mb-6 !text-[48px] text-center mb-2">{{ product.name }}</h1>
-        <img src="separador.svg" alt="separador" class="max-h-16 max-w-[264px]">
+      <h1 class="abhaya-libre-medium !text-[#28388E] mb-6 !text-[48px] text-center mb-2 !mt-12">{{ product.name }}</h1>
+      <img src="separador.svg" alt="separador" class="max-h-16 max-w-[264px] !-mb-15">
 
       <p class="noto-sans-regular abhaya-libre-medium !text-[20px] !text-[#A9A9A9] text-center !mt-40 !max-w-[850px] !mb-15">{{ product.short_description || product.description.substring(0, 150) + '...' }}</p>
   
-      <!-- Precio, cantidad y botón -->
-      <div class="w-full flex justify-center items-center mb-4">
-        <div class="flex flex-col me-100">
-          <p class="abhaya-libre-medium !text-[#28388E] mb-6 !text-[72px] text-[#283593]">${{ product.price }}</p>
-          <p class="abhaya-libre-medium !text-[#28388E] mb-6 !text-[24px] !-mt-2">a {{ product.mililitros }} ml</p>
+      <!-- Sección de precio, cantidad y botón - Modificada para responsividad -->
+      <div class="w-full flex flex-col md:flex-row justify-center items-center mb-4 gap-4 md:gap-8">
+        <!-- Contenedor del precio con margen responsivo -->
+        <div class="flex flex-col items-center md:items-end md:mr-[100px]">
+          <p class="abhaya-libre-medium !text-[#28388E] !text-[72px] text-[#283593]">${{ product.price }}</p>
+          <p class="abhaya-libre-medium !text-[#28388E] !text-[24px] !-mt-8">a {{ product.mililitros }} ml</p>
         </div>
   
-        <div class="flex items-center gap-1">
-          <div class="bg-white border-2 border-[#1A237E] rounded-[1.5rem] px-4 py-2">
+        <!-- Contenedor de cantidad y botón -->
+        <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto justify-center">
+          <!-- Selector de cantidad -->
+          <div class="bg-white border-2 border-[#1A237E] rounded-[1.5rem] px-4 py-2 w-full max-w-[180px]">
             <div class="w-full flex justify-between items-center gap-x-2">
               
               <!-- Input numérico -->
-              <div class="grow">
+              <div class="grow min-w-[40px]">
                 <input 
                   class="w-full p-0 bg-transparent border-0 text-[#1A237E] text-center text-lg font-medium focus:ring-0 
                          appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
@@ -70,16 +73,14 @@
                   </svg>
                 </button>
               </div>
-          
             </div>
           </div>
           
-  
           <button 
-            class="btn-void px-3 py-1.5 bg-[#283593] !ml-3 rounded-md hover:bg-[#1F1F44] transition focus:outline-none text-sm"
+            class="btn-void w-full sm:w-auto px-6 py-2"
             [disabled]="cantidad < 1 || cantidad > product.quantity"
             (click)="agregarAlCarrito()">
-            Agregar
+            Agregar al carrito
           </button>
         </div>
       </div>
@@ -89,4 +90,3 @@
   <div *ngIf="!product" class="text-center text-gray-500 py-10">
     Cargando producto...
   </div>
-  

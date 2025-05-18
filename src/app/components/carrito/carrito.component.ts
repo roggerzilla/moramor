@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { trigger, style, transition, animate } from '@angular/animations';
@@ -151,4 +151,32 @@ updateQuantity(item: CartItem) {
     this.closeCart();
     this.router.navigate(['/pay']);
   }
+
+  private disableBodyScroll(): void {
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
+}
+
+private enableBodyScroll(): void {
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
+}
+
+// Llama a disableBodyScroll cuando se abre el carrito
+ngOnChanges(changes: SimpleChanges): void {
+  if (changes['isOpen']) {
+    if (this.isOpen) {
+      this.disableBodyScroll();
+    } else {
+      this.enableBodyScroll();
+    }
+  }
+}
+
+// Asegúrate de habilitar el scroll cuando el componente se destruye
+ngOnDestroy(): void {
+  this.enableBodyScroll();
+}
 }

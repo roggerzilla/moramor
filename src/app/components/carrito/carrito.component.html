@@ -16,7 +16,7 @@
       <div>
         <!-- Encabezado -->
         <div class="flex items-start justify-between p-4">
-          <h2 class="!ml-47 abhaya-libre-bold text-lg font-medium text-gray-900 !text-[48px] !text-[#28388E]">Su orden</h2>
+          <h2 class="!ml-47 abhaya-libre-bold text-lg font-medium text-gray-900 !text-[48px] !text-[#28388E] !mt-10">Su orden</h2>
           <button (click)="closeCart()" class="p-2 text-gray-400 hover:text-gray-500">
             <span class="sr-only">Cerrar</span>
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,12 +27,12 @@
         </div>
 
         <!-- Separador -->
-        <div class="flex justify-center pb-2 px-4">
+        <div class="flex justify-center !-mt-8 pb-2 px-4">
           <img src="separador.svg" alt="separador" class="max-h-16 max-w-80">
         </div>
       </div>
 
-      <!-- Lista de productos -->
+      <!-- Contenido: productos + total -->
       <div class="flex-1 overflow-y-auto p-4">
         <div *ngIf="cartItems.length > 0; else emptyCart">
           <ul class="divide-y divide-gray-200 gap-y-6 flex flex-col">
@@ -40,24 +40,26 @@
               <!-- Columna izquierda: Imagen + nombre -->
               <div class="flex">
                 <div>
-                  <div class="h-32 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                    <img [src]="cartItem.item.image_url || 'assets/placeholder-product.png'"
-                         [alt]="cartItem.item.name"
-                         class="h-full w-full object-cover object-center" />
+                  <div class="h-[185px] w-[155px] flex-shrink-0 overflow-hidden rounded-md flex items-center justify-center">
+                    <img
+    [src]="cartItem.item.images?.[0]?.url || cartItem.item.image_url || 'assets/placeholder-product.png'"
+                      [alt]="cartItem.item.name"
+                      class="h-full w-full object-cover object-center"
+                    />
                   </div>
 
-                  <div class="mt-2">
-                    <h3 class="abhaya-libre-medium text-[#28388E] text-lg leading-tight">
-                      {{ cartItem.item.name }}
-                    </h3>
-                    <p class="text-[#28388E] text-sm">
-                      {{ cartItem.item.mililitros }} ml
-                    </p>
-                  </div>
+      <div class="mt-2 max-w-[155px]"> <!-- Añade max-w-[155px] para limitar el ancho -->
+  <h3 class="abhaya-libre-medium !text-[#28388E] text-[24px] leading-tight mt-4 break-words">
+    {{ cartItem.item.name }}
+  </h3>
+  <p class="abhaya-libre-medium text-[#28388E] !text-[16px] !-mt-3">
+    {{ cartItem.item.mililitros }} ml
+  </p>
+</div>
                 </div>
 
                 <!-- Selector cantidad -->
-                <div class="ml-4 flex items-center !ml-25 !-mt-20">
+                <div class="ml-4 flex items-center !ml-5 !-mt-20">
                   <div class="bg-white border-2 border-[#1A237E] rounded-[1.5rem] px-4 py-2 flex items-center justify-between gap-4 w-[120px]">
                     <input
                       type="number"
@@ -86,36 +88,36 @@
               </div>
 
               <!-- Columna derecha: Precio y eliminar -->
-              <div class="flex flex-col justify-between mt-3 mr-5 items-end ml-4">
+              <div class="flex flex-col justify-between mt-3 mr-5 items-end ml-4 !mt-10">
                 <div class="flex flex-col items-end">
                   <p class="abhaya-libre-medium text-[24px] text-[#28388E]">
                     {{ cartItem.item.price | currency }}
                   </p>
                   <button (click)="removeItem(cartItem); $event.stopPropagation()"
-                          class="font-medium text-red-600 hover:text-red-500 mt-2">
+                          class="font-medium text-red-600 hover:text-red-500 !mt-7">
                     X Eliminar
                   </button>
                 </div>
               </div>
             </li>
           </ul>
+
+          <!-- Total y botón de compra -->
+          <div class="border-t border-[#28388E] pt-6 mt-6 text-center ml-10 mr-10">
+            <div class="flex justify-between text-base font-medium text-gray-900">
+              <p class="abhaya-libre-medium !text-[24px] !text-[#28388E]">Total</p>
+              <p class="abhaya-libre-medium !text-[24px] !text-[#28388E]">{{ getTotal() | currency }}</p>
+            </div>
+            <button (click)="goToPayment($event)" class="btn-void mt-4">
+              Comprar
+            </button>
+          </div>
         </div>
 
         <!-- Carrito vacío -->
         <ng-template #emptyCart>
           <div class="text-center text-gray-500">Tu carrito está vacío</div>
         </ng-template>
-      </div>
-
-      <!-- Total y botón de compra -->
-      <div *ngIf="cartItems.length > 0" class="border-t border-gray-200 py-6 px-4 text-center">
-        <div class="flex justify-between text-base font-medium text-gray-900">
-          <p class="abhaya-libre-medium !text-[24px] !text-[#28388E]">Total</p>
-          <p class="abhaya-libre-medium !text-[24px] !text-[#28388E]">{{ getTotal() | currency }}</p>
-        </div>
-        <button (click)="goToPayment($event)" class="btn-void">
-          Comprar
-        </button>
       </div>
     </div>
   </div>

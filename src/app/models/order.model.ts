@@ -3,6 +3,7 @@
 export interface Address {
   street: string;
   address2:string;
+  colonia:string;
   city: string;
   state: string;
   postalCode: string;

@@ -5,11 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { NotificationService } from '../../services/notification.service';
 import { UserService } from '../../services/user.service';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 interface Address {
   id?: number;
   street: string;
   address2: string;
+  colonia: string;
   city: string;
   state: string;
   postal_code: string;
@@ -17,15 +19,14 @@ interface Address {
   editing?: boolean;
 }
 
-
 @Component({
   selector: 'app-user-edit',
   imports: [CommonModule, FormsModule],
   templateUrl: './user-edit.component.html',
   styleUrl: './user-edit.component.css',
-  
 })
 export class UserEditComponent implements OnInit {
+  private apiUrl = environment.apiUrl;
   user: any = { name: '', email: '' };
   password: string = '';
   updateMessage: string = '';
@@ -35,6 +36,7 @@ export class UserEditComponent implements OnInit {
   newAddress: Address = {
     street: '',
     address2: '',
+    colonia: '',
     city: '',
     state: '',
     postal_code: '',
@@ -64,12 +66,12 @@ export class UserEditComponent implements OnInit {
       'Accept': 'application/json'
     });
 
-    this.http.get('http://localhost:8000/api/user', { headers }).subscribe({
+    this.http.get(`${this.apiUrl}/user`, { headers }).subscribe({
       next: (data) => (this.user = data),
       error: (err) => console.error(err)
     });
 
-    this.http.get('http://localhost:8000/api/user/addresses', { headers }).subscribe({
+    this.http.get(`${this.apiUrl}/user/addresses`, { headers }).subscribe({
       next: (data: any) => {
         this.addresses = data ?? [];
         if (this.addresses.length > 0) {
@@ -95,7 +97,7 @@ export class UserEditComponent implements OnInit {
       password: this.password || null
     };
 
-    this.http.put('http://localhost:8000/api/user/profile', body, { headers }).subscribe({
+    this.http.put(`${this.apiUrl}/user/profile`, body, { headers }).subscribe({
       next: (res: any) => {
         this.updateMessage = 'Perfil actualizado correctamente';
         this.password = '';
@@ -126,7 +128,7 @@ export class UserEditComponent implements OnInit {
       'Accept': 'application/json'
     });
 
-    this.http.post('http://localhost:8000/api/user/address', this.newAddress, {
+    this.http.post(`${this.apiUrl}/user/address`, this.newAddress, {
       headers
     }).subscribe({
       next: (response: any) => {
@@ -135,6 +137,7 @@ export class UserEditComponent implements OnInit {
         this.newAddress = {
           street: '',
           address2: '',
+          colonia: '',
           city: '',
           state: '',
           postal_code: '',
@@ -157,7 +160,7 @@ export class UserEditComponent implements OnInit {
       'Accept': 'application/json'
     });
 
-    this.http.put(`http://localhost:8000/api/user/address/${address.id}`, address, { headers }).subscribe({
+    this.http.put(`${this.apiUrl}/user/address/${address.id}`, address, { headers }).subscribe({
       next: (res: any) => {
         this.notification.success('Dirección actualizada correctamente');
 
@@ -184,7 +187,7 @@ export class UserEditComponent implements OnInit {
       'Accept': 'application/json'
     });
 
-    this.http.delete(`http://localhost:8000/api/user/address/${address.id}`, { headers }).subscribe({
+    this.http.delete(`${this.apiUrl}/user/address/${address.id}`, { headers }).subscribe({
       next: () => {
         this.addresses = this.addresses.filter(a => a.id !== address.id);
         this.notification.success('Dirección eliminada correctamente');
@@ -222,5 +225,4 @@ export class UserEditComponent implements OnInit {
   compareAddress(a: Address, b: Address): boolean {
     return a && b ? a.id === b.id : a === b;
   }
-
 }

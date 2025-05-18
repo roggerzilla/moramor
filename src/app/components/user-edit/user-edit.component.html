@@ -1,19 +1,19 @@
 <div class="user-container">
-  <h2 class="text-center abhaya-libre-extrabold !text-[#28388E] mb-2">¡Hola, {{ user.name }}!</h2>
-  <p class="text-center text-base noto-sans-regular !text-[#28388E] mb-6">Bienvenido a tu perfil</p>
-
-  <div class="card shadow p-6 max-w-md mx-auto rounded-lg border border-gray-200 bg-white">
-    <section class="mb-6">
-      <h3 class="noto-sans-regular !text-[#28388E] text-lg mb-2 !text-[24px] !text-[#28388E]">Perfil</h3>
+  <h2 class="text-center abhaya-libre-extrabold !text-[#28388E] mb-2 !mt-7">¡Hola, {{ user.name }}!</h2>
+  <p class="text-center text-base noto-sans-regular !text-[#28388E] mb-6 !mt-7">Bienvenido a tu perfil</p>
+  <div class="card shadow p-8 w-full max-w-4xl mx-auto rounded-lg border border-gray-200 bg-white !mt-10">
+     <div class="max-w-md mx-auto">
+          <section class="mb-6">
+      <h3 class="noto-sans-regular !text-[#28388E] text-lg mb-2 !text-[24px] !text-[#28388E] !mt-8">Perfil</h3>
 
       <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Nombre</label>
       <input
-        class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
+        class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
         [(ngModel)]="user.name" />
 
       <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Correo</label>
       <input
-        class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
+        class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
         [(ngModel)]="user.email" />
 
       <button
@@ -21,21 +21,18 @@
         (click)="updateProfile()">Guardar cambios</button>
     </section>
 
-      <div class="mb-6 mt-15">
-        <div class="flex justify-center pb-2 px-4">
-          <img src="separador.svg" alt="separador" class="max-h-16 max-w-80 -mt-20">
-        </div>
+    <div class="flex justify-center pb-2 px-4">
+      <img src="separador.svg" alt="separador" class="max-h-16 max-w-80">
+    </div>
 
     <section class="mb-6">
-      <h3 class="text-lg mb-2 noto-sans-regular !text-[24px] !text-[#28388E]">Dirección</h3>
-
-      <!-- Selector bonito con grid y estilos -->
+      <h3 class="text-lg mb-2 noto-sans-regular !text-[24px] !text-[#28388E] !mt-8">Dirección</h3>
 
       <!-- Dirección guardada -->
       <div *ngIf="addressMode === 'saved'">
         <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Seleccione la dirección guardada</label>
         <select
-          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
+          class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
           [(ngModel)]="selectedAddress"
           [compareWith]="compareAddress"
           (change)="onAddressChange()">
@@ -47,82 +44,51 @@
         <section *ngIf="selectedAddress">
           <h4 class="font-semibold text-md mb-2 !text-[24px] !text-[#28388E]">Datos</h4>
 
-          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Dirección 1</label>
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Dirección 1</label>
           <input
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
             [(ngModel)]="selectedAddress.street" />
 
-          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Dirección 2</label>
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Interior</label>
           <input
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
             [(ngModel)]="selectedAddress.address2" />
 
-          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Ciudad</label>
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Colonia</label>
           <input
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            [(ngModel)]="selectedAddress.colonia" />
+
+
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Ciudad</label>
+          <input
+            class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
             [(ngModel)]="selectedAddress.city" />
 
-          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Estado</label>
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Estado</label>
           <input
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
             [(ngModel)]="selectedAddress.state" />
 
-          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Código Postal</label>
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Código Postal</label>
           <input
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
             [(ngModel)]="selectedAddress.postal_code" />
 
-          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">País</label>
+          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">País</label>
           <input
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+            class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
             [(ngModel)]="selectedAddress.country" />
-<div class="w-full flex justify-center gap-8 mt-6">
-  <button class="btn-void px-6 py-2" (click)="saveSelectedAddress()">Guardar cambios</button>
-  <button class="text-sm !text-[#B20808] cursor-pointer px-6 py-2 hover:underline" (click)="logout()">Cerrar sesión</button>
-</div>
         </section>
       </div>
 
-      <!-- Nueva dirección -->
-      <div *ngIf="addressMode === 'new'">
-        <h4 class="font-semibold text-md mb-2 !text-[24px] !text-[#28388E]">Nueva dirección</h4>
-
-        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Dirección 1</label>
-        <input
-          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-          [(ngModel)]="newAddress.street" />
-
-        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Dirección 2</label>
-        <input
-          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-          [(ngModel)]="newAddress.address2" />
-
-        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Ciudad</label>
-        <input
-          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-          [(ngModel)]="newAddress.city" />
-
-        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Estado</label>
-        <input
-          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-          [(ngModel)]="newAddress.state" />
-
-        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Código Postal</label>
-        <input
-          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-          [(ngModel)]="newAddress.postal_code" />
-
-        <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">País</label>
-        <input
-          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-          [(ngModel)]="newAddress.country" />
-<div class="w-full flex justify-center gap-8 mt-6">
-  <button class="btn-void px-6 py-2" (click)="addAddress()">Editar</button>
-  <button class="text-sm !text-[#B20808] cursor-pointer px-6 py-2 hover:underline" (click)="logout()">Cerrar sesión</button>
-</div>
+      <div class="w-full flex justify-center gap-8 mt-6">
+        <button class="btn-void px-6 py-2" (click)="addressMode === 'new' ? addAddress() : saveSelectedAddress()">
+          {{ addressMode === 'new' ? 'Guardar' : 'Guardar cambios' }}
+        </button>
+        <button class="text-sm !text-[#B20808] cursor-pointer px-6 py-2 hover:underline !mr-4" (click)="logout()">Cerrar sesión</button>
       </div>
     </section>
-
-
   </div>
+    </div>
 </div>

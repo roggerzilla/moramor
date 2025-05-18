@@ -13,6 +13,8 @@ import { trigger, transition, style, animate, state } from '@angular/animations'
 import { CarritoComponent } from './components/carrito/carrito.component';
 import { filter } from 'rxjs/operators';
 import { UnderComponent } from './components/under/under.component';
+import { environment } from '../environments/environment'; // Añadido
+
 
 @Component({
   selector: 'app-root',
@@ -58,6 +60,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   userIconSrc: string = '';
 cartIconSrc: string = '';
 
+  private apiUrl = environment.apiUrl; // Añadido
 
   constructor(
     private geolocationService: GeolocationService,
@@ -172,7 +175,7 @@ cartIconSrc: string = '';
     }
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    this.http.get<any>('http://localhost:8000/api/user', { headers }).subscribe(
+    this.http.get<any>(`${this.apiUrl}/user`, { headers }).subscribe(
       (response) => {
         this.userRole = response.role;
       },

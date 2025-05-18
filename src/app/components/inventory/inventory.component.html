@@ -41,6 +41,14 @@
       required
       class="border p-2 w-full mb-2"
     />
+    <input
+      type="text"
+      [(ngModel)]="item.mililitros"
+      name="mililitros"
+      placeholder="Nombre"
+      required
+      class="border p-2 w-full mb-2"
+    />
 
     <!-- Imágenes para nuevo producto -->
     <label class="block mb-2">Imágenes (máximo 4):</label>
@@ -146,6 +154,13 @@
           [(ngModel)]="product.quantity"
           name="editQuantity{{ product.id }}"
           min="0"
+          class="border p-2 w-full mb-2"
+          required
+        />
+                <input
+          type="text"
+          [(ngModel)]="product.mililitros"
+          name="editMililitros{{ product.id }}"
           class="border p-2 w-full mb-2"
           required
         />

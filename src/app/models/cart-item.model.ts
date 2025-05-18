@@ -11,5 +11,5 @@ export interface CartItem {
     image_url: string;
     quantity: number; // Agregar esta línea
     mililitros: number;
-  };
+ images?: { url: string }[];  };
 }

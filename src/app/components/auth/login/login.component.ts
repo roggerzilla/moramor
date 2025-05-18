@@ -58,4 +58,7 @@ window.location.href = '/usuario';
   loginWithGoogle() {
   window.location.href = 'http://localhost:8000/api/auth/google/redirect';
 }
+loginWithFacebook() {
+  window.location.href = 'http://localhost:8000/api/auth/facebook/redirect';
+}
 }

@@ -15,14 +15,14 @@
       <!-- Selector tipo de dirección -->
       <div class="mb-6 mt-15">
         <div class="flex justify-center pb-2 px-4">
-          <img src="separador.svg" alt="separador" class="max-h-16 max-w-80">
+          <img src="separador.svg" alt="separador" class="max-h-16 max-w-80 mb-10">
         </div>
         <label class="block text-sm font-medium text-gray-700 mb-2">¿Cómo deseas ingresar la dirección?</label>
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
 <button
-  class="btn-void rounded-lg cursor-pointer text-center transition-all duration-200 flex items-center justify-center"
+  class="btn-void rounded-md cursor-pointer text-center transition-all duration-200 flex items-center justify-center"
   [class.border-blue-500]="addressMode === 'saved'"
-  (click)="addressMode = 'saved'"
+  (click)="useSavedAddress()"
   style="width: 193px; height: 68px;"
 >
   <span class="text-[16px]">Utilizar una dirección guardada</span>
@@ -30,7 +30,7 @@
 <button
   class="btn-void rounded-lg cursor-pointer text-center transition-all duration-200 flex items-center justify-center"
   [class.border-blue-500]="addressMode === 'new'"
-  (click)="addressMode = 'new'"
+  (click)="addNewAddress()"
   style="width: 193px; height: 68px;"
 >
   <span class="text-[16px]">Agregar una nueva dirección</span>
@@ -39,37 +39,139 @@
       </div>
 
       <!-- Mostrar si usa dirección guardada -->
-      <div *ngIf="addressMode === 'saved'" class="mb-4 text-center">
-        <label for="shipping-address" class="noto-sans-regular !text-[#28388E] block font-semibold mb-2 text-left">Selecciona una dirección de envío</label>
-        <select id="shipping-address" class="w-full p-2 border rounded text-sm" [(ngModel)]="selectedAddressId">
-          <option *ngFor="let address of userAddresses" [value]="address.id">
-            {{ address.street }}, {{ address.address2 }}, {{ address.city }}, {{ address.state }}, {{ address.zip_code }}
-          </option>
-        </select>
+<!-- Mostrar si usa dirección guardada -->
+<div *ngIf="flag" class="mb-4 text-center">
+  <label for="shipping-address" class="noto-sans-regular !text-[#28388E] block font-semibold mb-2 text-left">Selecciona una dirección de envío</label>
+  <select id="shipping-address" class="w-full p-2 border rounded text-sm" [(ngModel)]="selectedAddressId" (change)="onAddressSelect()">
+    <option *ngFor="let address of userAddresses" [value]="address.id">
+      {{ address.street }}, {{ address.address2 }},{{address.colonia}}, {{ address.city }}, {{ address.state }}, {{ address.postal_code }}
+    </option>
+  </select>
+
+  <!-- Campos de dirección en modo lectura -->
+  <div *ngIf="selectedAddress" class="mt-4 space-y-4">
+    <!-- Calle y número -->
+    <div>
+      <label class="!noto-sans-regular !text-[#000A40] mb-1">Calle y número</label>
+      <div class="w-full p-2 border rounded text-sm bg-gray-100 text-gray-600">
+        {{ selectedAddress.street }}
       </div>
+    </div>
+
+    <!-- Colonia -->
+    <div>
+      <label class="!noto-sans-regular !text-[#000A40] mb-1">Interior</label>
+      <div class="w-full p-2 border rounded text-sm bg-gray-100 text-gray-600">
+        {{ selectedAddress.address2 }}
+      </div>
+    </div>
+
+        <div>
+      <label class="!noto-sans-regular !text-[#000A40] mb-1">Colonia</label>
+      <div class="w-full p-2 border rounded text-sm bg-gray-100 text-gray-600">
+        {{ selectedAddress.colonia }}
+      </div>
+    </div>
+
+    <!-- Ciudad -->
+    <div>
+      <label class="!noto-sans-regular !text-[#000A40] mb-1">Ciudad</label>
+      <div class="w-full p-2 border rounded text-sm bg-gray-100 text-gray-600">
+        {{ selectedAddress.city }}
+      </div>
+    </div>
+
+    <!-- Estado -->
+    <div>
+      <label class="!noto-sans-regular !text-[#000A40] mb-1">Estado</label>
+      <div class="w-full p-2 border rounded text-sm bg-gray-100 text-gray-600">
+        {{ selectedAddress.state }}
+      </div>
+    </div>
+
+    <!-- Código postal -->
+    <div>
+      <label class="!noto-sans-regular !text-[#000A40] mb-1">Código postal</label>
+      <div class="w-full p-2 border rounded text-sm bg-gray-100 text-gray-600">
+        {{ selectedAddress.postal_code }}
+      </div>
+    </div>
+  </div>
+</div>
 
       <!-- Formulario nueva dirección -->
-      <div *ngIf="addressMode === 'new'" class="mb-4">
+      <div *ngIf="flag === false" class="mb-4">
         <div class="space-y-2">
-          <input class="w-full p-2 border rounded text-sm text-[#28388E]" placeholder="Calle" [(ngModel)]="newAddress.street" />
-          <input class="w-full p-2 border rounded text-sm text-[#28388E]" placeholder="Dirección 2" [(ngModel)]="newAddress.address2" />
-          <input class="w-full p-2 border rounded text-sm text-[#28388E]" placeholder="Ciudad" [(ngModel)]="newAddress.city" />
-          <input class="w-full p-2 border rounded text-sm text-[#28388E]" placeholder="Estado" [(ngModel)]="newAddress.state" />
-          <input class="w-full p-2 border rounded text-sm text-[#28388E]" placeholder="Código postal" [(ngModel)]="newAddress.postal_code" />
+<div class="space-y-4">
+  <!-- Calle y número -->
+  <div>
+    <label for="street" class=" !noto-sans-regular !text-[#000A40] mb-1">Calle y número</label>
+    <input 
+      id="street"
+      class="w-full p-2 border rounded text-sm text-[#28388E]" 
+      [(ngModel)]="newAddress.street" />
+  </div>
+
+  <!-- Colonia -->
+  <div>
+    <label for="address2" class="!noto-sans-regular !text-[#000A40] mb-1">Interior</label>
+    <input 
+      id="address2"
+      class="w-full p-2 border rounded text-sm text-[#28388E]" 
+      [(ngModel)]="newAddress.address2" />
+  </div>
+  <div>
+    <label for="address2" class="!noto-sans-regular !text-[#000A40] mb-1">Colonia</label>
+    <input 
+      id="address2"
+      class="w-full p-2 border rounded text-sm text-[#28388E]" 
+      [(ngModel)]="newAddress.colonia" />
+  </div>
+  <!-- Ciudad -->
+  <div>
+    <label for="city" class="!noto-sans-regular !text-[#000A40] mb-1">Ciudad</label>
+    <input 
+      id="city"
+      class="w-full p-2 border rounded text-sm text-[#28388E]" 
+      [(ngModel)]="newAddress.city" />
+  </div>
+
+  <!-- Estado -->
+  <div>
+    <label for="state" class="!noto-sans-regular !text-[#000A40] mb-1">Estado</label>
+    <input 
+      id="state"
+      class="w-full p-2 border rounded text-sm text-[#28388E]" 
+      [(ngModel)]="newAddress.state" />
+  </div>
+
+  <!-- Código postal -->
+  <div>
+    <label for="postal_code" class="!noto-sans-regular !text-[#000A40] mb-1">Código postal</label>
+    <input 
+      id="postal_code"
+      class="w-full p-2 border rounded text-sm text-[#28388E]" 
+      [(ngModel)]="newAddress.postal_code" />
+  </div>
+</div>
+
         </div>
-        <div *ngIf="addressMode === 'new'" class="mt-4 flex justify-center">
-          <button class="btn-void px-4 py-2 text-sm rounded transition"
-                  (click)="saveNewAddress()">
-            Guardar dirección
-          </button>
-        </div>
+       
+
       </div>
 
       <!-- Botón de pagar -->
-      <div class="flex justify-center mt-4">
+      <div *ngIf="flag" class="flex justify-center mt-4">
         <button class="btn-void px-4 py-2"
                 (click)="handlePayment()">
           Pagar ahora
+        </button>
+      </div>
+
+      <div *ngIf="!flag"class="flex justify-center mt-4">
+        <button class="btn-void px-4 py-2"
+                (click)="handlePayment2()">
+          Pagar ara
         </button>
       </div>
     </div>

@@ -3,13 +3,13 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap, switchMap } from 'rxjs/operators';
 import { CartItem } from '../models/cart-item.model';
+import { environment } from '../../environments/environment'; // Añadido
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService {
-  private apiUrl = 'http://localhost:8000/api/cart';
-
+    private apiUrl = environment.apiUrl; 
 
   constructor(private http: HttpClient) {}
 

@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Order } from '../models/order.model';
-
+import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
 export class OrderService {
-  private apiUrl = 'http://localhost:8000/api/orders'; // Ajusta la URL según tu backend
-  private apiUrl2 = 'http://localhost:8000/api/ordersStore';
+private apiUrl = environment.apiUrl; 
+private apiUrl2 = `${this.apiUrl}/ordersStore`; 
 
   constructor(private http: HttpClient) {}
 

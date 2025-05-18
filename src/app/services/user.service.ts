@@ -3,12 +3,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Address } from '../models/address.model';
+import { environment } from '../../environments/environment'; 
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private apiUrl = 'http://localhost:8000/api'; // Cambia esto según tu backend
+ private apiUrl = environment.apiUrl; // Cambia esto según tu backend
 
   constructor(private http: HttpClient) {}
 

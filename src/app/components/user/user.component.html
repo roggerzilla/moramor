@@ -1,21 +1,22 @@
 <div class="user-container">
-  <h2 class="text-center abhaya-libre-extrabold !text-[#28388E] mb-2">¡Hola, {{ user.name }}!</h2>
-  <p class="text-center text-base noto-sans-regular !text-[#28388E] mb-6">Bienvenido a tu perfil</p>
+  <h2 class="text-center abhaya-libre-extrabold !text-[#28388E] mb-2 !mt-7">¡Hola, {{ user.name }}!</h2>
+  <p class="text-center text-base noto-sans-regular !text-[#28388E] mb-6  !mt-7">Bienvenido a tu perfil</p>
 
-  <div class="card shadow p-6 max-w-md mx-auto rounded-lg border border-gray-200 bg-white">
+  <div class="card shadow p-8 w-full max-w-4xl mx-auto rounded-lg border border-gray-200 bg-white !mt-10">
+     <div class="max-w-md mx-auto">
     <section class="mb-6">
-      <h3 class="noto-sans-regular !text-[#28388E] text-lg mb-2 !text-[24px] !text-[#28388E]">Perfil</h3>
+      <h3 class="noto-sans-regular !text-[#28388E] text-lg mb-2 !text-[24px] !text-[#28388E] !mt-8">Perfil</h3>
 
       <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Nombre</label>
       <input
         readonly
-        class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
+        class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
         [(ngModel)]="user.name" />
 
       <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Correo</label>
       <input
         readonly
-        class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
+        class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
         [(ngModel)]="user.email" />
     </section>
 
@@ -24,10 +25,10 @@
         </div>
 
     <section class="mb-6">
-      <h3 class="text-lg mb-2 noto-sans-regular !text-[24px] !text-[#28388E]">Direcciones</h3>
+      <p class="mb-2 !noto-sans-regular !text-[24px] !text-[#28388E] !mt-8">Direcciones</p>
         <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Seleccione la dirección guardada</label>
         <select
-          class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
+          class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-4"
           [(ngModel)]="selectedAddress"
           [compareWith]="compareAddress"
           (change)="onAddressChange()">
@@ -39,110 +40,130 @@
       <div *ngIf="addressMode === 'saved'">
 
 
-        <section *ngIf="selectedAddress">
-          <h4 class="font-semibold text-md mb-2 !text-[24px] !text-[#28388E]">Datos</h4>
-                    <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Dirección 1</label>
-          <input
-          readonly
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-            [(ngModel)]="selectedAddress.street" />
+   <section *ngIf="selectedAddress">
+  <p class="!noto-sans-regular text-md mb-2 !text-[24px] !text-[#28388E]">Datos</p>
+  
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Calle y número*</label>
+  <input
+    readonly
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="selectedAddress.street"
+    placeholder="Ej: Av. Juárez 123" />
 
-          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Dirección 2</label>
-          <input
-          readonly
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-            [(ngModel)]="selectedAddress.address2" />
+      <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Interior*</label>
+  <input
+    readonly
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="selectedAddress.address2"
+    placeholder="Ej: Centro" />
 
-          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Ciudad</label>
-          <input
-          readonly
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-            [(ngModel)]="selectedAddress.city" />
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Colonia*</label>
+  <input
+    readonly
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="selectedAddress.colonia"
+    placeholder="Ej: Centro" />
 
-          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Estado</label>
-          <input
-          readonly
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-            [(ngModel)]="selectedAddress.state" />
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Ciudad/Municipio*</label>
+  <input
+    readonly
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="selectedAddress.city"
+    placeholder="Ej: Guadalajara" />
 
-          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Código Postal</label>
-          <input
-          readonly
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-            [(ngModel)]="selectedAddress.postal_code" />
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Estado*</label>
+  <input
+    readonly
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="selectedAddress.state"
+    placeholder="Ej: Jalisco" />
 
-          <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">País</label>
-          <input
-          readonly
-            class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-            [(ngModel)]="selectedAddress.country" />
-        </section>
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Código Postal*</label>
+  <input
+    readonly
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="selectedAddress.postal_code"
+    placeholder="Ej: 44100" />
+
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">País</label>
+  <input
+    readonly
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="selectedAddress.country"
+    placeholder="México" />
+</section>
       </div>
 
       <!-- Formulario para nueva dirección -->
-   <div *ngIf="addressMode === 'new'">
-    <h4 class="font-semibold text-md mb-2 !text-[24px] !text-[#28388E]">Nueva Dirección</h4>
+ <div *ngIf="addressMode === 'new'">
+  <p class="!noto-sans-regular text-md mb-2 !text-[24px] !text-[#28388E]">Nueva dirección</p>
+  
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Calle y número*</label>
+  <input
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="newAddress.street" 
+    required
+    placeholder="Ej: Av. Juárez 123" />
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Interior*</label>
+  <input
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="newAddress.address2"
+    required
+    placeholder="Opcional" />
 
-    <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Calle y número*</label>
-    <input
-      class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-      [(ngModel)]="newAddress.street" 
-      required
-      placeholder="Ej: Av. Juárez 123" />
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Colonia*</label>
+  <input
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="newAddress.colonia"
+    required
+    placeholder="Ej: Centro" />
 
-    <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Colonia*</label>
-    <input
-      class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-      [(ngModel)]="newAddress.address2"
-      required
-      placeholder="Ej: Centro" />
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Ciudad/Municipio*</label>
+  <input
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="newAddress.city"
+    required
+    placeholder="Ej: Guadalajara" />
 
-    <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Ciudad/Municipio*</label>
-    <input
-      class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-      [(ngModel)]="newAddress.city"
-      required
-      placeholder="Ej: Guadalajara" />
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Estado*</label>
+  <input
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="newAddress.state"
+    required
+    placeholder="Ej: Jalisco" />
 
-    <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Estado*</label>
-    <input
-      class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-      [(ngModel)]="newAddress.state"
-      required
-      placeholder="Ej: Jalisco" />
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">Código Postal*</label>
+  <input
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    [(ngModel)]="newAddress.postal_code"
+    required
+    pattern="[0-9]{5}"
+    maxlength="5"
+    placeholder="Ej: 44100" />
 
-    <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">Código Postal*</label>
-    <input
-      class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-      [(ngModel)]="newAddress.postal_code"
-      required
-      pattern="[0-9]{5}"
-      maxlength="5"
-      
-      placeholder="Ej: 44100" />
+  <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40] !mt-3">País</label>
+  <input
+    readonly
+    class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
+    value="México" />
 
-    <label class="block mb-1 noto-sans-regular !text-[16px] !text-[#000A40]">País</label>
-    <input
-      readonly
-      class="appearance-none border rounded-sm w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none !bg-[#F4F4F6] mb-2"
-      value="México" />
-
-    <div class="flex justify-center gap-8 mt-6">
-      <button 
-        class="btn-void px-6 py-2" 
-        (click)="addAddress()"
-        [disabled]="!isAddressFormValid()">
-        Guardar
-      </button>
-      <button class="text-sm !text-[#B20808] cursor-pointer px-6 py-2 hover:underline" 
-              (click)="addressMode = 'saved'">Cancelar</button>
-    </div>
+  <div class="flex justify-center gap-8 mt-6">
+    <button 
+      class="btn-void px-6 py-2" 
+      (click)="addAddress()"
+      [disabled]="!isAddressFormValid()">
+      Guardar
+    </button>
+    <button class="text-sm !text-[#B20808] cursor-pointer px-6 py-2 hover:underline !mr-10" 
+            (click)="addressMode = 'saved'">Cancelar</button>
   </div>
+</div>
     </section>
 
 <div *ngIf="addressMode !== 'new'" class="w-full flex justify-center gap-8 mt-6">
   <button class="btn-void px-6 py-2" (click)="navigateToEdit()">Editar</button>
-  <button class="text-sm !text-[#B20808] cursor-pointer px-6 py-2 hover:underline" (click)="logout()">Cerrar sesión</button>
+  <button class="text-sm !text-[#B20808] cursor-pointer px-6 py-2 hover:underline !mr-6" (click)="logout()">Cerrar sesión</button>
 </div>
+  </div>
   </div>
 </div>

@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment'; 
 
 // Interfaces para tipado fuerte
 interface User {
@@ -17,7 +18,7 @@ interface User {
   providedIn: 'root'
 })
 export class PaymentService {
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = environment.apiUrl;
   private currentUser = new BehaviorSubject<User | null>(null);
 
   constructor(private http: HttpClient) {
@@ -78,4 +79,12 @@ export class PaymentService {
   subtractStock(items: Array<{ item_id: number, quantity: number }>): Observable<any> {
     return this.http.post(`${this.apiUrl}/subtract-stock`, { items });
   }
+verifyStock(items: { item_id: number, quantity: number }[]) {
+  return this.http.post<{ success: boolean, message?: string }>(
+    `${this.apiUrl}/verify-stock`, // ✅ usa la misma base
+    { items }
+  );
+}
+
+
 }

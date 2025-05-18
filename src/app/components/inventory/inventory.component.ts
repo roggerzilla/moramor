@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { NotificationService } from '../../services/notification.service';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-inventory',
@@ -16,6 +17,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 })
 export class InventoryComponent implements OnInit {
   private http = inject(HttpClient);
+  private apiUrl = environment.apiUrl; // Añadido
   activeItems: any[] = [];
   deletedItems: any[] = [];
   userRole: string | null = null;
@@ -30,6 +32,7 @@ export class InventoryComponent implements OnInit {
     description: '',
     price: 0,
     quantity: 0,
+    mililitros: '',
     image_urls: [] as string[],
   };
 
@@ -43,7 +46,7 @@ export class InventoryComponent implements OnInit {
 
   loadItems(): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.get<any[]>('http://localhost:8000/api/items', { headers }).subscribe(
+    this.http.get<any[]>(`${this.apiUrl}/items`, { headers }).subscribe( // Modificado
       (items) => {
         this.activeItems = items
           .filter(item => !item.deleted)
@@ -62,7 +65,7 @@ export class InventoryComponent implements OnInit {
 
   loadDeletedItems(): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.get<any[]>('http://localhost:8000/api/items/getdeleted', { headers }).subscribe(
+    this.http.get<any[]>(`${this.apiUrl}/items/getdeleted`, { headers }).subscribe( // Modificado
       (items) => {
         this.deletedItems = items.map(item => ({
           ...item,
@@ -76,7 +79,7 @@ export class InventoryComponent implements OnInit {
 
   deleteItem(item: any): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.delete(`http://localhost:8000/api/items/${item.id}`, { headers }).subscribe(
+    this.http.delete(`${this.apiUrl}/items/${item.id}`, { headers }).subscribe( // Modificado
       () => {
         this.notification.success('Producto eliminado.');
         this.loadItems();
@@ -91,7 +94,7 @@ export class InventoryComponent implements OnInit {
 
   restoreItem(item: any): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.put(`http://localhost:8000/api/items/${item.id}/restore`, {}, { headers }).subscribe(
+    this.http.put(`${this.apiUrl}/items/${item.id}/restore`, {}, { headers }).subscribe( // Modificado
       () => {
         this.notification.success('Producto restaurado.');
         this.loadItems();
@@ -111,7 +114,7 @@ export class InventoryComponent implements OnInit {
     }
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.get<any>('http://localhost:8000/api/user', { headers }).subscribe(
+    this.http.get<any>(`${this.apiUrl}/user`, { headers }).subscribe( // Modificado
       (response) => {
         this.userRole = response.role;
       },
@@ -134,7 +137,7 @@ export class InventoryComponent implements OnInit {
     }
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.post('http://localhost:8000/api/items', this.item, { headers }).subscribe(
+    this.http.post(`${this.apiUrl}/items`, this.item, { headers }).subscribe( // Modificado
       () => {
         this.notification.success('¡Item agregado!');
         this.loadItems();
@@ -146,52 +149,50 @@ export class InventoryComponent implements OnInit {
       }
     );
   }
-uploadImage(event: any, itemToUpdate?: any): void {
-  const file = event.target.files[0];
-  if (!file) {
-    console.log('No file selected');
-    return;
-  }
 
-  console.log('Archivo seleccionado:', file);
-
-  const formData = new FormData();
-  formData.append('image', file);
-
-  const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-
-  this.http.post<{ path: string }>('http://localhost:8000/api/upload-image', formData, { headers }).subscribe(
-    (response) => {
-      console.log('Respuesta de la API:', response);
-      
-       const imageUrl = response.path;
-
-      console.log('URL final de la imagen:', imageUrl);
-
-      // Dependiendo si itemToUpdate existe, agrega imagen a ese o a this.item
-      const targetItem = itemToUpdate || this.item;
-
-      if (!targetItem.image_urls) {
-        targetItem.image_urls = [];
-      }
-
-      if (targetItem.image_urls.length >= 4) {
-        console.warn('Intentas subir más de 4 imágenes');
-        this.notification.warning('Solo puedes subir hasta 4 imágenes por producto.');
-        return;
-      }
-
-      targetItem.image_urls.push(imageUrl);
-      console.log('Imágenes actuales del producto:', targetItem.image_urls);
-    },
-    (error: HttpErrorResponse) => {
-      console.error('Error al subir la imagen:', error);
-      this.notification.error('Error al subir la imagen.');
+  uploadImage(event: any, itemToUpdate?: any): void {
+    const file = event.target.files[0];
+    if (!file) {
+      console.log('No file selected');
+      return;
     }
-  );
-}
 
+    console.log('Archivo seleccionado:', file);
 
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+
+    this.http.post<{ path: string }>(`${this.apiUrl}/upload-image`, formData, { headers }).subscribe( // Modificado
+      (response) => {
+        console.log('Respuesta de la API:', response);
+        
+        const imageUrl = response.path;
+
+        console.log('URL final de la imagen:', imageUrl);
+
+        const targetItem = itemToUpdate || this.item;
+
+        if (!targetItem.image_urls) {
+          targetItem.image_urls = [];
+        }
+
+        if (targetItem.image_urls.length >= 4) {
+          console.warn('Intentas subir más de 4 imágenes');
+          this.notification.warning('Solo puedes subir hasta 4 imágenes por producto.');
+          return;
+        }
+
+        targetItem.image_urls.push(imageUrl);
+        console.log('Imágenes actuales del producto:', targetItem.image_urls);
+      },
+      (error: HttpErrorResponse) => {
+        console.error('Error al subir la imagen:', error);
+        this.notification.error('Error al subir la imagen.');
+      }
+    );
+  }
 
   removeImage(item: any, imageUrl: string): void {
     item.image_urls = item.image_urls.filter((url: string) => url !== imageUrl);
@@ -203,6 +204,7 @@ uploadImage(event: any, itemToUpdate?: any): void {
       description: '',
       price: 0,
       quantity: 0,
+      mililitros: '',
       image_urls: [],
     };
   }
@@ -213,7 +215,7 @@ uploadImage(event: any, itemToUpdate?: any): void {
 
   updateItem(item: any): void {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.put(`http://localhost:8000/api/items/${item.id}`, item, { headers }).subscribe(
+    this.http.put(`${this.apiUrl}/items/${item.id}`, item, { headers }).subscribe( // Modificado
       () => {
         item.editing = false;
         this.loadItems();

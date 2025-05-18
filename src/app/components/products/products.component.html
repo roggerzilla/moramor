@@ -17,7 +17,7 @@
         *ngIf="item.quantity > 0"
         [src]="item.images?.[0]?.url"
         alt="Imagen del producto"
-        class="w-full h-48 object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+        class="w-[345] h-[411] object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
         (click)="goToProductDetail(item.id)"
       />
 
@@ -26,8 +26,8 @@
         *ngIf="item.quantity === 0"
         [src]="item.images?.[0]?.url"
         alt="Imagen del producto"
-        class="w-full h-48 object-cover"
-      />
+class="w-[345px] h-[411px] object-cover"      
+/>
 
       <!-- Info del producto (nombre, precio, descripción) -->
       <div class="p-6">
@@ -36,8 +36,7 @@
           <p *ngIf="item.quantity > 0" class="abhaya-libre-medium !text-[#28388E] !text-[24px] group-hover:!font-bold transition-all duration-300">${{ item.price }}</p>
           <p *ngIf="item.quantity === 0" class="abhaya-libre-medium !text-[#28388E] !text-[24px] group-hover:!font-bold transition-all duration-300">Sin stock</p>
         </div>
-        <p class="abhaya-libre-medium !text-[#28388E] !text-[16px] group-hover:!font-bold transition-all duration-300">{{ item.mililitros }} ml</p>
-        <p class="noto-sans-regular text-gray-600 mb-4">{{ item.description }}</p>
+        <p class="abhaya-libre-medium !text-[#28388E] !text-[16px] group-hover:!font-bold transition-all duration-300 !-mt-5">{{ item.mililitros }} ml</p>
       </div>
     </div>
 

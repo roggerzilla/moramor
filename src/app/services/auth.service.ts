@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { AuthResponse } from '../models/auth-response';
+import { environment } from '../../environments/environment'; // Añadido
 
 @Injectable({
-  providedIn: 'root', // Asegúrate de que esté proporcionado globalmente
+  providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/api'; // URL de Laravel
+  private apiUrl = environment.apiUrl; 
 
   constructor(private http: HttpClient) {}
 
@@ -18,18 +19,19 @@ export class AuthService {
   registerAdmin(user: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/registerAdmin`, user);
   }
-// En tu servicio de autenticación (auth.service.ts)
-login(credentials: { email: string, password: string }): Observable<any> {
-  return this.http.post('http://localhost:8000/api/login', credentials).pipe(
-    tap((response: any) => {
-      // Guardar el token en el localStorage
-      localStorage.setItem('authToken', response.token);
-    })
-  );
-}
+
+  login(credentials: { email: string, password: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
+      tap((response: any) => {
+        localStorage.setItem('authToken', response.token);
+      })
+    );
+  }
+
   logout(): Observable<any> {
     return this.http.post(`${this.apiUrl}/logout`, {});
   }
+
   verifyEmail(id: string, hash: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/email/verify/${id}/${hash}`);
   }
