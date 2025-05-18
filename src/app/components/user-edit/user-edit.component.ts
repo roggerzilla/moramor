@@ -225,4 +225,7 @@ export class UserEditComponent implements OnInit {
   compareAddress(a: Address, b: Address): boolean {
     return a && b ? a.id === b.id : a === b;
   }
+      navigateToUser() {
+  this.router.navigate(['/usuario']);
+}
 }

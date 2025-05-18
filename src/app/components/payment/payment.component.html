@@ -189,7 +189,18 @@
             <p class="abhaya-libre-medium text-[18px] text-sm text-gray-600 !text-[#28388E]">Cantidad: {{ item.quantity }}</p>
           </div>
         </div>
-        <p class="abhaya-libre-medium !text-[32px] !text-[#28388E]">{{ item.item.price * item.quantity | currency:'MXN' }}</p>
+        <div class="flex flex-col items-end space-y-1">
+  <button
+    (click)="removeFromCart(item)"
+    class="flex items-center text-red-600 text-sm hover:underline focus:outline-none"
+  >
+    <span class="text-lg mr-1">&times;</span> <!-- la X -->
+    <span>Eliminar</span>
+  </button>
+  <p class="abhaya-libre-medium !text-[32px] !text-[#28388E]">
+    {{ item.item.price * item.quantity | currency:'MXN' }}
+  </p>
+</div>
       </div>
     </div>
 

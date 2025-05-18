@@ -9,7 +9,8 @@ import { environment } from '../../environments/environment'; // Añadido
   providedIn: 'root',
 })
 export class CartService {
-    private apiUrl = environment.apiUrl; 
+private apiUrl = `${environment.apiUrl}/cart`;
+
 
   constructor(private http: HttpClient) {}
 

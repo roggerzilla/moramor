@@ -449,5 +449,36 @@ onAddressSelect() {
 
   // Función para enviar la bandera al backend (Laravel)
 
+removeFromCart(itemToRemove: CartItem) {
+  this.cartService.removeFromCart(itemToRemove.id).subscribe({
+    next: (updatedCartItems: CartItem[]) => {
+      // Actualizamos los ítems locales
+      this.cartItems = updatedCartItems;
 
+      // Recalcular el total
+      this.calculateTotalAmount();
+
+      // Si el carrito queda vacío, desmontamos Stripe
+      if (this.cartItems.length === 0) {
+        this.stripeInitialized = false;
+        const container = document.getElementById('payment-element');
+        if (container) container.innerHTML = '';
+      }
+    },
+    error: (err) => {
+      console.error('Error al eliminar del carrito', err);
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: 'No se pudo eliminar el producto',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#ffffff',
+        color: '#28388E',
+      });
+    }
+  });
+}
 }
